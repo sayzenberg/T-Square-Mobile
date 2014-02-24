@@ -14,12 +14,12 @@ public class LoginActivity extends Activity {
 		setContentView(R.layout.activity_login);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	//@Override
+	//public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.login, menu);
-		return true;
-	}
+	//	getMenuInflater().inflate(R.menu.login, menu);
+	//	return true;
+	//}
 
 	public void onPress(View view) {
 		Intent intent = new Intent(this, HomeScreenActivity.class);

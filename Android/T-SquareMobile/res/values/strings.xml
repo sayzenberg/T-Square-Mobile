@@ -6,7 +6,35 @@
     <string name="username_text">Username</string>
     <string name="password_text">Password</string>
     <string name="login_button_text">Login</string>
-    <string name="title_activity_home_screen">HomeScreen</string>
+    <string name="title_activity_home_screen">Calendar</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_classes">Classes</string>
+    
+    <string name="title_section1">Announcements</string>
+    <string name="title_section2">Assignments</string>
+    <string name="title_section3">Grades</string>
+    
+    <string-array name="class_list">
+        <item>Calendar</item>
+        <item>ECE 6412</item>
+        <item>CS 8803</item>
+        <item>CS 4430</item>
+        <item>ECE 4430</item>
+    </string-array>
+    
+     <array name="nav_drawer_icons">
+        <item>@drawable/ic_calendar</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+    </array>
+    
+       <!-- Content Description -->
+    <string name="desc_list_item_icon">Item Icon</string>
+    
+    <string name="drawer_open">Open drawer</string>
+    <string name="drawer_close">Close drawer</string>
+    <string name="action_add_assignment">Add Assignment</string>
 
 </resources>
