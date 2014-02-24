@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class Classes extends FragmentActivity {
-
+	private String setClassname = "";
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -47,6 +47,13 @@ public class Classes extends FragmentActivity {
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
+		
+		//Dynamically change the name of the class based on NavDrawer Selection
+		Bundle extras = getIntent().getExtras();
+		if (extras != null){
+			setClassname = extras.getString("className");
+		}
+		setTitle(setClassname);
 
 	}
 

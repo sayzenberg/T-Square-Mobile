@@ -31,6 +31,7 @@ public class HomeScreenActivity extends Activity {
 	private ListView myDrawerList;
 	private ActionBarDrawerToggle myDrawerToggle;
 	private String[] myClasses;
+	private String className = "";
 
 	// Variables to add assignments
 	private String dialogue_text = "";
@@ -124,7 +125,9 @@ public class HomeScreenActivity extends Activity {
 		Intent intent;
 		if (position == 0) {
 		} else {
+			className = myClasses[position];
 			intent = new Intent(HomeScreenActivity.this, Classes.class);
+			intent.putExtra("className", className);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			this.startActivity(intent);
 		}
