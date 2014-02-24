@@ -22,6 +22,7 @@ public class LoginActivity extends Activity {
 	//}
 
 	public void onPress(View view) {
+		
 		Intent intent = new Intent(this, HomeScreenActivity.class);
 		startActivity(intent);
 	}

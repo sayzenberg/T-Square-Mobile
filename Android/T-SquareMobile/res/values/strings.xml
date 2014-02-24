@@ -28,13 +28,21 @@
         <item>@drawable/ic_class_icon</item>
         <item>@drawable/ic_class_icon</item>
         <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
     </array>
     
        <!-- Content Description -->
     <string name="desc_list_item_icon">Item Icon</string>
     
-    <string name="drawer_open">Open drawer</string>
-    <string name="drawer_close">Close drawer</string>
+    <string name="drawer_open">Open Drawer</string>
+    <string name="drawer_close">Close Drawer</string>
     <string name="action_add_assignment">Add Assignment</string>
 
 </resources>

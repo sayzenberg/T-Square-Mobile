@@ -1,5 +1,6 @@
 package com.teammeh.t_squaremobile;
 
+import java.util.Arrays;
 import java.util.Calendar;
 
 import android.os.Bundle;
@@ -23,7 +24,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 public class HomeScreenActivity extends Activity {
 	// Variables to create the Navigation Drawer
@@ -34,7 +38,8 @@ public class HomeScreenActivity extends Activity {
 	private String className = "";
 
 	// Variables to add assignments
-	private String dialogue_text = "";
+	private String assignment_course = "";
+	private String assignment_text = "";
 	private String assignment_due_date = "";
 
 	@Override
@@ -157,6 +162,8 @@ public class HomeScreenActivity extends Activity {
 
 	// Create Dialog Box to enter Assignment and Due Date
 	private Dialog add_assignments() {
+		
+		//String[] courses = Arrays.copyOfRange(myClasses, 1, myClasses.length);
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Add Assignment");
@@ -168,12 +175,20 @@ public class HomeScreenActivity extends Activity {
 		// as a password, and will mask the text
 		input.setInputType(InputType.TYPE_CLASS_TEXT);
 		builder.setView(input);
+		
+		// Set up spinner
+	
+		//final ArrayAdapter<String> classSpinner = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, courses);
+		//final Spinner spinner = new Spinner(this);
+		//spinner.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		//spinner.setAdapter(classSpinner);
+		//builder.setView(spinner);
 
 		// Set up the buttons
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				dialogue_text = input.getText().toString();
+				assignment_text = input.getText().toString();
 			}
 		});
 		builder.setNegativeButton("Cancel",
@@ -205,10 +220,11 @@ public class HomeScreenActivity extends Activity {
 	// Create Dialog Box to enter Assignment and Due Date
 	private Dialog logout() {
 
+		// Initialize Alert Dialog
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Logout");
 		builder.setMessage("Do you want to out?");
-
+		
 		// Set up the buttons
 		builder.setPositiveButton("Logout",
 				new DialogInterface.OnClickListener() {
