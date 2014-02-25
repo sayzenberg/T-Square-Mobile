@@ -1,15 +1,21 @@
 package com.teammeh.t_squaremobile;
 
+import java.io.IOException;
 import java.util.Locale;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +39,8 @@ public class Classes extends FragmentActivity {
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
+	
+//	Handler mHandler; // used for network io
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +62,7 @@ public class Classes extends FragmentActivity {
 			setClassname = extras.getString("className");
 		}
 		setTitle(setClassname);
+		doCall();
 
 	}
 
@@ -62,6 +71,56 @@ public class Classes extends FragmentActivity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.classes, menu);
 		return true;
+	}
+	
+//	Runnable mUpdateResults = new Runnable() {
+//		public void run(String text) {
+//			pushCallToUi(text);
+//		}
+//	};
+	
+	protected void doCall() {
+		HttpPost post = new HttpPost("http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/dummy");
+		new WebCallTask().execute(post);
+	}
+	
+	protected void pushCallToUi(String text) {
+		TextView t = (TextView)findViewById(R.id.textView1);
+		t.setText(text);
+	}
+		
+	
+	public class WebCallTask extends AsyncTask<HttpPost, String, String> {
+
+		String mText;
+		
+		@Override
+		protected String doInBackground(HttpPost... params) {
+			// TODO Auto-generated method stub
+			DefaultHttpClient client = new DefaultHttpClient();
+			HttpPost post = params[0];
+			HttpResponse response = null;
+			try {
+				response = client.execute(post);
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			client.getConnectionManager().shutdown();
+			String text = response.getAllHeaders()[0].getName() + ": " + response.getAllHeaders()[0].getValue();
+			return text;
+			
+		}
+		
+		@Override
+		protected void onPostExecute(String text) {
+			TextView t = (TextView)findViewById(R.id.textView1);
+			t.setText(text);
+		}
+		
 	}
 
 	/**

@@ -36,8 +36,8 @@ public final class R {
         public static final int ic_up_button=0x7f020008;
     }
     public static final class id {
-        public static final int action_add_assignment=0x7f09000c;
-        public static final int action_settings=0x7f09000b;
+        public static final int action_add_assignment=0x7f09000d;
+        public static final int action_settings=0x7f09000c;
         public static final int button1=0x7f090008;
         public static final int calendarView1=0x7f090004;
         public static final int content_frame=0x7f090003;
@@ -49,6 +49,7 @@ public final class R {
         public static final int pager=0x7f090000;
         public static final int pager_title_strip=0x7f090001;
         public static final int section_label=0x7f09000a;
+        public static final int textView1=0x7f09000b;
     }
     public static final class layout {
         public static final int activity_classes=0x7f030000;
