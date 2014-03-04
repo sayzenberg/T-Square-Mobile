@@ -3,14 +3,16 @@ package com.teammeh.t_squaremobile;
 import java.io.IOException;
 import java.util.Locale;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -111,7 +113,19 @@ public class Classes extends FragmentActivity {
 			}
 			client.getConnectionManager().shutdown();
 			String text = response.getAllHeaders()[0].getName() + ": " + response.getAllHeaders()[0].getValue();
-			return text;
+			HttpEntity entity = response.getEntity();
+			String responseString = "";
+			try {
+				responseString = EntityUtils.toString(entity, "UTF-8");
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+//			String text2 = EntityUtils.getContentCharSet(entity);
+			return responseString;
 			
 		}
 		
