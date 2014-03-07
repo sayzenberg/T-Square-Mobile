@@ -1,5 +1,6 @@
 package com.teammeh.t_squaremobile;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -23,7 +24,8 @@ public class LoginActivity extends Activity {
 
 	public void onPress(View view) {
 		
-		Intent intent = new Intent(this, HomeScreenActivity.class);
+//		Intent intent = new Intent(this, HomeScreenActivity.class);
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://dev.m.gatech.edu/login/private?url=tsquaremobile://loggedin&sessionTransfer=window"));
 		startActivity(intent);
 	}
 }

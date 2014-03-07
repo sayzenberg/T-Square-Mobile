@@ -1,33 +1,26 @@
 package com.teammeh.t_squaremobile;
 
 import java.util.Arrays;
-import java.util.Calendar;
 
-import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.text.InputType;
-import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
-import android.widget.Spinner;
 
 public class HomeScreenActivity extends Activity {
 	// Variables to create the Navigation Drawer
@@ -41,12 +34,20 @@ public class HomeScreenActivity extends Activity {
 	private String assignment_course = "";
 	private String assignment_text = "";
 	private String assignment_due_date = "";
+	String sessionName;
+	String sessionId;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home_screen);
 
+		Uri data = getIntent().getData();
+		sessionName = data.getQueryParameter("sessionName");
+	    sessionId = data.getQueryParameter("sessionId");
+
+		
 		myClasses = getResources().getStringArray(R.array.class_list);
 		myDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		myDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -107,9 +108,17 @@ public class HomeScreenActivity extends Activity {
 		}
 		switch (item.getItemId()) {
 		case R.id.action_add_assignment:
+			// Add assignments
 			add_assignments();
 			return true;
 		case R.id.action_settings:
+			// Create Settings for Calendar (notifications too)
+			Intent intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);
+			return true;
+		case R.id.action_logout:
+			// Logout of tsquare
+			logout();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -133,6 +142,8 @@ public class HomeScreenActivity extends Activity {
 			className = myClasses[position];
 			intent = new Intent(HomeScreenActivity.this, Classes.class);
 			intent.putExtra("className", className);
+			intent.putExtra("sessionName", sessionName);
+			intent.putExtra("sessionId", sessionId);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			this.startActivity(intent);
 		}
@@ -163,32 +174,29 @@ public class HomeScreenActivity extends Activity {
 	// Create Dialog Box to enter Assignment and Due Date
 	private Dialog add_assignments() {
 		
-		//String[] courses = Arrays.copyOfRange(myClasses, 1, myClasses.length);
+		String[] courses = Arrays.copyOfRange(myClasses, 1, myClasses.length);
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Add Assignment");
-
-		// Set up the input
-		final EditText input = new EditText(this);
-		input.setHint("Enter Assignment");
-		// Specify the type of input expected; this, for example, sets the input
-		// as a password, and will mask the text
-		input.setInputType(InputType.TYPE_CLASS_TEXT);
-		builder.setView(input);
 		
-		// Set up spinner
-	
-		//final ArrayAdapter<String> classSpinner = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, courses);
-		//final Spinner spinner = new Spinner(this);
-		//spinner.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		//spinner.setAdapter(classSpinner);
-		//builder.setView(spinner);
+		// Get the layout inflater
+		LayoutInflater inflater = this.getLayoutInflater();
+		
+		// Inflate and set the layout for the dialog
+	    builder.setView(inflater.inflate(R.layout.add_assignments_dialog, null));
+		
+		builder.setTitle("Add Assignment");
+		
+		//Set Spinner
+
+		//Set EditText
+		
+		//Set DatePicker
 
 		// Set up the buttons
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				assignment_text = input.getText().toString();
+				//assignment_text = input.getText().toString();
 			}
 		});
 		builder.setNegativeButton("Cancel",
@@ -217,7 +225,7 @@ public class HomeScreenActivity extends Activity {
 		super.onBackPressed();
 	}
 
-	// Create Dialog Box to enter Assignment and Due Date
+	// Create Dialog Box to Logout
 	private Dialog logout() {
 
 		// Initialize Alert Dialog

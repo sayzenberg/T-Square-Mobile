@@ -10,7 +10,10 @@ package com.teammeh.t_squaremobile;
 public final class R {
     public static final class array {
         public static final int class_list=0x7f060000;
-        public static final int nav_drawer_icons=0x7f060001;
+        public static final int frequency_titles_notifications=0x7f060003;
+        public static final int frequency_titles_sync=0x7f060001;
+        public static final int frequency_values_notifications=0x7f060004;
+        public static final int frequency_values_sync=0x7f060002;
     }
     public static final class attr {
     }
@@ -36,51 +39,93 @@ public final class R {
         public static final int ic_up_button=0x7f020008;
     }
     public static final class id {
-        public static final int action_add_assignment=0x7f09000d;
-        public static final int action_settings=0x7f09000c;
-        public static final int button1=0x7f090008;
+        public static final int EditTextAddAssignment=0x7f090009;
+        public static final int action_add_assignment=0x7f090010;
+        public static final int action_logout=0x7f09000f;
+        public static final int action_settings=0x7f09000e;
+        public static final int button1=0x7f090007;
         public static final int calendarView1=0x7f090004;
         public static final int content_frame=0x7f090003;
+        public static final int datePickerAddAssignment=0x7f09000b;
         public static final int drawer_layout=0x7f090002;
-        public static final int editText1=0x7f090009;
-        public static final int editText2=0x7f090007;
         public static final int left_drawer=0x7f090006;
         public static final int listView1=0x7f090005;
         public static final int pager=0x7f090000;
         public static final int pager_title_strip=0x7f090001;
-        public static final int section_label=0x7f09000a;
-        public static final int textView1=0x7f09000b;
+        public static final int section_label=0x7f09000c;
+        public static final int spinnerAddAssignment=0x7f090008;
+        public static final int textView1=0x7f09000d;
+        public static final int textViewAddAssignment=0x7f09000a;
     }
     public static final class layout {
         public static final int activity_classes=0x7f030000;
         public static final int activity_home_screen=0x7f030001;
         public static final int activity_login=0x7f030002;
-        public static final int drawer_list_item=0x7f030003;
-        public static final int fragment_classes_dummy=0x7f030004;
+        public static final int activity_settings=0x7f030003;
+        public static final int add_assignments_dialog=0x7f030004;
+        public static final int drawer_list_item=0x7f030005;
+        public static final int fragment_classes_dummy=0x7f030006;
     }
     public static final class menu {
         public static final int classes=0x7f080000;
         public static final int home_screen=0x7f080001;
         public static final int login=0x7f080002;
+        public static final int settings=0x7f080003;
     }
     public static final class string {
-        public static final int action_add_assignment=0x7f05000e;
+        public static final int action_add_assignment=0x7f050009;
+        public static final int action_logout=0x7f050007;
         public static final int action_settings=0x7f050001;
-        public static final int app_name=0x7f050000;
-        /**  Content Description 
+        /**  Assignment Activity Strings 
          */
-        public static final int desc_list_item_icon=0x7f05000b;
-        public static final int drawer_close=0x7f05000d;
-        public static final int drawer_open=0x7f05000c;
+        public static final int add_assignment=0x7f050008;
+        public static final int app_name=0x7f050000;
+        public static final int assignment_due_date=0x7f05000a;
+        /** 
+    <array name="nav_drawer_icons">
+        <item>@drawable/ic_calendar</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+        <item>@drawable/ic_class_icon</item>
+    </array>
+
+    
+ Content Description 
+         */
+        public static final int desc_list_item_icon=0x7f05000f;
+        public static final int drawer_close=0x7f050011;
+        public static final int drawer_open=0x7f050010;
+        public static final int header_data_sync=0x7f050018;
         public static final int hello_world=0x7f050006;
         public static final int login_button_text=0x7f050004;
+        public static final int new_message_notifications=0x7f050014;
+        public static final int notification_reminder=0x7f050017;
+        /**  Settings Content 
+         */
+        public static final int notifications=0x7f050013;
         public static final int password_text=0x7f050003;
-        public static final int title_activity_classes=0x7f050007;
+        public static final int ringtone=0x7f050015;
+        public static final int sync_frequency=0x7f050019;
+        public static final int system_sync_settings=0x7f05001a;
+        /**  Class Activity Strings 
+         */
+        public static final int title_activity_classes=0x7f05000b;
         public static final int title_activity_home_screen=0x7f050005;
-        public static final int title_section1=0x7f050008;
-        public static final int title_section2=0x7f050009;
-        public static final int title_section3=0x7f05000a;
+        public static final int title_activity_settings=0x7f050012;
+        public static final int title_section1=0x7f05000c;
+        public static final int title_section2=0x7f05000d;
+        public static final int title_section3=0x7f05000e;
         public static final int username_text=0x7f050002;
+        public static final int vibrate=0x7f050016;
     }
     public static final class style {
         /** 

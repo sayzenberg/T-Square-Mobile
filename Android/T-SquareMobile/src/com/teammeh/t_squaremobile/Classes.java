@@ -7,10 +7,16 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -41,12 +47,17 @@ public class Classes extends FragmentActivity {
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
+	String sessionName;
+	String sessionId;
 	
 //	Handler mHandler; // used for network io
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+//		Uri data = getIntent().getData();
+//		sessionName = data.getQueryParameter("sessionName");
+//	    sessionId = data.getQueryParameter("sessionId");
 		setContentView(R.layout.activity_classes);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		// Create the adapter that will return a fragment for each of the three
@@ -64,6 +75,8 @@ public class Classes extends FragmentActivity {
 			setClassname = extras.getString("className");
 		}
 		setTitle(setClassname);
+		sessionName = extras.getString("sessionName");
+		sessionId = extras.getString("sessionId");
 		doCall();
 
 	}
@@ -82,8 +95,10 @@ public class Classes extends FragmentActivity {
 //	};
 	
 	protected void doCall() {
-		HttpPost post = new HttpPost("http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/dummy");
-		new WebCallTask().execute(post);
+		String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/dummy";
+		HttpPost post = new HttpPost(url);
+		HttpGet get = new HttpGet(url);
+		new WebCallTask().execute(get);
 	}
 	
 	protected void pushCallToUi(String text) {
@@ -92,18 +107,22 @@ public class Classes extends FragmentActivity {
 	}
 		
 	
-	public class WebCallTask extends AsyncTask<HttpPost, String, String> {
+	public class WebCallTask extends AsyncTask<HttpGet, String, String> {
 
 		String mText;
 		
 		@Override
-		protected String doInBackground(HttpPost... params) {
+		protected String doInBackground(HttpGet... params) {
 			// TODO Auto-generated method stub
+//			Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://dev.m.gatech.edu/login?url=/d/tkerr3/w/t2://sessionTransfer=window"));
+//			startActivity(myIntent);
+			
 			DefaultHttpClient client = new DefaultHttpClient();
-			HttpPost post = params[0];
+			HttpGet get = params[0];
+			get.setHeader("Cookie", sessionName+"="+sessionId);
 			HttpResponse response = null;
 			try {
-				response = client.execute(post);
+				response = client.execute(get);
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
