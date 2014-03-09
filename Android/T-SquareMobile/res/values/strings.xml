@@ -63,28 +63,7 @@
     <string name="vibrate">Vibrate</string>
     <string name="notification_reminder">Notification Reminder</string>
     
-      <string name="header_data_sync">Data &amp; sync</string>
-    <string name="sync_frequency">Sync frequency</string>
-    <string name="system_sync_settings">System sync settings</string>
-
-    <string-array name="frequency_titles_sync">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="frequency_values_sync">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
-    </string-array>
-    
-      <string-array name="frequency_titles_notifications">
+    <string-array name="frequency_titles_notifications">
         <item>1 day</item>
         <item>3 days</item>
         <item>5 days</item>
@@ -100,5 +79,26 @@
         <item>14</item>
         <item>-1</item>
     </string-array>
+    
+     <!-- <string name="header_data_sync">Data &amp; sync</string>
+    <string name="sync_frequency">Sync frequency</string>
+    <string name="system_sync_settings">System sync settings</string> 
+
+     <string-array name="frequency_titles_sync">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="frequency_values_sync">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>-->
     
 </resources>

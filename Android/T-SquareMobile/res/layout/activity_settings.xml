@@ -43,11 +43,11 @@
     
   </PreferenceCategory>
 
-  <PreferenceCategory
-     android:title="@string/sync_frequency">
+  <!-- <PreferenceCategory
+     android:title="@string/sync_frequency">  -->
     
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
-    <ListPreference
+    <!--  <ListPreference
         android:defaultValue="180"
         android:entries="@array/frequency_titles_sync"
         android:entryValues="@array/frequency_values_sync"
@@ -56,6 +56,6 @@
         android:positiveButtonText="@null"
         android:title="@string/sync_frequency" />
 
-  </PreferenceCategory>
+  </PreferenceCategory> -->
 
 </PreferenceScreen>

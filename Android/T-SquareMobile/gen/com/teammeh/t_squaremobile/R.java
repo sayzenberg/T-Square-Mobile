@@ -10,10 +10,8 @@ package com.teammeh.t_squaremobile;
 public final class R {
     public static final class array {
         public static final int class_list=0x7f060000;
-        public static final int frequency_titles_notifications=0x7f060003;
-        public static final int frequency_titles_sync=0x7f060001;
-        public static final int frequency_values_notifications=0x7f060004;
-        public static final int frequency_values_sync=0x7f060002;
+        public static final int frequency_titles_notifications=0x7f060001;
+        public static final int frequency_values_notifications=0x7f060002;
     }
     public static final class attr {
     }
@@ -104,7 +102,6 @@ public final class R {
         public static final int desc_list_item_icon=0x7f05000f;
         public static final int drawer_close=0x7f050011;
         public static final int drawer_open=0x7f050010;
-        public static final int header_data_sync=0x7f050018;
         public static final int hello_world=0x7f050006;
         public static final int login_button_text=0x7f050004;
         public static final int new_message_notifications=0x7f050014;
@@ -114,8 +111,6 @@ public final class R {
         public static final int notifications=0x7f050013;
         public static final int password_text=0x7f050003;
         public static final int ringtone=0x7f050015;
-        public static final int sync_frequency=0x7f050019;
-        public static final int system_sync_settings=0x7f05001a;
         /**  Class Activity Strings 
          */
         public static final int title_activity_classes=0x7f05000b;
