@@ -11,8 +11,8 @@
         android:drawSelectorOnTop="true"  
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:entries="@array/class_list"
-    />
+        android:entries="@array/class_list"   />
+ 
     
     <EditText
         android:id="@+id/EditTextAddAssignment"
@@ -36,5 +36,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:calendarViewShown="false"/>
+    
 
 </LinearLayout>

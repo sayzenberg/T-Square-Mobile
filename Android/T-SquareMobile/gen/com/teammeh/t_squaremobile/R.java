@@ -66,10 +66,11 @@ public final class R {
         public static final int fragment_classes_dummy=0x7f030006;
     }
     public static final class menu {
-        public static final int classes=0x7f080000;
-        public static final int home_screen=0x7f080001;
-        public static final int login=0x7f080002;
-        public static final int settings=0x7f080003;
+        public static final int add_assignments=0x7f080000;
+        public static final int classes=0x7f080001;
+        public static final int home_screen=0x7f080002;
+        public static final int login=0x7f080003;
+        public static final int settings=0x7f080004;
     }
     public static final class string {
         public static final int action_add_assignment=0x7f050009;
@@ -112,6 +113,30 @@ public final class R {
         public static final int notifications=0x7f050013;
         public static final int password_text=0x7f050003;
         public static final int ringtone=0x7f050015;
+        /** 
+    <string name="header_data_sync">Data &amp; sync</string>
+    <string name="sync_frequency">Sync frequency</string>
+    <string name="system_sync_settings">System sync settings</string> 
+
+     <string-array name="frequency_titles_sync">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="frequency_values_sync">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+    
+         */
+        public static final int title_activity_add_assignments=0x7f050018;
         /**  Class Activity Strings 
          */
         public static final int title_activity_classes=0x7f05000b;

@@ -25,7 +25,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 public class HomeScreenActivity extends Activity {
 	// Variables to create the Navigation Drawer
@@ -37,9 +40,11 @@ public class HomeScreenActivity extends Activity {
 	private String className = "";
 
 	// Variables to add assignments
-	private String assignment_course = "";
-	private String assignment_text = "";
-	private String assignment_due_date = "";
+	private String assignment_course;
+	private String assignment_name;
+	private int assignment_day;
+	private int assignment_month;
+	private int assignment_year;
 	String sessionName;
 	String sessionId;
 
@@ -121,8 +126,8 @@ public class HomeScreenActivity extends Activity {
 			return true;
 		case R.id.action_settings:
 			// Create Settings for Calendar (notifications too)
-			Intent intent = new Intent(this, SettingsActivity.class);
-			startActivity(intent);
+			Intent intent2 = new Intent(this, SettingsActivity.class);
+			startActivity(intent2);
 			return true;
 		case R.id.action_logout:
 			// Logout of tsquare
@@ -179,33 +184,29 @@ public class HomeScreenActivity extends Activity {
 		// Pass any configuration change to the drawer toggles
 		myDrawerToggle.onConfigurationChanged(newConfig);
 	}
-
+	
 	// Create Dialog Box to enter Assignment and Due Date
-	private Dialog add_assignments() {
+	public void add_assignments(){
 		
-		String[] courses = Arrays.copyOfRange(myClasses, 1, myClasses.length);
-
+		final View addView = getLayoutInflater().inflate(R.layout.add_assignments_dialog, null);
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		
-		// Get the layout inflater
-		LayoutInflater inflater = this.getLayoutInflater();
-		
-		// Inflate and set the layout for the dialog
-	    builder.setView(inflater.inflate(R.layout.add_assignments_dialog, null));
-		
 		builder.setTitle("Add Assignment");
-		
-		//Set Spinner
-
-		//Set EditText
-		
-		//Set DatePicker
-
+		builder.setView(addView);
 		// Set up the buttons
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				//assignment_text = input.getText().toString();
+				//Get Spinner
+				Spinner spinner = (Spinner)addView.findViewById(R.id.spinnerAddAssignment);
+				assignment_course = spinner.getSelectedItem().toString();
+				// Get EditText
+				EditText edittext = (EditText)addView.findViewById(R.id.EditTextAddAssignment);
+				assignment_name = edittext.getText().toString();
+				// Get DatePicker
+				DatePicker datepicker = (DatePicker)addView.findViewById(R.id.datePickerAddAssignment);
+				assignment_day = datepicker.getDayOfMonth();
+				assignment_month = datepicker.getMonth();
+				assignment_year = datepicker.getYear();
 			}
 		});
 		builder.setNegativeButton("Cancel",
@@ -215,9 +216,10 @@ public class HomeScreenActivity extends Activity {
 						dialog.cancel();
 					}
 				});
-		return builder.show();
+		builder.show();
 	}
 	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	    if ((keyCode == KeyEvent.KEYCODE_BACK)) { //Back key pressed
@@ -240,7 +242,7 @@ public class HomeScreenActivity extends Activity {
 		// Initialize Alert Dialog
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Logout");
-		builder.setMessage("Do you want to out?");
+		builder.setMessage(assignment_name);
 		
 		// Set up the buttons
 		builder.setPositiveButton("Logout",

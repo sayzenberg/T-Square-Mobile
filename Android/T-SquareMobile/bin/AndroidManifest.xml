@@ -47,6 +47,10 @@
             android:name="com.teammeh.t_squaremobile.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
+        <activity
+            android:name="com.teammeh.t_squaremobile.AddAssignmentsActivity"
+            android:label="@string/title_activity_add_assignments" >
+        </activity>
     </application>
 
 </manifest>
