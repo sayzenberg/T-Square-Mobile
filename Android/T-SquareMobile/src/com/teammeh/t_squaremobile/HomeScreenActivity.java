@@ -126,8 +126,8 @@ public class HomeScreenActivity extends Activity {
 			return true;
 		case R.id.action_settings:
 			// Create Settings for Calendar (notifications too)
-			Intent intent2 = new Intent(this, SettingsActivity.class);
-			startActivity(intent2);
+			//Intent intent2 = new Intent(this, SettingsActivity.class);
+			//startActivity(intent2);
 			return true;
 		case R.id.action_logout:
 			// Logout of tsquare
