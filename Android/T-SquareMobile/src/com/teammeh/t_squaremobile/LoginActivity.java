@@ -1,10 +1,9 @@
 package com.teammeh.t_squaremobile;
 
-import android.net.Uri;
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
-import android.view.Menu;
+import android.net.Uri;
+import android.os.Bundle;
 import android.view.View;
 
 public class LoginActivity extends Activity {

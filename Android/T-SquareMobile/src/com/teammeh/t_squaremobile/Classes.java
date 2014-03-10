@@ -1,22 +1,22 @@
 package com.teammeh.t_squaremobile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 public class Classes extends FragmentActivity {
 	private String setClassname = "";
+	private String classId;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -73,11 +74,12 @@ public class Classes extends FragmentActivity {
 		Bundle extras = getIntent().getExtras();
 		if (extras != null){
 			setClassname = extras.getString("className");
+			classId = extras.getString("classId");
 		}
 		setTitle(setClassname);
 		sessionName = extras.getString("sessionName");
 		sessionId = extras.getString("sessionId");
-		doCall();
+		getDummy();
 
 	}
 
@@ -87,40 +89,43 @@ public class Classes extends FragmentActivity {
 		getMenuInflater().inflate(R.menu.classes, menu);
 		return true;
 	}
+
 	
-//	Runnable mUpdateResults = new Runnable() {
-//		public void run(String text) {
-//			pushCallToUi(text);
-//		}
-//	};
-	
-	protected void doCall() {
+	protected void getDummy() {
 		String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/dummy";
-		HttpPost post = new HttpPost(url);
 		HttpGet get = new HttpGet(url);
-		new WebCallTask().execute(get);
+		new GetCallTask().execute(get);
 	}
 	
-	protected void pushCallToUi(String text) {
-		TextView t = (TextView)findViewById(R.id.textView1);
-		t.setText(text);
+	protected void getAssignments() {
+		String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getAssignmentsByClass";
+		HttpPost post = new HttpPost(url);
+		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+	    postParameters.add(new BasicNameValuePair("classId", classId));
+	    try {
+			post.setEntity(new UrlEncodedFormEntity(postParameters));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    new PostCallTask().execute(post);
 	}
+	
+//	protected void pushCallToUi(String text) {
+//		TextView t = (TextView)findViewById(R.id.textView1);
+//		t.setText(text);
+//	}
 		
-	
-	public class WebCallTask extends AsyncTask<HttpGet, String, String> {
+	public class GetCallTask extends AsyncTask<HttpGet, String, String> {
 
 		String mText;
 		
 		@Override
 		protected String doInBackground(HttpGet... params) {
-			// TODO Auto-generated method stub
-//			Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://dev.m.gatech.edu/login?url=/d/tkerr3/w/t2://sessionTransfer=window"));
-//			startActivity(myIntent);
-			
 			DefaultHttpClient client = new DefaultHttpClient();
 			HttpGet get = params[0];
 			get.setHeader("Cookie", sessionName+"="+sessionId);
-			HttpResponse response = null;
+		    HttpResponse response = null;
 			try {
 				response = client.execute(get);
 			} catch (ClientProtocolException e) {
@@ -131,7 +136,7 @@ public class Classes extends FragmentActivity {
 				e.printStackTrace();
 			}
 			client.getConnectionManager().shutdown();
-			String text = response.getAllHeaders()[0].getName() + ": " + response.getAllHeaders()[0].getValue();
+//			String text = response.getAllHeaders()[0].getName() + ": " + response.getAllHeaders()[0].getValue();
 			HttpEntity entity = response.getEntity();
 			String responseString = "";
 			try {
@@ -143,7 +148,50 @@ public class Classes extends FragmentActivity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-//			String text2 = EntityUtils.getContentCharSet(entity);
+			return responseString;
+
+		}
+		
+		@Override
+		protected void onPostExecute(String text) {
+			TextView t = (TextView)findViewById(R.id.textView1);
+			t.setText(text);
+		}
+		
+	}
+	
+	public class PostCallTask extends AsyncTask<HttpPost, String, String> {
+
+		String mText;
+		
+		@Override
+		protected String doInBackground(HttpPost... params) {
+			DefaultHttpClient client = new DefaultHttpClient();
+			HttpPost post = params[0];
+			post.setHeader("Cookie", sessionName+"="+sessionId);
+		    HttpResponse response = null;
+			try {
+				response = client.execute(post);
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			client.getConnectionManager().shutdown();
+//			String text = response.getAllHeaders()[0].getName() + ": " + response.getAllHeaders()[0].getValue();
+			HttpEntity entity = response.getEntity();
+			String responseString = "";
+			try {
+				responseString = EntityUtils.toString(entity, "UTF-8");
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return responseString;
 			
 		}

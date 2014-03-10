@@ -1,6 +1,7 @@
 package com.teammeh.t_squaremobile;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -32,6 +33,7 @@ public class HomeScreenActivity extends Activity {
 	private ListView myDrawerList;
 	private ActionBarDrawerToggle myDrawerToggle;
 	private String[] myClasses;
+	private HashMap<String, String> myClassIds;
 	private String className = "";
 
 	// Variables to add assignments
@@ -53,6 +55,8 @@ public class HomeScreenActivity extends Activity {
 
 		
 		myClasses = getResources().getStringArray(R.array.class_list);
+		myClassIds = new HashMap<String, String>();
+		myClassIds.put("MAS test site", "gtc-38a2-fbae-53be-a4c3-ed17c8234e2a");
 		myDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		myDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -148,6 +152,7 @@ public class HomeScreenActivity extends Activity {
 			intent.putExtra("className", className);
 			intent.putExtra("sessionName", sessionName);
 			intent.putExtra("sessionId", sessionId);
+			intent.putExtra("classId", myClassIds.get("MAS test site"));
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			this.startActivity(intent);
 		}
