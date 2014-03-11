@@ -1,27 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
- 
-    <PreferenceCategory android:title="@string/pref_user_profile" >
-        <EditTextPreference
-                android:title="@string/pref_user_name"
-                android:summary="@string/pref_user_name_summary"
-                android:key="prefUsername"/>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory 
+        android:title="@string/notification_header"
+        android:key="notification_pref">
+        
+        <CheckBoxPreference 
+            android:key="set_notifications"
+            android:summary="Enable or disable notifications"
+            android:title="@string/notification_enable" 
+            android:defaultValue="true"
+        />
+        
+        <ListPreference 
+            android:key="updates_notifications"
+            android:title="@string/notification_reminder"
+            android:summary="Define reminder date before due date"
+            android:entries="@array/notificationInterval"
+            android:entryValues="@array/notificationIntervalValues"
+            android:dependency="set_notifications"
+            android:defaultValue="one_day"
+        />
+        
+        <RingtonePreference
+            android:key="ringtone_notifications"
+        	android:defaultValue="content://settings/system/notification_sound"
+        	android:title="@string/notification_ringtone"
+        	android:ringtoneType="notification"
+        	android:dependency="set_notifications"
+        />
+        
+        <CheckBoxPreference 
+            android:key="vibrate_notifications"
+            android:title="@string/notification_vibrate" 
+            android:dependency="set_notifications"
+            android:defaultValue="true"
+        />
+            
     </PreferenceCategory>
-     
-    <PreferenceCategory android:title="@string/pref_update_setting" >
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="prefSendReport"
-            android:summary="@string/pref_send_report_summary"
-            android:title="@string/pref_send_report" >
-        </CheckBoxPreference>
- 
-        <ListPreference
-            android:key="prefSyncFrequency"
-            android:entries="@array/syncFrequency"
-            android:summary="@string/pref_sync_frequency_summary"
-            android:entryValues="@array/syncFrequencyValues"
-            android:title="@string/pref_sync_frequency" />
-    </PreferenceCategory>
- 
+    
 </PreferenceScreen>

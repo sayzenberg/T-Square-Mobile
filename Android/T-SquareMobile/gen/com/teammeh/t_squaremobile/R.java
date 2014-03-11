@@ -10,8 +10,10 @@ package com.teammeh.t_squaremobile;
 public final class R {
     public static final class array {
         public static final int class_list=0x7f060000;
-        public static final int frequency_titles_notifications=0x7f060001;
-        public static final int frequency_values_notifications=0x7f060002;
+        /**  SETTINGS 
+         */
+        public static final int notificationInterval=0x7f060001;
+        public static final int notificationIntervalValues=0x7f060002;
     }
     public static final class attr {
     }
@@ -73,80 +75,36 @@ public final class R {
         public static final int settings=0x7f080004;
     }
     public static final class string {
-        public static final int action_add_assignment=0x7f050009;
+        public static final int action_add_assignment=0x7f05000b;
         public static final int action_logout=0x7f050007;
         public static final int action_settings=0x7f050001;
         /**  Assignment Activity Strings 
          */
-        public static final int add_assignment=0x7f050008;
+        public static final int add_assignment=0x7f05000a;
         public static final int app_name=0x7f050000;
-        public static final int assignment_due_date=0x7f05000a;
-        /** 
-    <array name="nav_drawer_icons">
-        <item>@drawable/ic_calendar</item>
-        <item>@drawable/ic_class_icon</item>
-        <item>@drawable/ic_class_icon</item>
-        <item>@drawable/ic_class_icon</item>
-        <item>@drawable/ic_class_icon</item>
-        <item>@drawable/ic_class_icon</item>
-        <item>@drawable/ic_class_icon</item>
-        <item>@drawable/ic_class_icon</item>
-        <item>@drawable/ic_class_icon</item>
-        <item>@drawable/ic_class_icon</item>
-        <item>@drawable/ic_class_icon</item>
-        <item>@drawable/ic_class_icon</item>
-        <item>@drawable/ic_class_icon</item>
-    </array>
-
-    
- Content Description 
+        public static final int assignment_due_date=0x7f05000c;
+        public static final int drawer_close=0x7f050009;
+        /**  Navigation Drawer 
          */
-        public static final int desc_list_item_icon=0x7f05000f;
-        public static final int drawer_close=0x7f050011;
-        public static final int drawer_open=0x7f050010;
+        public static final int drawer_open=0x7f050008;
         public static final int hello_world=0x7f050006;
         public static final int login_button_text=0x7f050004;
-        public static final int new_message_notifications=0x7f050014;
-        public static final int notification_reminder=0x7f050017;
-        /**  Settings Content 
-         */
-        public static final int notifications=0x7f050013;
+        public static final int notification_enable=0x7f050013;
+        public static final int notification_header=0x7f050012;
+        public static final int notification_reminder=0x7f050014;
+        public static final int notification_ringtone=0x7f050015;
+        public static final int notification_silent=0x7f050016;
+        public static final int notification_vibrate=0x7f050017;
         public static final int password_text=0x7f050003;
-        public static final int ringtone=0x7f050015;
-        /** 
-    <string name="header_data_sync">Data &amp; sync</string>
-    <string name="sync_frequency">Sync frequency</string>
-    <string name="system_sync_settings">System sync settings</string> 
-
-     <string-array name="frequency_titles_sync">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="frequency_values_sync">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
-    </string-array>
-    
-         */
-        public static final int title_activity_add_assignments=0x7f050018;
         /**  Class Activity Strings 
          */
-        public static final int title_activity_classes=0x7f05000b;
+        public static final int title_activity_classes=0x7f05000d;
         public static final int title_activity_home_screen=0x7f050005;
-        public static final int title_activity_settings=0x7f050012;
-        public static final int title_section1=0x7f05000c;
-        public static final int title_section2=0x7f05000d;
-        public static final int title_section3=0x7f05000e;
+        public static final int title_activity_settings=0x7f050011;
+        public static final int title_section1=0x7f05000e;
+        public static final int title_section2=0x7f05000f;
+        public static final int title_section3=0x7f050010;
         public static final int username_text=0x7f050002;
-        public static final int vibrate=0x7f050016;
     }
     public static final class style {
         /** 

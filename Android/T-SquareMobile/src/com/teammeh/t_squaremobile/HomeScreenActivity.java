@@ -29,6 +29,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.preference.PreferenceManager;
 
 public class HomeScreenActivity extends Activity {
 	// Variables to create the Navigation Drawer
@@ -45,6 +46,14 @@ public class HomeScreenActivity extends Activity {
 	private int assignment_day;
 	private int assignment_month;
 	private int assignment_year;
+	
+	// Variables for Settings
+	private boolean enable_notis;
+	private int reminder_notis;
+	private String ringtone_notis;
+	private boolean vibrate_notis;
+	
+	//CAS Call
 	String sessionName;
 	String sessionId;
 
@@ -126,8 +135,8 @@ public class HomeScreenActivity extends Activity {
 			return true;
 		case R.id.action_settings:
 			// Create Settings for Calendar (notifications too)
-			//Intent intent2 = new Intent(this, SettingsActivity.class);
-			//startActivity(intent2);
+			Intent intent2 = new Intent(this, SettingsActivity.class);
+			startActivity(intent2);
 			return true;
 		case R.id.action_logout:
 			// Logout of tsquare
@@ -262,5 +271,14 @@ public class HomeScreenActivity extends Activity {
 				});
 		return builder.show();
 	}
+	
+	// Get SharedPreferences from Settings
+	/*private void getPreferences(){
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		ringtone_notis = prefs.getString("ringtone_notifications", "DEFAULT_SOUND");
+		vibrate_notis = prefs.getBoolean("vibrate_notifications", true);
+		reminder_notis = prefs.getInt("updates_notifications", 1);
+		enable_notis = prefs.getBoolean("set_notifications", true);
+	}*/
 	
 }

@@ -49,7 +49,7 @@
         </activity>
         <activity
             android:name="com.teammeh.t_squaremobile.AddAssignmentsActivity"
-            android:label="@string/title_activity_add_assignments" >
+            android:label="@string/add_assignment" >
         </activity>
     </application>
 
