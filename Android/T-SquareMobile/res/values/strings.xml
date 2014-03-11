@@ -9,7 +9,7 @@
     <string name="title_activity_home_screen">Calendar</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_logout">Logout</string>
-    
+
     <!-- Navigation Drawer -->
     <string name="drawer_open">Open Drawer</string>
     <string name="drawer_close">Close Drawer</string>
@@ -33,9 +33,9 @@
         <item>ECE 4430</item>
         <item>MAS test site</item>
     </string-array>
-    
+
     <!-- SETTINGS -->
-     <string-array name="notificationInterval">
+    <string-array name="notificationInterval">
         <item name="one_day">1 Day</item>
         <item name="three_days">3 Days</item>
         <item name="five_days">5 Days</item>
@@ -43,7 +43,6 @@
         <item name="two_weeks">2 Weeks</item>
         <item name="never">Never</item>
     </string-array>
-    
     <string-array name="notificationIntervalValues">
         <item name="one_day">1</item>
         <item name="three_days">3</item>
@@ -52,7 +51,7 @@
         <item name="two_weeks">14</item>
         <item name="never">-1</item>
     </string-array>
-    
+
     <string name="title_activity_settings">Settings</string>
     <string name="notification_header">Notifications</string>
     <string name="notification_enable">Enable Notifications</string>
@@ -60,5 +59,8 @@
     <string name="notification_ringtone">Ringtone</string>
     <string name="notification_silent">Silent</string>
     <string name="notification_vibrate">Vibrate</string>
+    
+    <!-- NOTIFICATIONS -->
+    <string name="title_activity_notification">NotificationActivity</string>
 
 </resources>

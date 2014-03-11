@@ -51,6 +51,10 @@
             android:name="com.teammeh.t_squaremobile.AddAssignmentsActivity"
             android:label="@string/add_assignment" >
         </activity>
+        <activity
+            android:name="com.teammeh.t_squaremobile.NotificationActivity"
+            android:label="@string/title_activity_notification" >
+        </activity>
     </application>
 
 </manifest>

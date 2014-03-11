@@ -40,39 +40,42 @@ public final class R {
         public static final int ic_up_button=0x7f020009;
     }
     public static final class id {
-        public static final int EditTextAddAssignment=0x7f090009;
-        public static final int action_add_assignment=0x7f090010;
-        public static final int action_logout=0x7f09000f;
-        public static final int action_settings=0x7f09000e;
+        public static final int EditTextAddAssignment=0x7f09000a;
+        public static final int action_add_assignment=0x7f090011;
+        public static final int action_logout=0x7f090010;
+        public static final int action_settings=0x7f09000f;
         public static final int button1=0x7f090007;
         public static final int calendarView1=0x7f090004;
         public static final int content_frame=0x7f090003;
-        public static final int datePickerAddAssignment=0x7f09000b;
+        public static final int datePickerAddAssignment=0x7f09000c;
         public static final int drawer_layout=0x7f090002;
         public static final int left_drawer=0x7f090006;
         public static final int listView1=0x7f090005;
         public static final int pager=0x7f090000;
         public static final int pager_title_strip=0x7f090001;
-        public static final int section_label=0x7f09000c;
-        public static final int spinnerAddAssignment=0x7f090008;
-        public static final int textView1=0x7f09000d;
-        public static final int textViewAddAssignment=0x7f09000a;
+        public static final int section_label=0x7f09000d;
+        public static final int spinnerAddAssignment=0x7f090009;
+        public static final int textView1=0x7f09000e;
+        public static final int textViewAddAssignment=0x7f09000b;
+        public static final int text_notification=0x7f090008;
     }
     public static final class layout {
         public static final int activity_classes=0x7f030000;
         public static final int activity_home_screen=0x7f030001;
         public static final int activity_login=0x7f030002;
-        public static final int add_assignments_dialog=0x7f030003;
-        public static final int drawer_list_item=0x7f030004;
-        public static final int fragment_classes_dummy=0x7f030005;
-        public static final int preferences=0x7f030006;
+        public static final int activity_notification=0x7f030003;
+        public static final int add_assignments_dialog=0x7f030004;
+        public static final int drawer_list_item=0x7f030005;
+        public static final int fragment_classes_dummy=0x7f030006;
+        public static final int preferences=0x7f030007;
     }
     public static final class menu {
         public static final int add_assignments=0x7f080000;
         public static final int classes=0x7f080001;
         public static final int home_screen=0x7f080002;
         public static final int login=0x7f080003;
-        public static final int settings=0x7f080004;
+        public static final int notification=0x7f080004;
+        public static final int settings=0x7f080005;
     }
     public static final class string {
         public static final int action_add_assignment=0x7f05000b;
@@ -100,6 +103,7 @@ public final class R {
          */
         public static final int title_activity_classes=0x7f05000d;
         public static final int title_activity_home_screen=0x7f050005;
+        public static final int title_activity_notification=0x7f050018;
         public static final int title_activity_settings=0x7f050011;
         public static final int title_section1=0x7f05000e;
         public static final int title_section2=0x7f05000f;
