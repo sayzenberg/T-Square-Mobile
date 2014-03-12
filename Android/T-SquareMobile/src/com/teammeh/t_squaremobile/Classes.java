@@ -1,6 +1,9 @@
 package com.teammeh.t_squaremobile;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -16,6 +19,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -79,7 +85,7 @@ public class Classes extends FragmentActivity {
 		setTitle(setClassname);
 		sessionName = extras.getString("sessionName");
 		sessionId = extras.getString("sessionId");
-		getDummy();
+		getAssignments();
 
 	}
 
@@ -108,7 +114,14 @@ public class Classes extends FragmentActivity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	    new PostCallTask().execute(post);
+	    new GetAssignmentsTask().execute(post);
+	}
+	
+	protected void parseAssignments(JSONObject jObject) {
+		if(jObject != null) {
+			TextView t = (TextView)findViewById(R.id.textView1);
+			t.setText(jObject.toString());
+		}
 	}
 	
 //	protected void pushCallToUi(String text) {
@@ -204,6 +217,86 @@ public class Classes extends FragmentActivity {
 		
 	}
 
+	public class GetAssignmentsTask extends AsyncTask<HttpPost, String, JSONArray> {
+
+		String mText;
+		
+		protected JSONArray extractJson(HttpEntity entity) {
+		    InputStream stream = null;
+		    BufferedReader reader;
+		    String line = "";
+		    String result = "";
+		    JSONArray jArray = null;
+		   
+			try {
+				stream = entity.getContent();
+				reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
+				StringBuilder sb = new StringBuilder();
+				while ((line = reader.readLine()) != null)
+				{
+				    sb.append(line + "\n");
+				}
+				result = sb.toString();
+				jArray = new JSONArray(result);
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				try{if(stream != null)stream.close();}catch(Exception squish){}
+			}
+			return jArray;
+		}
+		
+		@Override
+		protected JSONArray doInBackground(HttpPost... params) {
+			DefaultHttpClient client = new DefaultHttpClient();
+			HttpPost post = params[0];
+			post.setHeader("Cookie", sessionName+"="+sessionId);
+			HttpEntity entity = null;
+		    HttpResponse response = null;
+		    JSONArray jArray = null;	    	    
+			try {
+				response = client.execute(post);
+				entity = response.getEntity();
+				jArray = extractJson(entity);
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			client.getConnectionManager().shutdown();
+		    
+			return jArray;
+			
+		}
+		
+		@Override
+		protected void onPostExecute(JSONArray jArray) {
+//			parseAssignments(jObject);
+			if(jArray != null && jArray.length() > 0) {
+				TextView t = (TextView)findViewById(R.id.textView1);
+				try {
+					t.setText(jArray.getString(0));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		}
+		
+	}
+	
+	
+	
 	/**
 	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
 	 * one of the sections/tabs/pages.

@@ -70,7 +70,7 @@ public class HomeScreenActivity extends Activity {
 		
 		myClasses = getResources().getStringArray(R.array.class_list);
 		myClassIds = new HashMap<String, String>();
-		myClassIds.put("MAS test site", "gtc-38a2-fbae-53be-a4c3-ed17c8234e2a");
+		myClassIds.put("MAS test site", "eb17774a-0534-43af-976f-158c2458cecb");
 		myDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		myDrawerList = (ListView) findViewById(R.id.left_drawer);
 

@@ -103,6 +103,8 @@ public final class R {
          */
         public static final int title_activity_classes=0x7f05000d;
         public static final int title_activity_home_screen=0x7f050005;
+        /**  NOTIFICATIONS 
+         */
         public static final int title_activity_notification=0x7f050018;
         public static final int title_activity_settings=0x7f050011;
         public static final int title_section1=0x7f05000e;
