@@ -59,8 +59,10 @@
     <string name="notification_ringtone">Ringtone</string>
     <string name="notification_silent">Silent</string>
     <string name="notification_vibrate">Vibrate</string>
-    
+
     <!-- NOTIFICATIONS -->
     <string name="title_activity_notification">NotificationActivity</string>
+    <string name="title_activity_broadcast_receiver">BroadcastReceiver</string>
+    <string name="title_activity_alarm_receiver">AlarmReceiver</string>
 
 </resources>

@@ -241,7 +241,11 @@ public class HomeScreenActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
-		// Do something
+		// Close Application
+		Intent intent = new Intent(Intent.ACTION_MAIN);
+		intent.addCategory(Intent.CATEGORY_HOME);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(intent);
 		super.onBackPressed();
 	}
 
@@ -251,7 +255,7 @@ public class HomeScreenActivity extends Activity {
 		// Initialize Alert Dialog
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Logout");
-		builder.setMessage(assignment_name);
+		builder.setMessage("Do you want to logout?");
 		
 		// Set up the buttons
 		builder.setPositiveButton("Logout",
@@ -271,14 +275,4 @@ public class HomeScreenActivity extends Activity {
 				});
 		return builder.show();
 	}
-	
-	// Get SharedPreferences from Settings
-	/*private void getPreferences(){
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		ringtone_notis = prefs.getString("ringtone_notifications", "DEFAULT_SOUND");
-		vibrate_notis = prefs.getBoolean("vibrate_notifications", true);
-		reminder_notis = prefs.getInt("updates_notifications", 1);
-		enable_notis = prefs.getBoolean("set_notifications", true);
-	}*/
-	
 }

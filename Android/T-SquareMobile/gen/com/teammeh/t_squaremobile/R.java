@@ -60,22 +60,26 @@ public final class R {
         public static final int text_notification=0x7f090008;
     }
     public static final class layout {
-        public static final int activity_classes=0x7f030000;
-        public static final int activity_home_screen=0x7f030001;
-        public static final int activity_login=0x7f030002;
-        public static final int activity_notification=0x7f030003;
-        public static final int add_assignments_dialog=0x7f030004;
-        public static final int drawer_list_item=0x7f030005;
-        public static final int fragment_classes_dummy=0x7f030006;
-        public static final int preferences=0x7f030007;
+        public static final int activity_alarm_receiver=0x7f030000;
+        public static final int activity_broadcast_receiver=0x7f030001;
+        public static final int activity_classes=0x7f030002;
+        public static final int activity_home_screen=0x7f030003;
+        public static final int activity_login=0x7f030004;
+        public static final int activity_notification=0x7f030005;
+        public static final int add_assignments_dialog=0x7f030006;
+        public static final int drawer_list_item=0x7f030007;
+        public static final int fragment_classes_dummy=0x7f030008;
+        public static final int preferences=0x7f030009;
     }
     public static final class menu {
         public static final int add_assignments=0x7f080000;
-        public static final int classes=0x7f080001;
-        public static final int home_screen=0x7f080002;
-        public static final int login=0x7f080003;
-        public static final int notification=0x7f080004;
-        public static final int settings=0x7f080005;
+        public static final int alarm_receiver=0x7f080001;
+        public static final int broadcast_receiver=0x7f080002;
+        public static final int classes=0x7f080003;
+        public static final int home_screen=0x7f080004;
+        public static final int login=0x7f080005;
+        public static final int notification=0x7f080006;
+        public static final int settings=0x7f080007;
     }
     public static final class string {
         public static final int action_add_assignment=0x7f05000b;
@@ -99,10 +103,14 @@ public final class R {
         public static final int notification_silent=0x7f050016;
         public static final int notification_vibrate=0x7f050017;
         public static final int password_text=0x7f050003;
+        public static final int title_activity_alarm_receiver=0x7f05001a;
+        public static final int title_activity_broadcast_receiver=0x7f050019;
         /**  Class Activity Strings 
          */
         public static final int title_activity_classes=0x7f05000d;
         public static final int title_activity_home_screen=0x7f050005;
+        /**  NOTIFICATIONS 
+         */
         public static final int title_activity_notification=0x7f050018;
         public static final int title_activity_settings=0x7f050011;
         public static final int title_section1=0x7f05000e;

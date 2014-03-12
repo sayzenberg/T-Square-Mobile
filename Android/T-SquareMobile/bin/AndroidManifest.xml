@@ -55,6 +55,14 @@
             android:name="com.teammeh.t_squaremobile.NotificationActivity"
             android:label="@string/title_activity_notification" >
         </activity>
+        <activity
+            android:name="com.teammeh.t_squaremobile.BroadcastReceiver"
+            android:label="@string/title_activity_broadcast_receiver" >
+        </activity>
+        <activity
+            android:name="com.teammeh.t_squaremobile.AlarmReceiver"
+            android:label="@string/title_activity_alarm_receiver" >
+        </activity>
     </application>
 
 </manifest>
