@@ -70,8 +70,7 @@ public class AnnouncementFragment extends ListFragment {
 
 		if (getArguments() != null) {
 			this.sessionName = getArguments().getString("sessionName");
-//			this.sessionId = getArguments().getString("sessionId");
-			this.sessionId = "477sk44n13qqje0n4dum0alm05";
+			this.sessionId = getArguments().getString("sessionId");
 			this.classId = getArguments().getString("classId");
 
 		}
