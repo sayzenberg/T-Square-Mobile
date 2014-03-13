@@ -41,9 +41,9 @@ public final class R {
     }
     public static final class id {
         public static final int EditTextAddAssignment=0x7f09000a;
-        public static final int action_add_assignment=0x7f090011;
-        public static final int action_logout=0x7f090010;
-        public static final int action_settings=0x7f09000f;
+        public static final int action_add_assignment=0x7f090012;
+        public static final int action_logout=0x7f090011;
+        public static final int action_settings=0x7f090010;
         public static final int button1=0x7f090007;
         public static final int calendarView1=0x7f090004;
         public static final int content_frame=0x7f090003;
@@ -58,6 +58,7 @@ public final class R {
         public static final int textView1=0x7f09000e;
         public static final int textViewAddAssignment=0x7f09000b;
         public static final int text_notification=0x7f090008;
+        public static final int titleTextView=0x7f09000f;
     }
     public static final class layout {
         public static final int activity_alarm_receiver=0x7f030000;
@@ -69,7 +70,8 @@ public final class R {
         public static final int add_assignments_dialog=0x7f030006;
         public static final int drawer_list_item=0x7f030007;
         public static final int fragment_classes_dummy=0x7f030008;
-        public static final int preferences=0x7f030009;
+        public static final int list_item=0x7f030009;
+        public static final int preferences=0x7f03000a;
     }
     public static final class menu {
         public static final int add_assignments=0x7f080000;
