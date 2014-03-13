@@ -18,14 +18,17 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.teammeh.t_squaremobile.AssignmentFragment.GetAssignmentsTask;
+import com.teammeh.t_squaremobile.dummy.DummyContent;
 
 /**
  * A fragment representing a list of Items.
@@ -34,22 +37,18 @@ import android.widget.ListView;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class AssignmentFragment extends ListFragment {
+public class AnnouncementFragment extends ListFragment {
 
-	// TODO: Rename parameter arguments, choose names that match
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	
 	String sessionName;
 	String sessionId;
 	String classId;
-	
-	private ArrayList<Assignment> assignments;
 
-	private OnAssignmentFragmentInteractionListener mListener;
+
+	private OnAnnouncementFragmentInteractionListener mListener;
 
 	// TODO: Rename and change types of parameters
-	public static AssignmentFragment newInstance(String sessionName, String sessionId, String classId) {
-		AssignmentFragment fragment = new AssignmentFragment();
+	public static AnnouncementFragment newInstance(String sessionName, String sessionId, String classId) {
+		AnnouncementFragment fragment = new AnnouncementFragment();
 		Bundle args = new Bundle();
 		args.putString("sessionName", sessionName);
 		args.putString("sessionId", sessionId);
@@ -62,29 +61,32 @@ public class AssignmentFragment extends ListFragment {
 	 * Mandatory empty constructor for the fragment manager to instantiate the
 	 * fragment (e.g. upon screen orientation changes).
 	 */
-	public AssignmentFragment() {
+	public AnnouncementFragment() {
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		
-		
 		if (getArguments() != null) {
 			this.sessionName = getArguments().getString("sessionName");
 //			this.sessionId = getArguments().getString("sessionId");
 			this.sessionId = "477sk44n13qqje0n4dum0alm05";
 			this.classId = getArguments().getString("classId");
-			getAssignments();
+
 		}
+
+		// TODO: Change Adapter to display your content
+		setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
+				android.R.layout.simple_list_item_1, android.R.id.text1,
+				DummyContent.ITEMS));
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		try {
-			mListener = (OnAssignmentFragmentInteractionListener) activity;
+			mListener = (OnAnnouncementFragmentInteractionListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnFragmentInteractionListener");
@@ -101,36 +103,16 @@ public class AssignmentFragment extends ListFragment {
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 
-		Assignment assignment = this.assignments.get(position);
-		
 		if (null != mListener) {
 			// Notify the active callbacks interface (the activity, if the
 			// fragment is attached to one) that an item has been selected.
 			mListener
-					.onAssignmentFragmentInteraction(assignment);
+					.onAnnouncementFragmentInteraction(DummyContent.ITEMS.get(position).id);
 		}
 	}
 	
-	public void parseJson(JSONArray items) {
-		ArrayList<Assignment> list = new ArrayList<Assignment>();
-		for(int i = 0; i < items.length(); i++) {
-			try {
-				JSONObject obj = items.getJSONObject(i);
-				list.add(new Assignment(obj));
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
-		this.assignments = list;
-		setListAdapter(new AssignmentListAdapter(getActivity(),
-				android.R.layout.simple_list_item_1, assignments));
-
-	}
-	
-	protected void getAssignments() {
-		String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getAssignmentsByClass";
+	protected void getAnnouncements() {
+		String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getAnnouncementsByClass";
 		HttpPost post = new HttpPost(url);
 		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 	    postParameters.add(new BasicNameValuePair("classId", classId));
@@ -140,10 +122,10 @@ public class AssignmentFragment extends ListFragment {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	    new GetAssignmentsTask().execute(post);
+//	    new GetAnnouncementsTask().execute(post);
 	}
 
-	public class GetAssignmentsTask extends AsyncTask<HttpPost, String, JSONArray> {
+	public class GetAnnouncementsTask extends AsyncTask<HttpPost, String, JSONArray> {
 
 		String mText;
 		
@@ -212,7 +194,7 @@ public class AssignmentFragment extends ListFragment {
 		
 		@Override
 		protected void onPostExecute(JSONArray jArray) {
-			parseJson(jArray);
+//			parseJson(jArray);
 //			if(jArray != null && jArray.length() > 0) {
 //				TextView t = (TextView)findViewById(R.id.textView1);
 //				try {
@@ -225,9 +207,6 @@ public class AssignmentFragment extends ListFragment {
 		}
 	}
 
-
-
-
 	/**
 	 * This interface must be implemented by activities that contain this
 	 * fragment to allow an interaction in this fragment to be communicated to
@@ -237,10 +216,9 @@ public class AssignmentFragment extends ListFragment {
 	 * "http://developer.android.com/training/basics/fragments/communicating.html"
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
-	public interface OnAssignmentFragmentInteractionListener {
+	public interface OnAnnouncementFragmentInteractionListener {
 		// TODO: Update argument type and name
-		public void onAssignmentFragmentInteraction(Assignment assignment);
+		public void onAnnouncementFragmentInteraction(String id);
 	}
-	
-	
+
 }
