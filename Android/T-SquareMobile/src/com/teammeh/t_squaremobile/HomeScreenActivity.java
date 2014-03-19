@@ -1,25 +1,19 @@
 package com.teammeh.t_squaremobile;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +23,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.preference.PreferenceManager;
 
 public class HomeScreenActivity extends Activity {
 	// Variables to create the Navigation Drawer
@@ -46,13 +39,13 @@ public class HomeScreenActivity extends Activity {
 	private int assignment_day;
 	private int assignment_month;
 	private int assignment_year;
-	
+
 	// Variables for Settings
 	private boolean enable_notis;
 	private int reminder_notis;
 	private String ringtone_notis;
 	private boolean vibrate_notis;
-	
+
 	//CAS Call
 	String sessionName;
 	String sessionId;
@@ -64,10 +57,18 @@ public class HomeScreenActivity extends Activity {
 		setContentView(R.layout.activity_home_screen);
 
 		Uri data = getIntent().getData();
-		sessionName = data.getQueryParameter("sessionName");
-	    sessionId = data.getQueryParameter("sessionId");
+		if(data != null) {
+			if(data.getQueryParameter("sessionName") != null && data.getQueryParameter("sessionId") != null) {
+				GlobalState.setSessionName(data.getQueryParameter("sessionName"));
+				GlobalState.setSessionId(data.getQueryParameter("sessionId"));
+			}
+		}
 
-		
+
+		sessionName = GlobalState.getSessionName();
+		sessionId = GlobalState.getSessionId();
+
+
 		myClasses = getResources().getStringArray(R.array.class_list);
 		myClassIds = new HashMap<String, String>();
 		myClassIds.put("MAS test site", "eb17774a-0534-43af-976f-158c2458cecb");
@@ -91,19 +92,19 @@ public class HomeScreenActivity extends Activity {
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the sliding drawer and the action bar app icon
 		myDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
-		myDrawerLayout, /* DrawerLayout object */
-		R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
-		R.string.drawer_open, /* "open drawer" description for accessibility */
-		R.string.drawer_close /* "close drawer" description for accessibility */
-		) {
+				myDrawerLayout, /* DrawerLayout object */
+				R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
+				R.string.drawer_open, /* "open drawer" description for accessibility */
+				R.string.drawer_close /* "close drawer" description for accessibility */
+				) {
 			public void onDrawerClosed(View view) {
 				invalidateOptionsMenu(); // creates call to
-											// onPrepareOptionsMenu()
+				// onPrepareOptionsMenu()
 			}
 
 			public void onDrawerOpened(View drawerView) {
 				invalidateOptionsMenu(); // creates call to
-											// onPrepareOptionsMenu()
+				// onPrepareOptionsMenu()
 			}
 		};
 
@@ -113,6 +114,14 @@ public class HomeScreenActivity extends Activity {
 		if (savedInstanceState == null) {
 			selectItem(0);
 		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putString("sessionName", sessionName);
+		savedInstanceState.putString("sessionId", sessionId);
+		super.onSaveInstanceState(savedInstanceState);
+
 	}
 
 	@Override
@@ -148,7 +157,7 @@ public class HomeScreenActivity extends Activity {
 
 	/* The click listener for ListView in the navigation drawer */
 	private class DrawerItemClickListener implements
-			ListView.OnItemClickListener {
+	ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
@@ -193,10 +202,10 @@ public class HomeScreenActivity extends Activity {
 		// Pass any configuration change to the drawer toggles
 		myDrawerToggle.onConfigurationChanged(newConfig);
 	}
-	
+
 	// Create Dialog Box to enter Assignment and Due Date
 	public void add_assignments(){
-		
+
 		final View addView = getLayoutInflater().inflate(R.layout.add_assignments_dialog, null);
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Add Assignment");
@@ -220,23 +229,23 @@ public class HomeScreenActivity extends Activity {
 		});
 		builder.setNegativeButton("Cancel",
 				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+			}
+		});
 		builder.show();
 	}
-	
+
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-	    if ((keyCode == KeyEvent.KEYCODE_BACK)) { //Back key pressed
-	       //Things to Do
-	    	logout();
-	        return true;
-	    }
-	    return super.onKeyDown(keyCode, event);
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) { //Back key pressed
+			//Things to Do
+			logout();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override
@@ -256,23 +265,23 @@ public class HomeScreenActivity extends Activity {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Logout");
 		builder.setMessage("Do you want to logout?");
-		
+
 		// Set up the buttons
 		builder.setPositiveButton("Logout",
 				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// WRITE BACKEND CODE!!!!
-						onBackPressed();
-					}
-				});
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// WRITE BACKEND CODE!!!!
+				onBackPressed();
+			}
+		});
 		builder.setNegativeButton("Cancel",
 				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+			}
+		});
 		return builder.show();
 	}
 }

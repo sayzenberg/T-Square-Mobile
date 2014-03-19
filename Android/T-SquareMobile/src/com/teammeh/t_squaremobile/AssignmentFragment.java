@@ -69,11 +69,12 @@ public class AssignmentFragment extends ListFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		
+		sessionName = GlobalState.getSessionName();
+		sessionId = GlobalState.getSessionId();
 		
 		if (getArguments() != null) {
-			this.sessionName = getArguments().getString("sessionName");
-			this.sessionId = getArguments().getString("sessionId");
+//			this.sessionName = getArguments().getString("sessionName");
+//			this.sessionId = getArguments().getString("sessionId");
 			this.classId = getArguments().getString("classId");
 			getAssignments();
 		}
