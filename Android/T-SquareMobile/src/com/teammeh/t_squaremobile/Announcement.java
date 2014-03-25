@@ -26,15 +26,16 @@ public class Announcement {
 		this.body = obj.optString("body");
 		this.title = obj.optString("title");
 		this.author = obj.optString("createdByDisplayName");
-		SimpleDateFormat formatter = new SimpleDateFormat("LLLL dd, yyyy kk:mm a");
+		SimpleDateFormat formatter = new SimpleDateFormat("LLLL dd, yyyy h:mm a");
 		formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
-//		String epoch = obj.optString("createdOn");
+		String epoch = obj.optString("createdOn");
 //		System.out.println(epoch);
-//		if(epoch != "") {
-//			Long epochNum = Long.getLong(epoch) * 1000;
-//			Date epochDate = new Date(epochNum);
-//			this.date = formatter.format(epochDate);
-//		}
+		if(epoch != "") {
+//			System.out.println(epoch == null);
+			Long epochNum = Long.parseLong(epoch);
+			Date epochDate = new Date(epochNum);
+			this.date = formatter.format(epochDate);
+		}
 	}
 
 	public String getId() {

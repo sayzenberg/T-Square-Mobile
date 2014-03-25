@@ -21,7 +21,7 @@
 
     <!-- Class Activity Strings -->
     <string name="title_activity_classes">Classes</string>
-    <string name="title_section1">Announcements</string>
+    <string name="title_section1">Recent Announcements</string>
     <string name="title_section2">Assignments</string>
     <string name="title_section3">Grades</string>
 

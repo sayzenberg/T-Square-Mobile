@@ -171,8 +171,8 @@ public class Classes extends FragmentActivity implements OnAssignmentFragmentInt
 	@Override
 	public void onAnnouncementFragmentInteraction(Announcement announcement) {
 		// TODO Auto-generated method stub
-		Toast.makeText(this, announcement.getTitle() + " was posted by " + announcement.getAuthor()
-				, Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, announcement.getTitle() + " was posted by " + announcement.getAuthor() + " on "
+				+ announcement.getDate(), Toast.LENGTH_SHORT).show();
 
 	}
 }

@@ -39,7 +39,7 @@ public class AnnouncementListAdapter extends ArrayAdapter {
 		//       }
 
 		holder.titleText.setText(announcement.getTitle());
-		System.out.println(holder.titleText.getText());
+//		System.out.println(holder.titleText.getText());
 		return viewToUse;
 	}
 

@@ -419,7 +419,7 @@ public class HomeScreenActivity extends Activity {
 				    sb.append(line + "\n");
 				}
 				result = sb.toString();
-				System.out.println(result);
+//				System.out.println(result);
 				jObject = new JSONObject(result);
 				jObject = new JSONObject(jObject.getString("body"));
 			} catch (ClientProtocolException e) {
@@ -449,7 +449,7 @@ public class HomeScreenActivity extends Activity {
 			try {
 				Header[] headers = get.getAllHeaders();
 				for(Header header : headers) {
-					System.out.println(header.getName() + " " + header.getValue());
+//					System.out.println(header.getName() + " " + header.getValue());
 				}
 				response = client.execute(get);
 				entity = response.getEntity();
@@ -469,7 +469,7 @@ public class HomeScreenActivity extends Activity {
 		
 		@Override
 		protected void onPostExecute(JSONObject jObject) {
-			System.out.println("I'm here!");
+//			System.out.println("I'm here!");
 			parseJson(jObject);
 		}
 	}
