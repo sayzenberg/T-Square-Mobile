@@ -164,7 +164,7 @@ public class AssignmentFragment extends ListFragment {
 				}
 				result = sb.toString();
 				jArray = new JSONArray(result);
-				System.out.println("Length of JSON: " + jArray.length());
+//				System.out.println("Length of JSON: " + jArray.length());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -191,12 +191,17 @@ public class AssignmentFragment extends ListFragment {
 			try {
 				Header[] headers = post.getAllHeaders();
 				for(Header header : headers) {
-					System.out.println(header.getName() + " " + header.getValue());
+//					System.out.println(header.getName() + " " + header.getValue());
 				}
 				response = client.execute(post);
 				entity = response.getEntity();
-				jArray = extractJson(entity);
-				System.out.println(response.getStatusLine());
+				if(response.getStatusLine().toString().contains("504")) {
+					jArray = null;
+				} else {
+//					System.out.println(response.getStatusLine());
+					jArray = extractJson(entity);
+				}
+//				System.out.println(response.getStatusLine());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -212,7 +217,7 @@ public class AssignmentFragment extends ListFragment {
 		
 		@Override
 		protected void onPostExecute(JSONArray jArray) {
-			parseJson(jArray);
+			if(jArray != null) parseJson(jArray);
 //			if(jArray != null && jArray.length() > 0) {
 //				TextView t = (TextView)findViewById(R.id.textView1);
 //				try {

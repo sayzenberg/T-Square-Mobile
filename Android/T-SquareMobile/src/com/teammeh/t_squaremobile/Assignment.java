@@ -9,7 +9,7 @@ public class Assignment {
 	String openDate;
 	String dueDate;
 	String instructions;
-	
+
 	public Assignment(String assignmentId, String title, String openDate,
 			String dueDate, String instructions) {
 		this.assignmentId = assignmentId;
@@ -18,14 +18,18 @@ public class Assignment {
 		this.dueDate = dueDate;
 		this.instructions = instructions;
 	}
-	
+
 	public Assignment(JSONObject obj) throws JSONException {
 		this.assignmentId = obj.optString("assignmentId");
 		this.title = obj.optString("title");
-		this.openDate = obj.getJSONObject("openDate").optString("display");
-		this.dueDate = obj.getJSONObject("dueDate").optString("display");
+		if(obj.optJSONObject("openDate") != null) {
+			this.openDate = obj.getJSONObject("openDate").optString("display");
+		}
+		if(obj.optJSONObject("dueDate") != null) {
+			this.dueDate = obj.getJSONObject("dueDate").optString("display");
+		}
 		this.instructions = obj.optString("instructions");
-		
+
 	}
 
 	public String getAssignmentId() {
@@ -67,8 +71,8 @@ public class Assignment {
 	public void setInstructions(String instructions) {
 		this.instructions = instructions;
 	}
-	
-	
-	
-	
+
+
+
+
 }

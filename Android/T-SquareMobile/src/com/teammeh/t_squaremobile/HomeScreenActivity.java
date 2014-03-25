@@ -1,6 +1,21 @@
 package com.teammeh.t_squaremobile;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,6 +24,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -30,8 +46,8 @@ public class HomeScreenActivity extends Activity {
 	private ListView myDrawerList;
 	private ActionBarDrawerToggle myDrawerToggle;
 	private String[] myClasses;
-	private HashMap<String, String> myClassIds;
 	private String className = "";
+	private ArrayList<Course> courses;
 
 	// Variables to add assignments
 	private String assignment_course;
@@ -63,15 +79,82 @@ public class HomeScreenActivity extends Activity {
 				GlobalState.setSessionId(data.getQueryParameter("sessionId"));
 			}
 		}
-
-
 		sessionName = GlobalState.getSessionName();
 		sessionId = GlobalState.getSessionId();
+		
+		if(GlobalState.getClasses() == null) {
+			getClasses();
+			myClasses = new String[1];
+			myClasses[0] = "Classes loading, please wait";
+			myDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+			myDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+			// Implement a custom shadow that overlays main content when the
+			// navigation drawer is accessed
+			myDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
+					GravityCompat.START);
+
+			// Populate the navigation drawer with items and create a click listener
+			myDrawerList.setAdapter(new ArrayAdapter<String>(this,
+					R.layout.drawer_list_item, myClasses));
+//			myDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+			// Enable IC_launcher icon to set action to toggle the navigation drawer
+			getActionBar().setDisplayHomeAsUpEnabled(true);
+			getActionBar().setHomeButtonEnabled(true);
+
+			// ActionBarDrawerToggle ties together the the proper interactions
+			// between the sliding drawer and the action bar app icon
+			myDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
+					myDrawerLayout, /* DrawerLayout object */
+					R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
+					R.string.drawer_open, /* "open drawer" description for accessibility */
+					R.string.drawer_close /* "close drawer" description for accessibility */
+					) {
+				public void onDrawerClosed(View view) {
+					invalidateOptionsMenu(); // creates call to
+					// onPrepareOptionsMenu()
+				}
+
+				public void onDrawerOpened(View drawerView) {
+					invalidateOptionsMenu(); // creates call to
+					// onPrepareOptionsMenu()
+				}
+			};
+
+			// Listens to whenever the drawer is toggled
+			myDrawerLayout.setDrawerListener(myDrawerToggle);
+		} else {
+			courses = GlobalState.getClasses();
+			drawSidebar();
+		}
+//		while(GlobalState.getClasses() == null) {
+			
+//		}
+//		courses = GlobalState.getClasses();
+
+		
+		
+
+		
+//		myClasses = getResources().getStringArray(R.array.class_list);
+//		myClasses = new String[courses.size()];
+//		for(int i = 0; i < courses.size(); i++) {
+//			myClasses[i] = courses.get(i).getClassName();
+//		}
 
 
-		myClasses = getResources().getStringArray(R.array.class_list);
-		myClassIds = new HashMap<String, String>();
-		myClassIds.put("MAS test site", "eb17774a-0534-43af-976f-158c2458cecb");
+		if (savedInstanceState == null) {
+			selectItem(0);
+		}
+	}
+	
+	protected void drawSidebar() {
+//		myClasses = getResources().getStringArray(R.array.class_list);
+		myClasses = new String[courses.size()];
+		for(int i = 0; i < courses.size(); i++) {
+			myClasses[i] = courses.get(i).getClassName();
+		}
 		myDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		myDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -111,9 +194,6 @@ public class HomeScreenActivity extends Activity {
 		// Listens to whenever the drawer is toggled
 		myDrawerLayout.setDrawerListener(myDrawerToggle);
 
-		if (savedInstanceState == null) {
-			selectItem(0);
-		}
 	}
 
 	@Override
@@ -170,12 +250,11 @@ public class HomeScreenActivity extends Activity {
 		Intent intent;
 		if (position == 0) {
 		} else {
-			className = myClasses[position];
 			intent = new Intent(HomeScreenActivity.this, Classes.class);
-			intent.putExtra("className", className);
+			intent.putExtra("className", courses.get(position).getClassName());
 			intent.putExtra("sessionName", sessionName);
 			intent.putExtra("sessionId", sessionId);
-			intent.putExtra("classId", myClassIds.get("MAS test site"));
+			intent.putExtra("classId", courses.get(position).getClassId());
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			this.startActivity(intent);
 		}
@@ -284,4 +363,115 @@ public class HomeScreenActivity extends Activity {
 		});
 		return builder.show();
 	}
+	
+	protected void getClasses() {
+		String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/siteJson";
+		HttpGet get = new HttpGet(url);
+//		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+//	    postParameters.add(new BasicNameValuePair("classId", classId));
+//	    try {
+//			post.setEntity(new UrlEncodedFormEntity(postParameters));
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+	    new GetClassesTask().execute(get);
+	}
+	
+	protected void parseJson(JSONObject jObject) {
+		ArrayList<Course> classes = new ArrayList<Course>();
+		JSONArray array = null;
+		try {
+//			System.out.println(jObject.length());
+			array = jObject.getJSONArray("site_collection");
+			for(int i = 0; i < array.length(); i++) {
+				JSONObject obj = array.getJSONObject(i);
+				String classTitle = obj.getString("title");
+				String classId = obj.getString("id");
+				classes.add(new Course(classTitle, classId));
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		GlobalState.setClasses(classes);
+		this.courses = classes;
+		drawSidebar();
+	}
+	
+	public class GetClassesTask extends AsyncTask<HttpGet, String, JSONObject> {
+
+		String mText;
+		
+		protected JSONObject extractJson(HttpEntity entity) {
+		    InputStream stream = null;
+		    BufferedReader reader;
+		    String line = "";
+		    String result = "";
+		    JSONObject jObject = null;
+		   
+			try {
+				stream = entity.getContent();
+				reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
+				StringBuilder sb = new StringBuilder();
+				while ((line = reader.readLine()) != null)
+				{
+				    sb.append(line + "\n");
+				}
+				result = sb.toString();
+				System.out.println(result);
+				jObject = new JSONObject(result);
+				jObject = new JSONObject(jObject.getString("body"));
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				try{if(stream != null)stream.close();}catch(Exception squish){}
+			}
+			return jObject;
+		}
+
+		
+		@Override
+		protected JSONObject doInBackground(HttpGet... params) {
+			DefaultHttpClient client = new DefaultHttpClient();
+			HttpGet get = params[0];
+			get.setHeader("Cookie", sessionName+"="+sessionId);
+			HttpEntity entity = null;
+		    HttpResponse response = null;
+		    JSONObject jObject = null;	    	    
+			try {
+				Header[] headers = get.getAllHeaders();
+				for(Header header : headers) {
+					System.out.println(header.getName() + " " + header.getValue());
+				}
+				response = client.execute(get);
+				entity = response.getEntity();
+				jObject = extractJson(entity);
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			client.getConnectionManager().shutdown();
+		    
+			return jObject;
+			
+		}
+		
+		@Override
+		protected void onPostExecute(JSONObject jObject) {
+			System.out.println("I'm here!");
+			parseJson(jObject);
+		}
+	}
+
 }

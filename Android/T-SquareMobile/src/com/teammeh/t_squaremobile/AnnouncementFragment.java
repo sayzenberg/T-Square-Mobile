@@ -18,6 +18,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.AsyncTask;
@@ -43,6 +44,7 @@ public class AnnouncementFragment extends ListFragment {
 	String sessionId;
 	String classId;
 
+	private ArrayList<Announcement> announcements;
 
 	private OnAnnouncementFragmentInteractionListener mListener;
 
@@ -68,17 +70,15 @@ public class AnnouncementFragment extends ListFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		sessionName = GlobalState.getSessionName();
+		sessionId = GlobalState.getSessionId();
+
 		if (getArguments() != null) {
-			this.sessionName = getArguments().getString("sessionName");
-			this.sessionId = getArguments().getString("sessionId");
+			//			this.sessionName = getArguments().getString("sessionName");
+			//			this.sessionId = getArguments().getString("sessionId");
 			this.classId = getArguments().getString("classId");
-
+			getAnnouncements();
 		}
-
-		// TODO: Change Adapter to display your content
-		setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-				android.R.layout.simple_list_item_1, android.R.id.text1,
-				DummyContent.ITEMS));
 	}
 
 	@Override
@@ -102,50 +102,73 @@ public class AnnouncementFragment extends ListFragment {
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 
+		Announcement announcement = this.announcements.get(position);
+
 		if (null != mListener) {
 			// Notify the active callbacks interface (the activity, if the
 			// fragment is attached to one) that an item has been selected.
 			mListener
-					.onAnnouncementFragmentInteraction(DummyContent.ITEMS.get(position).id);
+			.onAnnouncementFragmentInteraction(announcement);
 		}
 	}
-	
+
+	public void parseJson(JSONObject items) {
+		ArrayList<Announcement> list = new ArrayList<Announcement>();
+		JSONArray array;
+		try {
+			array = items.getJSONArray("announcement_collection");
+			for(int i = 0; i < items.length(); i++) {
+				JSONObject obj = array.getJSONObject(i);
+				list.add(new Announcement(obj));
+
+			}
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		this.announcements = list;
+		setListAdapter(new AnnouncementListAdapter(getActivity(),
+				android.R.layout.simple_list_item_1, announcements));
+
+	}
+
 	protected void getAnnouncements() {
 		String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getAnnouncementsByClass";
 		HttpPost post = new HttpPost(url);
 		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-	    postParameters.add(new BasicNameValuePair("classId", classId));
-	    try {
+		postParameters.add(new BasicNameValuePair("classId", classId));
+		try {
 			post.setEntity(new UrlEncodedFormEntity(postParameters));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//	    new GetAnnouncementsTask().execute(post);
+		new GetAnnouncementsTask().execute(post);
 	}
 
-	public class GetAnnouncementsTask extends AsyncTask<HttpPost, String, JSONArray> {
+	public class GetAnnouncementsTask extends AsyncTask<HttpPost, String, JSONObject> {
 
 		String mText;
-		
-		protected JSONArray extractJson(HttpEntity entity) {
-		    InputStream stream = null;
-		    BufferedReader reader;
-		    String line = "";
-		    String result = "";
-		    JSONArray jArray = null;
-		   
+
+		protected JSONObject extractJson(HttpEntity entity) {
+			InputStream stream = null;
+			BufferedReader reader;
+			String line = "";
+			String result = "";
+			JSONObject jObject = null;
+
 			try {
 				stream = entity.getContent();
 				reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
 				StringBuilder sb = new StringBuilder();
 				while ((line = reader.readLine()) != null)
 				{
-				    sb.append(line + "\n");
+					sb.append(line + "\n");
 				}
 				result = sb.toString();
-				jArray = new JSONArray(result);
-				System.out.println("Length of JSON: " + jArray.length());
+				jObject = new JSONObject(result);
+				System.out.println("Length of JSON: " + jObject.length());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -158,17 +181,17 @@ public class AnnouncementFragment extends ListFragment {
 			} finally {
 				try{if(stream != null)stream.close();}catch(Exception squish){}
 			}
-			return jArray;
+			return jObject;
 		}
-		
+
 		@Override
-		protected JSONArray doInBackground(HttpPost... params) {
+		protected JSONObject doInBackground(HttpPost... params) {
 			DefaultHttpClient client = new DefaultHttpClient();
 			HttpPost post = params[0];
 			post.setHeader("Cookie", sessionName+"="+sessionId);
 			HttpEntity entity = null;
-		    HttpResponse response = null;
-		    JSONArray jArray = null;	    	    
+			HttpResponse response = null;
+			JSONObject jObject = null;	    	    
 			try {
 				Header[] headers = post.getAllHeaders();
 				for(Header header : headers) {
@@ -176,7 +199,7 @@ public class AnnouncementFragment extends ListFragment {
 				}
 				response = client.execute(post);
 				entity = response.getEntity();
-				jArray = extractJson(entity);
+				jObject = extractJson(entity);
 				System.out.println(response.getStatusLine());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
@@ -186,23 +209,23 @@ public class AnnouncementFragment extends ListFragment {
 				e.printStackTrace();
 			}
 			client.getConnectionManager().shutdown();
-		    
-			return jArray;
-			
+
+			return jObject;
+
 		}
-		
+
 		@Override
-		protected void onPostExecute(JSONArray jArray) {
-//			parseJson(jArray);
-//			if(jArray != null && jArray.length() > 0) {
-//				TextView t = (TextView)findViewById(R.id.textView1);
-//				try {
-//					t.setText(jArray.getString(0));
-//				} catch (JSONException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
+		protected void onPostExecute(JSONObject jObject) {
+			parseJson(jObject);
+			//			if(jArray != null && jArray.length() > 0) {
+			//				TextView t = (TextView)findViewById(R.id.textView1);
+			//				try {
+			//					t.setText(jArray.getString(0));
+			//				} catch (JSONException e) {
+			//					// TODO Auto-generated catch block
+			//					e.printStackTrace();
+			//				}
+			//			}
 		}
 	}
 
@@ -217,7 +240,7 @@ public class AnnouncementFragment extends ListFragment {
 	 */
 	public interface OnAnnouncementFragmentInteractionListener {
 		// TODO: Update argument type and name
-		public void onAnnouncementFragmentInteraction(String id);
+		public void onAnnouncementFragmentInteraction(Announcement announcement);
 	}
 
 }

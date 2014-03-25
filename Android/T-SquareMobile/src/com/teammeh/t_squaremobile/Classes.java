@@ -164,14 +164,14 @@ public class Classes extends FragmentActivity implements OnAssignmentFragmentInt
 	@Override
 	public void onAssignmentFragmentInteraction(Assignment assignment) {
 		// TODO Auto-generated method stub
-		Toast.makeText(this, assignment.getTitle() + " Clicked!"
+		Toast.makeText(this, assignment.getTitle() + " is due on " + assignment.getDueDate()
 				, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
-	public void onAnnouncementFragmentInteraction(String id) {
+	public void onAnnouncementFragmentInteraction(Announcement announcement) {
 		// TODO Auto-generated method stub
-		Toast.makeText(this, id + " Clicked!"
+		Toast.makeText(this, announcement.getTitle() + " was posted by " + announcement.getAuthor()
 				, Toast.LENGTH_SHORT).show();
 
 	}
