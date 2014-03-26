@@ -15,7 +15,7 @@ public class Announcement {
 	
 	public Announcement(String id, String body, String title, String author, String date) {
 		this.id = id;
-		this.body = body;
+		this.body = body.replaceAll("\\<.*?>","");;
 		this.title = title;
 		this.author = author;
 		this.date = date;
@@ -24,6 +24,9 @@ public class Announcement {
 	public Announcement(JSONObject obj) {
 		this.id = obj.optString("id");
 		this.body = obj.optString("body");
+		if(body != "") {
+			this.body = this.body.replaceAll("\\<.*?>","");
+		}
 		this.title = obj.optString("title");
 		this.author = obj.optString("createdByDisplayName");
 		SimpleDateFormat formatter = new SimpleDateFormat("LLLL dd, yyyy h:mm a");

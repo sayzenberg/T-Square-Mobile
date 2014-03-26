@@ -24,7 +24,10 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -171,8 +174,19 @@ public class Classes extends FragmentActivity implements OnAssignmentFragmentInt
 	@Override
 	public void onAnnouncementFragmentInteraction(Announcement announcement) {
 		// TODO Auto-generated method stub
-		Toast.makeText(this, announcement.getTitle() + " was posted by " + announcement.getAuthor() + " on "
-				+ announcement.getDate(), Toast.LENGTH_SHORT).show();
+//		Toast.makeText(this, announcement.getTitle() + " was posted by " + announcement.getAuthor() + " on "
+//				+ announcement.getDate(), Toast.LENGTH_SHORT).show();
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(announcement.title);
+		builder.setMessage(announcement.body + "\nPosted on " + announcement.getDate() + " by " 
+		+ announcement.getAuthor());
+		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+		    @Override
+		    public void onClick(DialogInterface dialog, int which) {
+		        dialog.cancel();
+		    }
+		});
+		builder.create().show();
 
 	}
 }
