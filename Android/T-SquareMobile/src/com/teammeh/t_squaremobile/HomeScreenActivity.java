@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -17,9 +20,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.tyczj.extendedcalendarview.CalendarProvider;
+import com.tyczj.extendedcalendarview.Event;
+import com.tyczj.extendedcalendarview.ExtendedCalendarView;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -29,6 +37,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.text.format.Time;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -81,6 +90,9 @@ public class HomeScreenActivity extends Activity {
 		}
 		sessionName = GlobalState.getSessionName();
 		sessionId = GlobalState.getSessionId();
+		
+		//Github calendar
+	    ExtendedCalendarView calendar = (ExtendedCalendarView)findViewById(R.id.calendar);
 		
 		if(GlobalState.getClasses() == null) {
 			getClasses();
@@ -304,6 +316,7 @@ public class HomeScreenActivity extends Activity {
 				assignment_day = datepicker.getDayOfMonth();
 				assignment_month = datepicker.getMonth();
 				assignment_year = datepicker.getYear();
+				add_to_Cal(assignment_course, assignment_name, assignment_year, assignment_month, assignment_day, 0, 0);
 			}
 		});
 		builder.setNegativeButton("Cancel",
@@ -474,4 +487,30 @@ public class HomeScreenActivity extends Activity {
 		}
 	}
 
+	// Add events to the calendar
+		private void add_to_Cal(String course, String assignment, int startYear, int startMonth, int startDay, int startHour, int startMin){
+			ContentValues values = new ContentValues();
+		    values.put(CalendarProvider.COLOR, Event.COLOR_RED);
+		    values.put(CalendarProvider.DESCRIPTION, course);
+		    values.put(CalendarProvider.EVENT, assignment);
+
+		    Calendar cal = Calendar.getInstance();
+		    TimeZone tz = TimeZone.getDefault();
+		    
+		    cal.set(startYear, startMonth, startDay, startHour, startMin);
+		    int startDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
+		    values.put(CalendarProvider.START, cal.getTimeInMillis());
+		    values.put(CalendarProvider.START_DAY, startDayJulian);
+
+
+		    cal.set(startYear, startMonth, startDay, startHour, startMin);
+		    int endDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
+
+		    values.put(CalendarProvider.END, cal.getTimeInMillis());
+		    values.put(CalendarProvider.END_DAY, endDayJulian);
+
+		    Uri uri = getContentResolver().insert(CalendarProvider.CONTENT_URI, values);
+		}
+
+	
 }

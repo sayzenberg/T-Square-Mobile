@@ -11,12 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
     
-       <CalendarView
-            android:id="@+id/calendarView1"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-        	android:layout_alignParentLeft="true"
-        	android:layout_alignParentTop="true" />
+   <com.tyczj.extendedcalendarview.ExtendedCalendarView 
+       android:id="@+id/calendar"
+       android:layout_height="match_parent"
+       android:layout_width="match_parent"
+       android:layout_alignParentLeft="true"
+       android:layout_alignParentTop="true" />
 
        <!--  NEED TO FIX THIS LISTVIEW -->
         <ListView
