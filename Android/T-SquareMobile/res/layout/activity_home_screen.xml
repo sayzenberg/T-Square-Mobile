@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/calendarView1"
+            android:layout_below="@+id/calendar"
             android:layout_marginTop="10dp" >
         </ListView>
 

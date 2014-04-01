@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -21,8 +22,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.tyczj.extendedcalendarview.CalendarProvider;
+import com.tyczj.extendedcalendarview.Day;
 import com.tyczj.extendedcalendarview.Event;
 import com.tyczj.extendedcalendarview.ExtendedCalendarView;
+import com.tyczj.extendedcalendarview.ExtendedCalendarView.OnDayClickListener;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -39,15 +42,19 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.text.format.Time;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 public class HomeScreenActivity extends Activity {
 	// Variables to create the Navigation Drawer
@@ -70,7 +77,9 @@ public class HomeScreenActivity extends Activity {
 	private int reminder_notis;
 	private String ringtone_notis;
 	private boolean vibrate_notis;
-
+	
+	private ExtendedCalendarView calendar;
+	
 	//CAS Call
 	String sessionName;
 	String sessionId;
@@ -80,6 +89,21 @@ public class HomeScreenActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home_screen);
+		
+		// Get Calendar Event Information
+		calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
+		
+		calendar.setOnDayClickListener(new OnDayClickListener(){
+
+			@Override
+			public void onDayClicked(AdapterView<?> adapter, View view,
+					int position, long id, Day day) {
+				// TODO Auto-generated method stub
+				
+				Toast.makeText(getApplicationContext(), day.getEvents().toString(), 
+						   Toast.LENGTH_LONG).show();
+			}
+		});
 
 		Uri data = getIntent().getData();
 		if(data != null) {
@@ -91,8 +115,6 @@ public class HomeScreenActivity extends Activity {
 		sessionName = GlobalState.getSessionName();
 		sessionId = GlobalState.getSessionId();
 		
-		//Github calendar
-	    ExtendedCalendarView calendar = (ExtendedCalendarView)findViewById(R.id.calendar);
 		
 		if(GlobalState.getClasses() == null) {
 			getClasses();
@@ -160,6 +182,7 @@ public class HomeScreenActivity extends Activity {
 			selectItem(0);
 		}
 	}
+
 	
 	protected void drawSidebar() {
 //		myClasses = getResources().getStringArray(R.array.class_list);
@@ -213,7 +236,6 @@ public class HomeScreenActivity extends Activity {
 		savedInstanceState.putString("sessionName", sessionName);
 		savedInstanceState.putString("sessionId", sessionId);
 		super.onSaveInstanceState(savedInstanceState);
-
 	}
 
 	@Override
@@ -306,17 +328,19 @@ public class HomeScreenActivity extends Activity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				//Get Spinner
-				Spinner spinner = (Spinner)addView.findViewById(R.id.spinnerAddAssignment);
-				assignment_course = spinner.getSelectedItem().toString();
+				EditText edittext_course = (EditText)addView.findViewById(R.id.EditTextEnterCourse);
+				assignment_course = edittext_course.getText().toString();
 				// Get EditText
-				EditText edittext = (EditText)addView.findViewById(R.id.EditTextAddAssignment);
-				assignment_name = edittext.getText().toString();
+				EditText edittext_assignment = (EditText)addView.findViewById(R.id.EditTextAddAssignment);
+				assignment_name = edittext_assignment.getText().toString();
 				// Get DatePicker
 				DatePicker datepicker = (DatePicker)addView.findViewById(R.id.datePickerAddAssignment);
 				assignment_day = datepicker.getDayOfMonth();
 				assignment_month = datepicker.getMonth();
 				assignment_year = datepicker.getYear();
 				add_to_Cal(assignment_course, assignment_name, assignment_year, assignment_month, assignment_day, 0, 0);
+				calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
+				calendar.refreshCalendar();
 			}
 		});
 		builder.setNegativeButton("Cancel",
@@ -501,7 +525,6 @@ public class HomeScreenActivity extends Activity {
 		    int startDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
 		    values.put(CalendarProvider.START, cal.getTimeInMillis());
 		    values.put(CalendarProvider.START_DAY, startDayJulian);
-
 
 		    cal.set(startYear, startMonth, startDay, startHour, startMin);
 		    int endDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));

@@ -24,14 +24,14 @@ public final class R {
 		public static final int red = 0x7f020012;
 	}
 	public static final class id {
-		public static final int imageView1 = 0x7f090010;
-		public static final int imageView2 = 0x7f090012;
-		public static final int imageView3 = 0x7f090011;
-		public static final int imageView4 = 0x7f090013;
-		public static final int imageView5 = 0x7f090014;
-		public static final int imageView6 = 0x7f090015;
-		public static final int rl = 0x7f09000f;
-		public static final int textView1 = 0x7f09000e;
+		public static final int imageView1 = 0x7f09000f;
+		public static final int imageView2 = 0x7f090011;
+		public static final int imageView3 = 0x7f090010;
+		public static final int imageView4 = 0x7f090012;
+		public static final int imageView5 = 0x7f090013;
+		public static final int imageView6 = 0x7f090014;
+		public static final int rl = 0x7f09000e;
+		public static final int textView1 = 0x7f09000d;
 	}
 	public static final class layout {
 		public static final int day_of_week = 0x7f030007;

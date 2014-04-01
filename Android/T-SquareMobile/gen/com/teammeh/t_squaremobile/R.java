@@ -51,33 +51,32 @@ public final class R {
         public static final int red=0x7f020012;
     }
     public static final class id {
-        public static final int EditTextAddAssignment=0x7f09000b;
-        public static final int action_add_assignment=0x7f09001a;
-        public static final int action_logout=0x7f090019;
-        public static final int action_settings=0x7f090018;
-        public static final int button1=0x7f090008;
+        public static final int EditTextAddAssignment=0x7f09000a;
+        public static final int EditTextEnterCourse=0x7f090009;
+        public static final int action_add_assignment=0x7f090019;
+        public static final int action_logout=0x7f090018;
+        public static final int action_settings=0x7f090017;
+        public static final int button1=0x7f090007;
         public static final int calendar=0x7f090004;
-        public static final int calendarView1=0x7f090006;
         public static final int content_frame=0x7f090003;
-        public static final int datePickerAddAssignment=0x7f09000d;
+        public static final int datePickerAddAssignment=0x7f09000c;
         public static final int drawer_layout=0x7f090002;
-        public static final int imageView1=0x7f090010;
-        public static final int imageView2=0x7f090012;
-        public static final int imageView3=0x7f090011;
-        public static final int imageView4=0x7f090013;
-        public static final int imageView5=0x7f090014;
-        public static final int imageView6=0x7f090015;
-        public static final int left_drawer=0x7f090007;
+        public static final int imageView1=0x7f09000f;
+        public static final int imageView2=0x7f090011;
+        public static final int imageView3=0x7f090010;
+        public static final int imageView4=0x7f090012;
+        public static final int imageView5=0x7f090013;
+        public static final int imageView6=0x7f090014;
+        public static final int left_drawer=0x7f090006;
         public static final int listView1=0x7f090005;
         public static final int pager=0x7f090000;
         public static final int pager_title_strip=0x7f090001;
-        public static final int rl=0x7f09000f;
-        public static final int section_label=0x7f090016;
-        public static final int spinnerAddAssignment=0x7f09000a;
-        public static final int textView1=0x7f09000e;
-        public static final int textViewAddAssignment=0x7f09000c;
-        public static final int text_notification=0x7f090009;
-        public static final int titleTextView=0x7f090017;
+        public static final int rl=0x7f09000e;
+        public static final int section_label=0x7f090015;
+        public static final int textView1=0x7f09000d;
+        public static final int textViewAddAssignment=0x7f09000b;
+        public static final int text_notification=0x7f090008;
+        public static final int titleTextView=0x7f090016;
     }
     public static final class layout {
         public static final int activity_alarm_receiver=0x7f030000;
@@ -105,14 +104,15 @@ public final class R {
         public static final int settings=0x7f080007;
     }
     public static final class string {
-        public static final int action_add_assignment=0x7f050012;
+        public static final int action_add_assignment=0x7f050013;
         public static final int action_logout=0x7f05000e;
         public static final int action_settings=0x7f050008;
+        public static final int add_assignment=0x7f050012;
         /**  Assignment Activity Strings 
          */
-        public static final int add_assignment=0x7f050011;
+        public static final int add_course=0x7f050011;
         public static final int app_name=0x7f050000;
-        public static final int assignment_due_date=0x7f050013;
+        public static final int assignment_due_date=0x7f050014;
         public static final int drawer_close=0x7f050010;
         /**  Navigation Drawer 
          */
@@ -121,29 +121,29 @@ public final class R {
         public static final int hello_world=0x7f05000d;
         public static final int login_button_text=0x7f05000b;
         public static final int monday=0x7f050001;
-        public static final int notification_enable=0x7f05001a;
-        public static final int notification_header=0x7f050019;
-        public static final int notification_reminder=0x7f05001b;
-        public static final int notification_ringtone=0x7f05001c;
-        public static final int notification_silent=0x7f05001d;
-        public static final int notification_vibrate=0x7f05001e;
+        public static final int notification_enable=0x7f05001b;
+        public static final int notification_header=0x7f05001a;
+        public static final int notification_reminder=0x7f05001c;
+        public static final int notification_ringtone=0x7f05001d;
+        public static final int notification_silent=0x7f05001e;
+        public static final int notification_vibrate=0x7f05001f;
         public static final int password_text=0x7f05000a;
         public static final int saturday=0x7f050006;
         public static final int sunday=0x7f050007;
         public static final int thursday=0x7f050004;
-        public static final int title_activity_alarm_receiver=0x7f050021;
-        public static final int title_activity_broadcast_receiver=0x7f050020;
+        public static final int title_activity_alarm_receiver=0x7f050022;
+        public static final int title_activity_broadcast_receiver=0x7f050021;
         /**  Class Activity Strings 
          */
-        public static final int title_activity_classes=0x7f050014;
+        public static final int title_activity_classes=0x7f050015;
         public static final int title_activity_home_screen=0x7f05000c;
         /**  NOTIFICATIONS 
          */
-        public static final int title_activity_notification=0x7f05001f;
-        public static final int title_activity_settings=0x7f050018;
-        public static final int title_section1=0x7f050015;
-        public static final int title_section2=0x7f050016;
-        public static final int title_section3=0x7f050017;
+        public static final int title_activity_notification=0x7f050020;
+        public static final int title_activity_settings=0x7f050019;
+        public static final int title_section1=0x7f050016;
+        public static final int title_section2=0x7f050017;
+        public static final int title_section3=0x7f050018;
         public static final int tuesday=0x7f050002;
         public static final int username_text=0x7f050009;
         public static final int wednesday=0x7f050003;
