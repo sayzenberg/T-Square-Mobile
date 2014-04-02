@@ -169,6 +169,16 @@ public class Classes extends FragmentActivity implements OnAssignmentFragmentInt
 		// TODO Auto-generated method stub
 		Toast.makeText(this, assignment.getTitle() + " is due on " + assignment.getDueDate()
 				, Toast.LENGTH_SHORT).show();
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(assignment.title);
+		builder.setMessage("Assignment due on " + assignment.dueDate + ":\n " + assignment.instructions);
+		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+		    @Override
+		    public void onClick(DialogInterface dialog, int which) {
+		        dialog.cancel();
+		    }
+		});		
+		builder.create().show();
 	}
 
 	@Override

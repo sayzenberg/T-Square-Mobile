@@ -2,6 +2,9 @@ package com.teammeh.t_squaremobile;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 public class Assignment {
 	String assignmentId;
@@ -16,7 +19,10 @@ public class Assignment {
 		this.title = title;
 		this.openDate = openDate;
 		this.dueDate = dueDate;
-		this.instructions = instructions;
+		Document doc = Jsoup.parseBodyFragment(instructions);
+		Element bodyElement = doc.body();
+		this.instructions = bodyElement.text();
+
 	}
 
 	public Assignment(JSONObject obj) throws JSONException {
@@ -29,6 +35,11 @@ public class Assignment {
 			this.dueDate = obj.getJSONObject("dueDate").optString("display");
 		}
 		this.instructions = obj.optString("instructions");
+		if(this.instructions != "") {
+			Document doc = Jsoup.parseBodyFragment(instructions);
+			Element bodyElement = doc.body();
+			this.instructions = bodyElement.text();
+		}
 
 	}
 

@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 public class Announcement {
 	String id;
@@ -15,7 +18,10 @@ public class Announcement {
 	
 	public Announcement(String id, String body, String title, String author, String date) {
 		this.id = id;
-		this.body = body.replaceAll("\\<.*?>","");;
+//		this.body = body.replaceAll("\\<.*?>","");
+		Document doc = Jsoup.parseBodyFragment(body);
+		Element bodyElement = doc.body();
+		this.body = bodyElement.text();
 		this.title = title;
 		this.author = author;
 		this.date = date;
@@ -25,7 +31,9 @@ public class Announcement {
 		this.id = obj.optString("id");
 		this.body = obj.optString("body");
 		if(body != "") {
-			this.body = this.body.replaceAll("\\<.*?>","");
+			Document doc = Jsoup.parseBodyFragment(body);
+			Element bodyElement = doc.body();
+			this.body = bodyElement.text();
 		}
 		this.title = obj.optString("title");
 		this.author = obj.optString("createdByDisplayName");
