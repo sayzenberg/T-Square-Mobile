@@ -53,20 +53,22 @@ public final class R {
     public static final class id {
         public static final int EditTextAddAssignment=0x7f09000a;
         public static final int EditTextEnterCourse=0x7f090009;
-        public static final int action_add_assignment=0x7f090019;
-        public static final int action_logout=0x7f090018;
-        public static final int action_settings=0x7f090017;
+        public static final int action_add_assignment=0x7f09001c;
+        public static final int action_logout=0x7f09001b;
+        public static final int action_settings=0x7f09001a;
         public static final int button1=0x7f090007;
         public static final int calendar=0x7f090004;
         public static final int content_frame=0x7f090003;
         public static final int datePickerAddAssignment=0x7f09000c;
         public static final int drawer_layout=0x7f090002;
+        public static final int gradebook_button=0x7f090016;
         public static final int imageView1=0x7f09000f;
         public static final int imageView2=0x7f090011;
         public static final int imageView3=0x7f090010;
         public static final int imageView4=0x7f090012;
         public static final int imageView5=0x7f090013;
         public static final int imageView6=0x7f090014;
+        public static final int label=0x7f090018;
         public static final int left_drawer=0x7f090006;
         public static final int listView1=0x7f090005;
         public static final int pager=0x7f090000;
@@ -76,7 +78,8 @@ public final class R {
         public static final int textView1=0x7f09000d;
         public static final int textViewAddAssignment=0x7f09000b;
         public static final int text_notification=0x7f090008;
-        public static final int titleTextView=0x7f090016;
+        public static final int titleTextView=0x7f090017;
+        public static final int value=0x7f090019;
     }
     public static final class layout {
         public static final int activity_alarm_receiver=0x7f030000;
@@ -90,8 +93,10 @@ public final class R {
         public static final int day_view=0x7f030008;
         public static final int drawer_list_item=0x7f030009;
         public static final int fragment_classes_dummy=0x7f03000a;
-        public static final int list_item=0x7f03000b;
-        public static final int preferences=0x7f03000c;
+        public static final int fragment_gradebook=0x7f03000b;
+        public static final int list_item=0x7f03000c;
+        public static final int listview_assignments=0x7f03000d;
+        public static final int preferences=0x7f03000e;
     }
     public static final class menu {
         public static final int add_assignments=0x7f080000;
@@ -118,6 +123,7 @@ public final class R {
          */
         public static final int drawer_open=0x7f05000f;
         public static final int friday=0x7f050005;
+        public static final int gradebook_button_text=0x7f050023;
         public static final int hello_world=0x7f05000d;
         public static final int login_button_text=0x7f05000b;
         public static final int monday=0x7f050001;

@@ -6,7 +6,7 @@
     
         <!-- Framelayout to display Fragments -->
         <!-- ISSUE! WILL NOT SEE ON GRAPHICAL LAYOUT -->
-   <RelativeLayout
+   <FrameLayout
         android:id="@+id/content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
@@ -14,22 +14,18 @@
    <com.tyczj.extendedcalendarview.ExtendedCalendarView 
        android:id="@+id/calendar"
        android:layout_height="match_parent"
-       android:layout_width="match_parent"
-       android:layout_alignParentLeft="true"
-       android:layout_alignParentTop="true" />
+       android:layout_width="match_parent"/>
 
        <!--  NEED TO FIX THIS LISTVIEW -->
         <ListView
             android:id="@+id/listView1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/calendar"
-            android:layout_marginTop="10dp" >
+            android:stackFromBottom="true"
+            android:layout_marginTop="275dp" >
         </ListView>
 
-
-    </RelativeLayout>
+    </FrameLayout>
     
     
     <!-- Listview to display slider menu -->

@@ -65,5 +65,6 @@
     <string name="title_activity_notification">NotificationActivity</string>
     <string name="title_activity_broadcast_receiver">BroadcastReceiver</string>
     <string name="title_activity_alarm_receiver">AlarmReceiver</string>
+    <string name="gradebook_button_text">Open gradebook in browser</string>
 
 </resources>

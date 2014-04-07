@@ -124,7 +124,7 @@ public class AssignmentFragment extends ListFragment {
 			
 		}
 		this.assignments = list;
-		setListAdapter(new AssignmentListAdapter(getActivity(),
+		if(assignments != null)	setListAdapter(new AssignmentListAdapter(getActivity(),
 				android.R.layout.simple_list_item_1, assignments));
 
 	}

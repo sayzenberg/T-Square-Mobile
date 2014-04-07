@@ -3,6 +3,7 @@ package com.teammeh.t_squaremobile;
 import java.util.ArrayList;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 
 public class GlobalState extends Application {
 

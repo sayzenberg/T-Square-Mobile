@@ -33,10 +33,12 @@ import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -55,6 +57,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+
 
 public class HomeScreenActivity extends Activity {
 	// Variables to create the Navigation Drawer
@@ -77,10 +81,13 @@ public class HomeScreenActivity extends Activity {
 	private int reminder_notis;
 	private String ringtone_notis;
 	private boolean vibrate_notis;
-	
+
 	private ExtendedCalendarView calendar;
-	
-	//CAS Call
+	private ArrayAdapter adapter1;
+	private ArrayList<Items> additems;
+	private SharedPreferences prefs;
+
+	// CAS Call
 	String sessionName;
 	String sessionId;
 
@@ -89,19 +96,21 @@ public class HomeScreenActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home_screen);
-		
+
+		this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
 		// Get Calendar Event Information
 		calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
-		
+
 		calendar.setOnDayClickListener(new OnDayClickListener(){
 
 			@Override
 			public void onDayClicked(AdapterView<?> adapter, View view,
 					int position, long id, Day day) {
 				// TODO Auto-generated method stub
-				
+
 				Toast.makeText(getApplicationContext(), day.getEvents().toString(), 
-						   Toast.LENGTH_LONG).show();
+						Toast.LENGTH_LONG).show();
 			}
 		});
 
@@ -114,8 +123,8 @@ public class HomeScreenActivity extends Activity {
 		}
 		sessionName = GlobalState.getSessionName();
 		sessionId = GlobalState.getSessionId();
-		
-		
+
+
 		if(GlobalState.getClasses() == null) {
 			getClasses();
 			myClasses = new String[1];
@@ -131,7 +140,7 @@ public class HomeScreenActivity extends Activity {
 			// Populate the navigation drawer with items and create a click listener
 			myDrawerList.setAdapter(new ArrayAdapter<String>(this,
 					R.layout.drawer_list_item, myClasses));
-//			myDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+			//			myDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
 			// Enable IC_launcher icon to set action to toggle the navigation drawer
 			getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -162,30 +171,69 @@ public class HomeScreenActivity extends Activity {
 			courses = GlobalState.getClasses();
 			drawSidebar();
 		}
-//		while(GlobalState.getClasses() == null) {
-			
-//		}
-//		courses = GlobalState.getClasses();
+		//		while(GlobalState.getClasses() == null) {
 
-		
-		
+		//		}
+		//		courses = GlobalState.getClasses();
 
-		
-//		myClasses = getResources().getStringArray(R.array.class_list);
-//		myClasses = new String[courses.size()];
-//		for(int i = 0; i < courses.size(); i++) {
-//			myClasses[i] = courses.get(i).getClassName();
-//		}
+
+
+
+
+		//		myClasses = getResources().getStringArray(R.array.class_list);
+		//		myClasses = new String[courses.size()];
+		//		for(int i = 0; i < courses.size(); i++) {
+		//			myClasses[i] = courses.get(i).getClassName();
+		//		}
 
 
 		if (savedInstanceState == null) {
 			selectItem(0);
 		}
+
+		additems = new ArrayList<Items>();
+		
+		ListView listview = (ListView) findViewById(R.id.listView1);
+		
+		adapter1 = new MyAdapter(this, generateData());
+		
+		listview.setAdapter(adapter1);
+
+		calendar.setOnDayClickListener(new OnDayClickListener() {
+
+			@Override
+			public void onDayClicked(AdapterView<?> adapter, View view,
+					int position, long id, Day day) {
+				// TODO Auto-generated method stub
+
+				additems = new ArrayList<Items>();
+				if (day.getNumOfEvenets() != 0){
+					for (int i = 0; i < day.getNumOfEvenets(); i++) {
+						additems.add(new Items(day.getEvents().get(i)
+								.getDescription(), day.getEvents().get(i)
+								.getTitle()));
+					}
+				}
+
+				//Toast.makeText(getApplicationContext(),
+				//additems.get(0).getTitle().toString(),
+				//Toast.LENGTH_LONG).show();
+				//adapter1.notifyDataSetChanged();
+			}
+		});
 	}
 
-	
+	private ArrayList<Items> generateData(){
+        ArrayList<Items> items = new ArrayList<Items>();
+        items.add(new Items("Item 1","First Item on the list"));
+        items.add(new Items("Item 2","Second Item on the list"));
+        items.add(new Items("Item 3","Third Item on the list"));
+ 
+        return items;
+    }
+
 	protected void drawSidebar() {
-//		myClasses = getResources().getStringArray(R.array.class_list);
+		//		myClasses = getResources().getStringArray(R.array.class_list);
 		myClasses = new String[courses.size()];
 		for(int i = 0; i < courses.size(); i++) {
 			myClasses[i] = courses.get(i).getClassName();
@@ -400,26 +448,40 @@ public class HomeScreenActivity extends Activity {
 		});
 		return builder.show();
 	}
-	
+
 	protected void getClasses() {
-		String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/siteJson";
-		HttpGet get = new HttpGet(url);
-//		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-//	    postParameters.add(new BasicNameValuePair("classId", classId));
-//	    try {
-//			post.setEntity(new UrlEncodedFormEntity(postParameters));
-//		} catch (UnsupportedEncodingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-	    new GetClassesTask().execute(get);
-	}
-	
+//		if(prefs.contains("courseListJson")) {
+//			System.out.println("They're in there");
+//			JSONObject jObject = null;
+//			try {
+//				jObject = new JSONObject(prefs.getString("courseListJson", ""));
+//			} catch (JSONException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			if(jObject != null) {
+//				parseJson(jObject);
+//			}
+//		} else {
+			String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/siteJson";
+			HttpGet get = new HttpGet(url);
+			//		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+			//	    postParameters.add(new BasicNameValuePair("classId", classId));
+			//	    try {
+			//			post.setEntity(new UrlEncodedFormEntity(postParameters));
+			//		} catch (UnsupportedEncodingException e) {
+			//			// TODO Auto-generated catch block
+			//			e.printStackTrace();
+			//		}
+			new GetClassesTask().execute(get);
+		}
+//	}
+
 	protected void parseJson(JSONObject jObject) {
 		ArrayList<Course> classes = new ArrayList<Course>();
 		JSONArray array = null;
 		try {
-//			System.out.println(jObject.length());
+			//			System.out.println(jObject.length());
 			array = jObject.getJSONArray("site_collection");
 			for(int i = 0; i < array.length(); i++) {
 				JSONObject obj = array.getJSONObject(i);
@@ -433,30 +495,48 @@ public class HomeScreenActivity extends Activity {
 		}
 		GlobalState.setClasses(classes);
 		this.courses = classes;
+		if(!prefs.contains("courseListJson")) {
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putString("courseListJson", jObject.toString());
+			editor.commit();
+		}
+		//		if(!prefs.contains("courseNames") && !prefs.contains("courseIds")) {
+		//			HashSet<String> courseNames = new HashSet<String>();
+		//			HashSet<String> courseIds = new HashSet<String>();
+		//			for(Course course : courses) {
+		//				courseNames.add(course.getClassName());
+		//				courseIds.add(course.getClassId());
+		//			}
+		//			SharedPreferences.Editor editor = prefs.edit();
+		//			editor.putStringSet("courseNames", courseNames);
+		//			editor.putStringSet("courseIds", courseIds);
+		//			editor.commit();
+		//			
+		//		}
 		drawSidebar();
 	}
-	
+
 	public class GetClassesTask extends AsyncTask<HttpGet, String, JSONObject> {
 
 		String mText;
-		
+
 		protected JSONObject extractJson(HttpEntity entity) {
-		    InputStream stream = null;
-		    BufferedReader reader;
-		    String line = "";
-		    String result = "";
-		    JSONObject jObject = null;
-		   
+			InputStream stream = null;
+			BufferedReader reader;
+			String line = "";
+			String result = "";
+			JSONObject jObject = null;
+
 			try {
 				stream = entity.getContent();
 				reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
 				StringBuilder sb = new StringBuilder();
 				while ((line = reader.readLine()) != null)
 				{
-				    sb.append(line + "\n");
+					sb.append(line + "\n");
 				}
 				result = sb.toString();
-//				System.out.println(result);
+				//				System.out.println(result);
 				jObject = new JSONObject(result);
 				jObject = new JSONObject(jObject.getString("body"));
 			} catch (ClientProtocolException e) {
@@ -474,19 +554,19 @@ public class HomeScreenActivity extends Activity {
 			return jObject;
 		}
 
-		
+
 		@Override
 		protected JSONObject doInBackground(HttpGet... params) {
 			DefaultHttpClient client = new DefaultHttpClient();
 			HttpGet get = params[0];
 			get.setHeader("Cookie", sessionName+"="+sessionId);
 			HttpEntity entity = null;
-		    HttpResponse response = null;
-		    JSONObject jObject = null;	    	    
+			HttpResponse response = null;
+			JSONObject jObject = null;	    	    
 			try {
 				Header[] headers = get.getAllHeaders();
 				for(Header header : headers) {
-//					System.out.println(header.getName() + " " + header.getValue());
+					//					System.out.println(header.getName() + " " + header.getValue());
 				}
 				response = client.execute(get);
 				entity = response.getEntity();
@@ -499,41 +579,41 @@ public class HomeScreenActivity extends Activity {
 				e.printStackTrace();
 			}
 			client.getConnectionManager().shutdown();
-		    
+
 			return jObject;
-			
+
 		}
-		
+
 		@Override
 		protected void onPostExecute(JSONObject jObject) {
-//			System.out.println("I'm here!");
+			//			System.out.println("I'm here!");
 			parseJson(jObject);
 		}
 	}
 
 	// Add events to the calendar
-		private void add_to_Cal(String course, String assignment, int startYear, int startMonth, int startDay, int startHour, int startMin){
-			ContentValues values = new ContentValues();
-		    values.put(CalendarProvider.COLOR, Event.COLOR_RED);
-		    values.put(CalendarProvider.DESCRIPTION, course);
-		    values.put(CalendarProvider.EVENT, assignment);
+	private void add_to_Cal(String course, String assignment, int startYear, int startMonth, int startDay, int startHour, int startMin){
+		ContentValues values = new ContentValues();
+		values.put(CalendarProvider.COLOR, Event.COLOR_RED);
+		values.put(CalendarProvider.DESCRIPTION, course);
+		values.put(CalendarProvider.EVENT, assignment);
 
-		    Calendar cal = Calendar.getInstance();
-		    TimeZone tz = TimeZone.getDefault();
-		    
-		    cal.set(startYear, startMonth, startDay, startHour, startMin);
-		    int startDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
-		    values.put(CalendarProvider.START, cal.getTimeInMillis());
-		    values.put(CalendarProvider.START_DAY, startDayJulian);
+		Calendar cal = Calendar.getInstance();
+		TimeZone tz = TimeZone.getDefault();
 
-		    cal.set(startYear, startMonth, startDay, startHour, startMin);
-		    int endDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
+		cal.set(startYear, startMonth, startDay, startHour, startMin);
+		int startDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
+		values.put(CalendarProvider.START, cal.getTimeInMillis());
+		values.put(CalendarProvider.START_DAY, startDayJulian);
 
-		    values.put(CalendarProvider.END, cal.getTimeInMillis());
-		    values.put(CalendarProvider.END_DAY, endDayJulian);
+		cal.set(startYear, startMonth, startDay, startHour, startMin);
+		int endDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
 
-		    Uri uri = getContentResolver().insert(CalendarProvider.CONTENT_URI, values);
-		}
+		values.put(CalendarProvider.END, cal.getTimeInMillis());
+		values.put(CalendarProvider.END_DAY, endDayJulian);
 
-	
+		Uri uri = getContentResolver().insert(CalendarProvider.CONTENT_URI, values);
+	}
+
+
 }

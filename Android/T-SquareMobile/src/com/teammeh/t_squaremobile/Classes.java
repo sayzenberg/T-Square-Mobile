@@ -132,7 +132,11 @@ public class Classes extends FragmentActivity implements OnAssignmentFragmentInt
 			Fragment fragment;
 			if(position == 0) {
 				fragment = new AnnouncementFragment();
-			} else fragment = new AssignmentFragment();
+			} else if(position == 1) {
+				fragment = new AssignmentFragment();
+			} else {
+				fragment = new GradebookFragment();
+			}
 			Bundle args = new Bundle();
 //			args.putInt(AssignmentsSectionFragment.ARG_SECTION_NUMBER, position + 1);
 			args.putString("sessionName", sessionName);
