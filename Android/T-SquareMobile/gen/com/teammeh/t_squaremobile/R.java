@@ -55,6 +55,7 @@ public final class R {
         public static final int EditTextEnterCourse=0x7f090009;
         public static final int action_add_assignment=0x7f09001c;
         public static final int action_logout=0x7f09001b;
+        public static final int action_refreshlist=0x7f09001d;
         public static final int action_settings=0x7f09001a;
         public static final int button1=0x7f090007;
         public static final int calendar=0x7f090004;
@@ -118,6 +119,7 @@ public final class R {
         public static final int add_course=0x7f050011;
         public static final int app_name=0x7f050000;
         public static final int assignment_due_date=0x7f050014;
+        public static final int course_refresh=0x7f050024;
         public static final int drawer_close=0x7f050010;
         /**  Navigation Drawer 
          */

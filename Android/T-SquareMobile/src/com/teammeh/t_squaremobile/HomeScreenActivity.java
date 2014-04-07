@@ -1,13 +1,16 @@
 package com.teammeh.t_squaremobile;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -21,16 +24,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.tyczj.extendedcalendarview.CalendarProvider;
-import com.tyczj.extendedcalendarview.Day;
-import com.tyczj.extendedcalendarview.Event;
-import com.tyczj.extendedcalendarview.ExtendedCalendarView;
-import com.tyczj.extendedcalendarview.ExtendedCalendarView.OnDayClickListener;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -44,23 +42,26 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.text.format.Time;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.tyczj.extendedcalendarview.CalendarProvider;
+import com.tyczj.extendedcalendarview.Day;
+import com.tyczj.extendedcalendarview.Event;
+import com.tyczj.extendedcalendarview.ExtendedCalendarView;
+import com.tyczj.extendedcalendarview.ExtendedCalendarView.OnDayClickListener;
 
 
 
 public class HomeScreenActivity extends Activity {
+	private static final String courseFileName = "courseFileName";
 	// Variables to create the Navigation Drawer
 	private DrawerLayout myDrawerLayout;
 	private ListView myDrawerList;
@@ -126,7 +127,6 @@ public class HomeScreenActivity extends Activity {
 
 
 		if(GlobalState.getClasses() == null) {
-			getClasses();
 			myClasses = new String[1];
 			myClasses[0] = "Classes loading, please wait";
 			myDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -141,7 +141,7 @@ public class HomeScreenActivity extends Activity {
 			myDrawerList.setAdapter(new ArrayAdapter<String>(this,
 					R.layout.drawer_list_item, myClasses));
 			//			myDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
+			getClasses(); // load preliminary screen before getting classes
 			// Enable IC_launcher icon to set action to toggle the navigation drawer
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 			getActionBar().setHomeButtonEnabled(true);
@@ -167,6 +167,7 @@ public class HomeScreenActivity extends Activity {
 
 			// Listens to whenever the drawer is toggled
 			myDrawerLayout.setDrawerListener(myDrawerToggle);
+			
 		} else {
 			courses = GlobalState.getClasses();
 			drawSidebar();
@@ -192,11 +193,11 @@ public class HomeScreenActivity extends Activity {
 		}
 
 		additems = new ArrayList<Items>();
-		
+
 		ListView listview = (ListView) findViewById(R.id.listView1);
-		
+
 		adapter1 = new MyAdapter(this, generateData());
-		
+
 		listview.setAdapter(adapter1);
 
 		calendar.setOnDayClickListener(new OnDayClickListener() {
@@ -224,20 +225,20 @@ public class HomeScreenActivity extends Activity {
 	}
 
 	private ArrayList<Items> generateData(){
-        ArrayList<Items> items = new ArrayList<Items>();
-        items.add(new Items("Item 1","First Item on the list"));
-        items.add(new Items("Item 2","Second Item on the list"));
-        items.add(new Items("Item 3","Third Item on the list"));
- 
-        return items;
-    }
+		ArrayList<Items> items = new ArrayList<Items>();
+		items.add(new Items("Item 1","First Item on the list"));
+		items.add(new Items("Item 2","Second Item on the list"));
+		items.add(new Items("Item 3","Third Item on the list"));
+
+		return items;
+	}
 
 	protected void drawSidebar() {
-		//		myClasses = getResources().getStringArray(R.array.class_list);
 		myClasses = new String[courses.size()];
 		for(int i = 0; i < courses.size(); i++) {
 			myClasses[i] = courses.get(i).getClassName();
 		}
+		System.out.println(myClasses[0]);
 		myDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		myDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -303,6 +304,12 @@ public class HomeScreenActivity extends Activity {
 		case R.id.action_add_assignment:
 			// Add assignments
 			add_assignments();
+			return true;
+		case R.id.action_refreshlist:
+			// Force refresh of course list
+			File file = new File(this.getFilesDir(), courseFileName);
+			if(file.exists()) file.delete();
+			getClasses();
 			return true;
 		case R.id.action_settings:
 			// Create Settings for Calendar (notifications too)
@@ -450,32 +457,22 @@ public class HomeScreenActivity extends Activity {
 	}
 
 	protected void getClasses() {
-//		if(prefs.contains("courseListJson")) {
-//			System.out.println("They're in there");
-//			JSONObject jObject = null;
-//			try {
-//				jObject = new JSONObject(prefs.getString("courseListJson", ""));
-//			} catch (JSONException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			if(jObject != null) {
-//				parseJson(jObject);
-//			}
-//		} else {
+		File file = new File(this.getFilesDir(), courseFileName);
+		boolean readResult = false;
+		if(file.exists()) {
+			readResult = readCoursesFromFile();
+		} 
+		if(readResult) {
+			this.courses = GlobalState.getClasses();
+			System.out.println("I'm in here now! " + courses.get(0).getClassName());
+			drawSidebar();
+		} else {
 			String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/siteJson";
 			HttpGet get = new HttpGet(url);
-			//		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-			//	    postParameters.add(new BasicNameValuePair("classId", classId));
-			//	    try {
-			//			post.setEntity(new UrlEncodedFormEntity(postParameters));
-			//		} catch (UnsupportedEncodingException e) {
-			//			// TODO Auto-generated catch block
-			//			e.printStackTrace();
-			//		}
 			new GetClassesTask().execute(get);
 		}
-//	}
+	}
+	//	}
 
 	protected void parseJson(JSONObject jObject) {
 		ArrayList<Course> classes = new ArrayList<Course>();
@@ -495,11 +492,13 @@ public class HomeScreenActivity extends Activity {
 		}
 		GlobalState.setClasses(classes);
 		this.courses = classes;
-		if(!prefs.contains("courseListJson")) {
-			SharedPreferences.Editor editor = prefs.edit();
-			editor.putString("courseListJson", jObject.toString());
-			editor.commit();
-		}
+		File file = new File(this.getFilesDir(), courseFileName);
+		if(!file.exists()) writeCoursesToFile();
+		//		if(!prefs.contains("courseListJson")) {
+		//			SharedPreferences.Editor editor = prefs.edit();
+		//			editor.putString("courseListJson", jObject.toString());
+		//			editor.commit();
+		//		}
 		//		if(!prefs.contains("courseNames") && !prefs.contains("courseIds")) {
 		//			HashSet<String> courseNames = new HashSet<String>();
 		//			HashSet<String> courseIds = new HashSet<String>();
@@ -590,6 +589,42 @@ public class HomeScreenActivity extends Activity {
 			parseJson(jObject);
 		}
 	}
+
+	protected boolean writeCoursesToFile() {
+		boolean result = false;
+		try {
+			FileOutputStream fos = this.openFileOutput(courseFileName, Context.MODE_PRIVATE);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(GlobalState.getClasses());
+			result = true;
+			System.out.println("File written!");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return result;
+	}
+
+	protected boolean readCoursesFromFile() {
+		boolean result = false;
+		File file = new File(this.getFilesDir(), courseFileName);
+		if(file.exists()) {
+			try {
+				FileInputStream fis = this.openFileInput(courseFileName);
+				ObjectInputStream ois = new ObjectInputStream(fis);
+				ArrayList<Course> courseList = (ArrayList<Course>) ois.readObject();
+				if(courseList != null) {
+					GlobalState.setClasses(courseList);
+					result = true;
+					System.out.println("File loaded!");
+				}
+			} catch(Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		return result;
+	}
+
+
 
 	// Add events to the calendar
 	private void add_to_Cal(String course, String assignment, int startYear, int startMonth, int startDay, int startHour, int startMin){

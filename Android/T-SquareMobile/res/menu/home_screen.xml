@@ -17,5 +17,6 @@
         android:icon="@drawable/ic_add"
         android:title="@string/action_add_assignment"
         android:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_refreshlist" android:title="@string/course_refresh" android:orderInCategory="100" android:showAsAction="never"></item>
 
 </menu>

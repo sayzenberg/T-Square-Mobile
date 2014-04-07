@@ -130,7 +130,9 @@ public class AnnouncementFragment extends ListFragment {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
+		if(list.size() == 0) {
+			list.add(new Announcement("0", "", "No announcements at this time", "", ""));
+		}
 		this.announcements = list;
 		setListAdapter(new AnnouncementListAdapter(getActivity(),
 				android.R.layout.simple_list_item_1, announcements));

@@ -1,6 +1,6 @@
 package com.teammeh.t_squaremobile;
 
-public class Course {
+public class Course implements java.io.Serializable {
 
 	public String className;
 	public String classId;
