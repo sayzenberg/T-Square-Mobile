@@ -58,8 +58,6 @@ import com.tyczj.extendedcalendarview.Event;
 import com.tyczj.extendedcalendarview.ExtendedCalendarView;
 import com.tyczj.extendedcalendarview.ExtendedCalendarView.OnDayClickListener;
 
-
-
 public class HomeScreenActivity extends Activity {
 	private static final String courseFileName = "courseFileName";
 	// Variables to create the Navigation Drawer
@@ -89,7 +87,6 @@ public class HomeScreenActivity extends Activity {
 	private ArrayAdapter adapter1;
 	private ArrayList<Items> additems;
 	private ListView listview;
-	
 
 	// CAS Call
 	String sessionName;
@@ -101,22 +98,7 @@ public class HomeScreenActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home_screen);
 
-		this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-		// Get Calendar Event Information
-		calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
-
-		calendar.setOnDayClickListener(new OnDayClickListener(){
-
-			@Override
-			public void onDayClicked(AdapterView<?> adapter, View view,
-					int position, long id, Day day) {
-				// TODO Auto-generated method stub
-
-				Toast.makeText(getApplicationContext(), day.getEvents().toString(), 
-						Toast.LENGTH_LONG).show();
-			}
-		});
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 		Uri data = getIntent().getData();
 		if(data != null) {
@@ -194,8 +176,8 @@ public class HomeScreenActivity extends Activity {
 		if (savedInstanceState == null) {
 			selectItem(0);
 		}
-
-additems = new ArrayList<Items>();
+		
+		additems = new ArrayList<Items>();
 		
 		this.listview = (ListView) findViewById(R.id.listView1);
 		
@@ -376,7 +358,7 @@ additems = new ArrayList<Items>();
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				//Get Spinner
+				//Get EditText
 				EditText edittext_course = (EditText)addView.findViewById(R.id.EditTextEnterCourse);
 				assignment_course = edittext_course.getText().toString();
 				// Get EditText
@@ -387,7 +369,7 @@ additems = new ArrayList<Items>();
 				assignment_day = datepicker.getDayOfMonth();
 				assignment_month = datepicker.getMonth();
 				assignment_year = datepicker.getYear();
-				add_to_Cal(assignment_course, assignment_name, assignment_year, assignment_month, assignment_day, 0, 0);
+				add_to_Cal(assignment_course, assignment_name, assignment_year, assignment_month, assignment_day);
 				calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
 				calendar.refreshCalendar();
 			}
@@ -621,7 +603,7 @@ additems = new ArrayList<Items>();
 
 
 	// Add events to the calendar
-	private void add_to_Cal(String course, String assignment, int startYear, int startMonth, int startDay, int startHour, int startMin){
+	private void add_to_Cal(String course, String assignment, int startYear, int startMonth, int startDay){
 		ContentValues values = new ContentValues();
 		values.put(CalendarProvider.COLOR, Event.COLOR_RED);
 		values.put(CalendarProvider.DESCRIPTION, course);
@@ -630,12 +612,12 @@ additems = new ArrayList<Items>();
 		Calendar cal = Calendar.getInstance();
 		TimeZone tz = TimeZone.getDefault();
 
-		cal.set(startYear, startMonth, startDay, startHour, startMin);
+		cal.set(startYear, startMonth, startDay, 0, 0);
 		int startDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
 		values.put(CalendarProvider.START, cal.getTimeInMillis());
 		values.put(CalendarProvider.START_DAY, startDayJulian);
 
-		cal.set(startYear, startMonth, startDay, startHour, startMin);
+		cal.set(startYear, startMonth, startDay, 0, 0);
 		int endDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
 
 		values.put(CalendarProvider.END, cal.getTimeInMillis());
@@ -643,6 +625,10 @@ additems = new ArrayList<Items>();
 
 		Uri uri = getContentResolver().insert(CalendarProvider.CONTENT_URI, values);
 	}
-
-
+	
+	//Alarm receiver
+	//private void setNotification(int day, int month, int year){
+	//	Calendar noteCal = Calendar.getInstance();
+	//	//noteCal.get
+	//}
 }
