@@ -185,6 +185,8 @@ public class HomeScreenActivity extends Activity {
 		
 		listview.setAdapter(adapter1);
 
+		calendar = new ExtendedCalendarView(this);
+		
 		calendar.setOnDayClickListener(new OnDayClickListener() {
 
 			@Override
