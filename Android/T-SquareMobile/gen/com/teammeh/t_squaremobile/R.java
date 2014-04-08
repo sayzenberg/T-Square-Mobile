@@ -53,13 +53,14 @@ public final class R {
     public static final class id {
         public static final int EditTextAddAssignment=0x7f09000a;
         public static final int EditTextEnterCourse=0x7f090009;
-        public static final int action_add_assignment=0x7f09001c;
-        public static final int action_logout=0x7f09001b;
-        public static final int action_refreshlist=0x7f09001d;
-        public static final int action_settings=0x7f09001a;
+        public static final int action_add_assignment=0x7f09001d;
+        public static final int action_logout=0x7f09001c;
+        public static final int action_refreshlist=0x7f09001e;
+        public static final int action_settings=0x7f09001b;
         public static final int button1=0x7f090007;
         public static final int calendar=0x7f090004;
         public static final int content_frame=0x7f090003;
+        public static final int date=0x7f09001a;
         public static final int datePickerAddAssignment=0x7f09000c;
         public static final int drawer_layout=0x7f090002;
         public static final int gradebook_button=0x7f090016;

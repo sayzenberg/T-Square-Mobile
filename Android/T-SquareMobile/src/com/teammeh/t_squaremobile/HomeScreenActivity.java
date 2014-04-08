@@ -77,16 +77,19 @@ public class HomeScreenActivity extends Activity {
 	private int assignment_month;
 	private int assignment_year;
 
-	// Variables for Settings
+	// Variables for Settings, Notifications
+	private SharedPreferences prefs;
 	private boolean enable_notis;
 	private int reminder_notis;
 	private String ringtone_notis;
 	private boolean vibrate_notis;
 
+	//Variables for calendar and listview
 	private ExtendedCalendarView calendar;
 	private ArrayAdapter adapter1;
 	private ArrayList<Items> additems;
-	private SharedPreferences prefs;
+	private ListView listview;
+	
 
 	// CAS Call
 	String sessionName;
@@ -192,12 +195,12 @@ public class HomeScreenActivity extends Activity {
 			selectItem(0);
 		}
 
-		additems = new ArrayList<Items>();
-
-		ListView listview = (ListView) findViewById(R.id.listView1);
-
-		adapter1 = new MyAdapter(this, generateData());
-
+additems = new ArrayList<Items>();
+		
+		this.listview = (ListView) findViewById(R.id.listView1);
+		
+		adapter1 = new MyAdapter(this, additems);//generateData());
+		
 		listview.setAdapter(adapter1);
 
 		calendar.setOnDayClickListener(new OnDayClickListener() {
@@ -206,31 +209,22 @@ public class HomeScreenActivity extends Activity {
 			public void onDayClicked(AdapterView<?> adapter, View view,
 					int position, long id, Day day) {
 				// TODO Auto-generated method stub
-
-				additems = new ArrayList<Items>();
+				additems.clear();
 				if (day.getNumOfEvenets() != 0){
 					for (int i = 0; i < day.getNumOfEvenets(); i++) {
 						additems.add(new Items(day.getEvents().get(i)
 								.getDescription(), day.getEvents().get(i)
-								.getTitle()));
+								.getTitle(), day.getDay(), day.getMonth(), day.getYear()));
 					}
+					adapter1.notifyDataSetChanged();
 				}
-
-				//Toast.makeText(getApplicationContext(),
-				//additems.get(0).getTitle().toString(),
-				//Toast.LENGTH_LONG).show();
-				//adapter1.notifyDataSetChanged();
+				else{
+					additems.clear();
+					adapter1.notifyDataSetChanged();
+				}
 			}
+			
 		});
-	}
-
-	private ArrayList<Items> generateData(){
-		ArrayList<Items> items = new ArrayList<Items>();
-		items.add(new Items("Item 1","First Item on the list"));
-		items.add(new Items("Item 2","Second Item on the list"));
-		items.add(new Items("Item 3","Third Item on the list"));
-
-		return items;
 	}
 
 	protected void drawSidebar() {

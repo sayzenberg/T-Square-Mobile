@@ -32,21 +32,17 @@ public class MyAdapter extends ArrayAdapter<Items> {
             // 2. Get rowView from inflater
             View rowView = inflater.inflate(R.layout.listview_assignments, parent, false);
  
-            // 3. Get the two text view from the rowView
+            // 3. Get the three text view from the rowView
             TextView labelView = (TextView) rowView.findViewById(R.id.label);
             TextView valueView = (TextView) rowView.findViewById(R.id.value);
+            TextView dateView  = (TextView) rowView.findViewById(R.id.date);
  
             // 4. Set the text for textView 
             labelView.setText(itemsArrayList.get(position).getTitle());
             valueView.setText(itemsArrayList.get(position).getDescription());
+            dateView.setText(itemsArrayList.get(position).getDate());
  
             // 5. return rowView
             return rowView;
-        }
-        
-        @Override
-        public void notifyDataSetChanged() // Create this function in your adapter class
-        {
-            this.notifyDataSetChanged();
         }
 }
