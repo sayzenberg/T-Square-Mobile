@@ -99,6 +99,8 @@ public class HomeScreenActivity extends Activity {
 		setContentView(R.layout.activity_home_screen);
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
 
 		Uri data = getIntent().getData();
 		if(data != null) {
@@ -184,8 +186,6 @@ public class HomeScreenActivity extends Activity {
 		adapter1 = new MyAdapter(this, additems);//generateData());
 		
 		listview.setAdapter(adapter1);
-
-		calendar = new ExtendedCalendarView(this);
 		
 		calendar.setOnDayClickListener(new OnDayClickListener() {
 
