@@ -13,6 +13,20 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		Uri data = intent.getData();
+		if(data != null) {
+			if(data.getQueryParameter("sessionName") != null && data.getQueryParameter("sessionId") != null) {
+				GlobalState.setSessionName(data.getQueryParameter("sessionName"));
+				GlobalState.setSessionId(data.getQueryParameter("sessionId"));
+			}
+		}
+		Intent homeIntent = new Intent(this, HomeScreenActivity.class);
+		startActivity(homeIntent);
+	}
 
 	//@Override
 	//public boolean onCreateOptionsMenu(Menu menu) {
@@ -25,6 +39,7 @@ public class LoginActivity extends Activity {
 		
 //		Intent intent = new Intent(this, HomeScreenActivity.class);
 		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://dev.m.gatech.edu/login/private?url=tsquaremobile://loggedin&sessionTransfer=window"));
+//		intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 		startActivity(intent);
 	}
 }

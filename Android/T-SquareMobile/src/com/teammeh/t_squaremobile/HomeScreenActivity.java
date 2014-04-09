@@ -102,13 +102,13 @@ public class HomeScreenActivity extends Activity {
 		
 		calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
 
-		Uri data = getIntent().getData();
-		if(data != null) {
-			if(data.getQueryParameter("sessionName") != null && data.getQueryParameter("sessionId") != null) {
-				GlobalState.setSessionName(data.getQueryParameter("sessionName"));
-				GlobalState.setSessionId(data.getQueryParameter("sessionId"));
-			}
-		}
+//		Uri data = getIntent().getData();
+//		if(data != null) {
+//			if(data.getQueryParameter("sessionName") != null && data.getQueryParameter("sessionId") != null) {
+//				GlobalState.setSessionName(data.getQueryParameter("sessionName"));
+//				GlobalState.setSessionId(data.getQueryParameter("sessionId"));
+//			}
+//		}
 		sessionName = GlobalState.getSessionName();
 		sessionId = GlobalState.getSessionId();
 
