@@ -25,8 +25,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -81,6 +83,7 @@ public class HomeScreenActivity extends Activity {
 	private int reminder_notis;
 	private String ringtone_notis;
 	private boolean vibrate_notis;
+	private PendingIntent pendingIntent;
 
 	//Variables for calendar and listview
 	private ExtendedCalendarView calendar;
@@ -372,7 +375,8 @@ public class HomeScreenActivity extends Activity {
 				assignment_month = datepicker.getMonth();
 				assignment_year = datepicker.getYear();
 				add_to_Cal(assignment_course, assignment_name, assignment_year, assignment_month, assignment_day);
-				calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
+				//calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
+				setNotification(assignment_course, assignment_name, assignment_year, assignment_month, assignment_day);
 				calendar.refreshCalendar();
 			}
 		});
@@ -602,8 +606,6 @@ public class HomeScreenActivity extends Activity {
 		return result;
 	}
 
-
-
 	// Add events to the calendar
 	private void add_to_Cal(String course, String assignment, int startYear, int startMonth, int startDay){
 		ContentValues values = new ContentValues();
@@ -629,8 +631,34 @@ public class HomeScreenActivity extends Activity {
 	}
 	
 	//Alarm receiver
-	//private void setNotification(int day, int month, int year){
-	//	Calendar noteCal = Calendar.getInstance();
-	//	//noteCal.get
-	//}
+	private void setNotification(String course, String assignment, int day, int month, int year){
+		
+		//if (Integer.parseInt(prefs.getString("updates_notifications", "null")) != 0){
+		String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
+		String date = months[month] + " " + day + ", " + year;
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.MONTH, month);
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.DAY_OF_MONTH, day);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		
+		long eventTime=calendar.getTimeInMillis();//Returns Time in milliseconds
+		
+		int noOfDays=1; //Integer.parseInt(prefs.getString("updates_notifications", "null"));
+		long reminderTime=eventTime-(noOfDays*86400000);//Time in milliseconds when the alarm will shoot up & you do not need to concider month/year with this approach as time is already in milliseconds.
+	
+		//Set alarm
+		Intent myIntent = new Intent(HomeScreenActivity.this, AlarmReceiver.class);
+		///myIntent.putExtra("course", course);
+		///myIntent.putExtra("assignment", assignment);
+		///myIntent.putExtra("date", date);
+		
+		pendingIntent = PendingIntent.getBroadcast(HomeScreenActivity.this, 0, myIntent,PendingIntent.FLAG_CANCEL_CURRENT);
+		AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+		alarmManager.set(AlarmManager.RTC_WAKEUP, reminderTime, pendingIntent);
+		//}
+	}
 }

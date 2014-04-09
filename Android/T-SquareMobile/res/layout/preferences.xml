@@ -23,14 +23,6 @@
             android:defaultValue="one_day"
         />
         
-        <RingtonePreference
-            android:key="ringtone_notifications"
-        	android:defaultValue="content://settings/system/notification_sound"
-        	android:title="@string/notification_ringtone"
-        	android:ringtoneType="notification"
-        	android:dependency="set_notifications"
-        />
-        
         <CheckBoxPreference 
             android:key="vibrate_notifications"
             android:title="@string/notification_vibrate" 
