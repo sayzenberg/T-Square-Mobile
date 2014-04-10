@@ -35,7 +35,7 @@ public class NotificationActivity extends Service {
        super.onStart(intent, startId);
       
        mManager = (NotificationManager) this.getApplicationContext().getSystemService(this.getApplicationContext().NOTIFICATION_SERVICE);
-       Intent intent1 = new Intent(this.getApplicationContext(),LoginActivity.class);
+       Intent intent1 = new Intent(this.getApplicationContext(), LoginActivity.class);
      
        ///String courseName = intent1.getStringExtra("course");
        ///String assignmentName = intent1.getStringExtra("assignment");

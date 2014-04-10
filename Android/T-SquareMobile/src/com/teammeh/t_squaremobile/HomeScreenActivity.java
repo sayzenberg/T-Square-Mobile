@@ -631,11 +631,11 @@ public class HomeScreenActivity extends Activity {
 	}
 	
 	//Alarm receiver
-	private void setNotification(String course, String assignment, int day, int month, int year){
+	private void setNotification(String course, String assignment, int year, int month, int day){
 		
 		//if (Integer.parseInt(prefs.getString("updates_notifications", "null")) != 0){
-		String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
-		String date = months[month] + " " + day + ", " + year;
+		//String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
+		//String date = months[month] + " " + day + ", " + year;
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.MONTH, month);
