@@ -49,7 +49,8 @@ public class NotificationActivity extends Service {
        notification.flags |= Notification.FLAG_AUTO_CANCEL;
        notification.setLatestEventInfo(this.getApplicationContext(), "BeeSquared", "You have an assignment due tomorrow!", pendingNotificationIntent);
  
-       mManager.notify(0, notification);
+       //Check if this works
+       mManager.notify((int)(Math.random()*1000), notification);
     }
  
     @Override

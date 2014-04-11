@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:stackFromBottom="true"
-            android:layout_marginTop="275dp" >
+            android:layout_marginTop="325dp" >
         </ListView>
 
     </FrameLayout>

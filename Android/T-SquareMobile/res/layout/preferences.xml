@@ -12,23 +12,6 @@
             android:title="@string/notification_enable" 
             android:defaultValue="true"
         />
-        
-        <ListPreference 
-            android:key="updates_notifications"
-            android:title="@string/notification_reminder"
-            android:summary="Define reminder date before due date"
-            android:entries="@array/notificationInterval"
-            android:entryValues="@array/notificationIntervalValues"
-            android:dependency="set_notifications"
-            android:defaultValue="one_day"
-        />
-        
-        <CheckBoxPreference 
-            android:key="vibrate_notifications"
-            android:title="@string/notification_vibrate" 
-            android:dependency="set_notifications"
-            android:defaultValue="true"
-        />
             
     </PreferenceCategory>
     

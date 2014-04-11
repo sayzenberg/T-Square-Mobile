@@ -90,6 +90,7 @@ public class HomeScreenActivity extends Activity {
 	private ArrayAdapter adapter1;
 	private ArrayList<Items> additems;
 	private ListView listview;
+	private ContentValues values;
 
 	// CAS Call
 	String sessionName;
@@ -104,6 +105,7 @@ public class HomeScreenActivity extends Activity {
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
+		calendar.refreshCalendar();
 
 //		Uri data = getIntent().getData();
 //		if(data != null) {
@@ -184,7 +186,7 @@ public class HomeScreenActivity extends Activity {
 		
 		additems = new ArrayList<Items>();
 		
-		this.listview = (ListView) findViewById(R.id.listView1);
+		listview = (ListView) findViewById(R.id.listView1);
 		
 		adapter1 = new MyAdapter(this, additems);//generateData());
 		
@@ -374,9 +376,10 @@ public class HomeScreenActivity extends Activity {
 				assignment_day = datepicker.getDayOfMonth();
 				assignment_month = datepicker.getMonth();
 				assignment_year = datepicker.getYear();
-				add_to_Cal(assignment_course, assignment_name, assignment_year, assignment_month, assignment_day);
+				values = AddAssignments.addToCal(assignment_course, assignment_name, assignment_year, assignment_month, assignment_day);
+				Uri uri = getContentResolver().insert(CalendarProvider.CONTENT_URI, values);
 				//calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
-				setNotification(assignment_course, assignment_name, assignment_year, assignment_month, assignment_day);
+				AddAssignments.setNotification(HomeScreenActivity.this, assignment_course, assignment_name, assignment_year, assignment_month, assignment_day);
 				calendar.refreshCalendar();
 			}
 		});
@@ -607,7 +610,7 @@ public class HomeScreenActivity extends Activity {
 	}
 
 	// Add events to the calendar
-	private void add_to_Cal(String course, String assignment, int startYear, int startMonth, int startDay){
+	/*private void add_to_Cal(String course, String assignment, int startYear, int startMonth, int startDay){
 		ContentValues values = new ContentValues();
 		values.put(CalendarProvider.COLOR, Event.COLOR_RED);
 		values.put(CalendarProvider.DESCRIPTION, course);
@@ -628,10 +631,10 @@ public class HomeScreenActivity extends Activity {
 		values.put(CalendarProvider.END_DAY, endDayJulian);
 
 		Uri uri = getContentResolver().insert(CalendarProvider.CONTENT_URI, values);
-	}
+	}*/
 	
 	//Alarm receiver
-	private void setNotification(String course, String assignment, int year, int month, int day){
+	/*private void setNotification(String course, String assignment, int year, int month, int day){
 		
 		//if (Integer.parseInt(prefs.getString("updates_notifications", "null")) != 0){
 		//String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
@@ -660,5 +663,5 @@ public class HomeScreenActivity extends Activity {
 		AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
 		alarmManager.set(AlarmManager.RTC_WAKEUP, reminderTime, pendingIntent);
 		//}
-	}
+	}*/
 }

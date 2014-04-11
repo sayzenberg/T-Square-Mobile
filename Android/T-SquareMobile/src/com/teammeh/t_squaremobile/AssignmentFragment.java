@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -21,11 +22,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
+
+import com.tyczj.extendedcalendarview.CalendarProvider;
+import com.tyczj.extendedcalendarview.Day;
+import com.tyczj.extendedcalendarview.Event;
+import com.tyczj.extendedcalendarview.ExtendedCalendarView;
 
 /**
  * A fragment representing a list of Items.
@@ -42,6 +51,16 @@ public class AssignmentFragment extends ListFragment {
 	String sessionName;
 	String sessionId;
 	String classId;
+	
+	int month;
+	int day;
+	int year;
+	String myClassName;
+	String myClassId;
+	
+	//Context context;
+	private ContentValues values;
+	private ExtendedCalendarView calendar;
 	
 	private ArrayList<Assignment> assignments;
 
@@ -112,11 +131,32 @@ public class AssignmentFragment extends ListFragment {
 	}
 	
 	public void parseJson(JSONArray items) {
+		String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
 		ArrayList<Assignment> list = new ArrayList<Assignment>();
+		
 		for(int i = 0; i < items.length(); i++) {
 			try {
 				JSONObject obj = items.getJSONObject(i);
-				list.add(new Assignment(obj));
+				Assignment assignment = new Assignment(obj);
+				list.add(assignment);
+				//To Put Assignments In the Calendar
+				String date = assignment.getDueDate();
+				String delims = "[ ]";
+				String[] dateItems = date.split(delims);
+				month = Arrays.asList(months).indexOf(dateItems[0]);
+				day = Integer.parseInt(dateItems[1].replace(",",""));
+				year = Integer.parseInt(dateItems[2]);
+				String assignName = assignment.getTitle();
+				ArrayList<Course> myClass = GlobalState.getClasses();
+				myClassId = classId;
+				for (int k = 0; k < myClass.size(); k++){
+					if (myClassId.equals(myClass.get(k).getClassId())){
+						myClassName = myClass.get(k).getClassName();
+					}
+				}
+				values = AddAssignments.addToCal(myClassName, assignName, year, month, day);
+				Uri uri = getActivity().getContentResolver().insert(CalendarProvider.CONTENT_URI, values);
+				AddAssignments.setNotification(getActivity(), myClassName, assignName, year, month, day);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -126,7 +166,6 @@ public class AssignmentFragment extends ListFragment {
 		this.assignments = list;
 		if(assignments != null)	setListAdapter(new AssignmentListAdapter(getActivity(),
 				android.R.layout.simple_list_item_1, assignments));
-
 	}
 	
 	protected void getAssignments() {
