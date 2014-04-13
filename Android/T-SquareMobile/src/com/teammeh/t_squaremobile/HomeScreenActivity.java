@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +36,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -47,7 +49,9 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -85,8 +89,8 @@ public class HomeScreenActivity extends Activity {
 	private boolean vibrate_notis;
 	private PendingIntent pendingIntent;
 
-	//Variables for calendar and listview
-	private ExtendedCalendarView calendar;
+	// Variables for calendar and listview
+	public ExtendedCalendarView calendar;
 	private ArrayAdapter adapter1;
 	private ArrayList<Items> additems;
 	private ListView listview;
@@ -96,29 +100,28 @@ public class HomeScreenActivity extends Activity {
 	String sessionName;
 	String sessionId;
 
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home_screen);
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		
+
 		calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
 		calendar.refreshCalendar();
 
-//		Uri data = getIntent().getData();
-//		if(data != null) {
-//			if(data.getQueryParameter("sessionName") != null && data.getQueryParameter("sessionId") != null) {
-//				GlobalState.setSessionName(data.getQueryParameter("sessionName"));
-//				GlobalState.setSessionId(data.getQueryParameter("sessionId"));
-//			}
-//		}
+		// Uri data = getIntent().getData();
+		// if(data != null) {
+		// if(data.getQueryParameter("sessionName") != null &&
+		// data.getQueryParameter("sessionId") != null) {
+		// GlobalState.setSessionName(data.getQueryParameter("sessionName"));
+		// GlobalState.setSessionId(data.getQueryParameter("sessionId"));
+		// }
+		// }
 		sessionName = GlobalState.getSessionName();
 		sessionId = GlobalState.getSessionId();
 
-
-		if(GlobalState.getClasses() == null) {
+		if (GlobalState.getClasses() == null) {
 			myClasses = new String[1];
 			myClasses[0] = "Classes loading, please wait";
 			myDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -129,23 +132,26 @@ public class HomeScreenActivity extends Activity {
 			myDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
 					GravityCompat.START);
 
-			// Populate the navigation drawer with items and create a click listener
+			// Populate the navigation drawer with items and create a click
+			// listener
 			myDrawerList.setAdapter(new ArrayAdapter<String>(this,
 					R.layout.drawer_list_item, myClasses));
-			//			myDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+			// myDrawerList.setOnItemClickListener(new
+			// DrawerItemClickListener());
 			getClasses(); // load preliminary screen before getting classes
-			// Enable IC_launcher icon to set action to toggle the navigation drawer
+			// Enable IC_launcher icon to set action to toggle the navigation
+			// drawer
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 			getActionBar().setHomeButtonEnabled(true);
 
 			// ActionBarDrawerToggle ties together the the proper interactions
 			// between the sliding drawer and the action bar app icon
 			myDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
-					myDrawerLayout, /* DrawerLayout object */
-					R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
-					R.string.drawer_open, /* "open drawer" description for accessibility */
-					R.string.drawer_close /* "close drawer" description for accessibility */
-					) {
+			myDrawerLayout, /* DrawerLayout object */
+			R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
+			R.string.drawer_open, /* "open drawer" description for accessibility */
+			R.string.drawer_close /* "close drawer" description for accessibility */
+			) {
 				public void onDrawerClosed(View view) {
 					invalidateOptionsMenu(); // creates call to
 					// onPrepareOptionsMenu()
@@ -159,66 +165,134 @@ public class HomeScreenActivity extends Activity {
 
 			// Listens to whenever the drawer is toggled
 			myDrawerLayout.setDrawerListener(myDrawerToggle);
-			
+
 		} else {
 			courses = GlobalState.getClasses();
 			drawSidebar();
 		}
-		//		while(GlobalState.getClasses() == null) {
+		// while(GlobalState.getClasses() == null) {
 
-		//		}
-		//		courses = GlobalState.getClasses();
+		// }
+		// courses = GlobalState.getClasses();
 
-
-
-
-
-		//		myClasses = getResources().getStringArray(R.array.class_list);
-		//		myClasses = new String[courses.size()];
-		//		for(int i = 0; i < courses.size(); i++) {
-		//			myClasses[i] = courses.get(i).getClassName();
-		//		}
-
+		// myClasses = getResources().getStringArray(R.array.class_list);
+		// myClasses = new String[courses.size()];
+		// for(int i = 0; i < courses.size(); i++) {
+		// myClasses[i] = courses.get(i).getClassName();
+		// }
 
 		if (savedInstanceState == null) {
 			selectItem(0);
 		}
-		
+
 		additems = new ArrayList<Items>();
-		
+
 		listview = (ListView) findViewById(R.id.listView1);
-		
-		adapter1 = new MyAdapter(this, additems);//generateData());
-		
+
+		adapter1 = new MyAdapter(this, additems);// generateData());
+
 		listview.setAdapter(adapter1);
-		
+
+		listview.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				// TODO Auto-generated method stub
+				Items selectAssignment = (Items) adapter1.getItem(position);
+				final String getClass = selectAssignment.getTitle();
+				final String getAssign = selectAssignment.getDescription();
+
+				// Toast.makeText(HomeScreenActivity.this, getClass + " " +
+				// getAssign, Toast.LENGTH_SHORT).show();
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+						HomeScreenActivity.this);
+
+				// set title
+				alertDialogBuilder.setTitle("Delete Event");
+
+				// set dialog message
+				alertDialogBuilder
+						.setMessage("Do you want to delete this event?")
+						.setCancelable(false)
+						.setPositiveButton("Delete",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										// if this button is clicked, close
+										// current activity
+										// AddAssignments.deleteEvent(getBaseContext(),
+										// getClass, getAssign);
+										// Toast.makeText(getBaseContext(),
+										// test, Toast.LENGTH_SHORT).show();
+										calendar.refreshCalendar();
+									}
+								})
+						.setNegativeButton("Cancel",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										// if this button is clicked, just close
+										// the dialog box and do nothing
+										dialog.cancel();
+									}
+								});
+				// create alert dialog
+				AlertDialog alertDialog = alertDialogBuilder.create();
+				// show it
+				alertDialog.show();
+				return true;
+			}
+		});
+
 		calendar.setOnDayClickListener(new OnDayClickListener() {
 
 			@Override
 			public void onDayClicked(AdapterView<?> adapter, View view,
 					int position, long id, Day day) {
+
+				// boolean test = false;
+				// ArrayList<Items> eventList = AddAssignments
+				// .readEvents(getApplicationContext());
+
+				// for (int i = 0; i < eventList.size(); i++) {
+				// test = test
+				// || (Arrays.asList(eventList.get(i).getTitle())
+				// .contains("piggy") & Arrays.asList(
+				// eventList.get(i).getDescription())
+				// .contains("horse"));
+				// Toast.makeText(getApplicationContext(),
+				// eventList.get(i).getTitle() + " " +
+				// eventList.get(i).getDescription(),
+				// Toast.LENGTH_SHORT).show();
+				// Toast.makeText(getApplicationContext(),
+				// String.valueOf(Arrays.asList(eventList.get(i)).contains("horse")),
+				// Toast.LENGTH_SHORT).show();
+				// }
+				// Toast.makeText(getApplicationContext(), String.valueOf(test),
+				// Toast.LENGTH_SHORT).show();
 				// TODO Auto-generated method stub
 				additems.clear();
-				if (day.getNumOfEvenets() != 0){
+				if (day.getNumOfEvenets() != 0) {
 					for (int i = 0; i < day.getNumOfEvenets(); i++) {
 						additems.add(new Items(day.getEvents().get(i)
 								.getDescription(), day.getEvents().get(i)
-								.getTitle(), day.getDay(), day.getMonth(), day.getYear()));
+								.getTitle(), day.getDay(), day.getMonth(), day
+								.getYear()));
 					}
 					adapter1.notifyDataSetChanged();
-				}
-				else{
+				} else {
 					additems.clear();
 					adapter1.notifyDataSetChanged();
 				}
+
 			}
-			
+
 		});
 	}
 
 	protected void drawSidebar() {
 		myClasses = new String[courses.size()];
-		for(int i = 0; i < courses.size(); i++) {
+		for (int i = 0; i < courses.size(); i++) {
 			myClasses[i] = courses.get(i).getClassName();
 		}
 		System.out.println(myClasses[0]);
@@ -242,11 +316,11 @@ public class HomeScreenActivity extends Activity {
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the sliding drawer and the action bar app icon
 		myDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
-				myDrawerLayout, /* DrawerLayout object */
-				R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
-				R.string.drawer_open, /* "open drawer" description for accessibility */
-				R.string.drawer_close /* "close drawer" description for accessibility */
-				) {
+		myDrawerLayout, /* DrawerLayout object */
+		R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
+		R.string.drawer_open, /* "open drawer" description for accessibility */
+		R.string.drawer_close /* "close drawer" description for accessibility */
+		) {
 			public void onDrawerClosed(View view) {
 				invalidateOptionsMenu(); // creates call to
 				// onPrepareOptionsMenu()
@@ -291,7 +365,8 @@ public class HomeScreenActivity extends Activity {
 		case R.id.action_refreshlist:
 			// Force refresh of course list
 			File file = new File(this.getFilesDir(), courseFileName);
-			if(file.exists()) file.delete();
+			if (file.exists())
+				file.delete();
 			getClasses();
 			return true;
 		case R.id.action_settings:
@@ -309,7 +384,7 @@ public class HomeScreenActivity extends Activity {
 
 	/* The click listener for ListView in the navigation drawer */
 	private class DrawerItemClickListener implements
-	ListView.OnItemClickListener {
+			ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
@@ -355,49 +430,76 @@ public class HomeScreenActivity extends Activity {
 	}
 
 	// Create Dialog Box to enter Assignment and Due Date
-	public void add_assignments(){
+	public void add_assignments() {
 
-		final View addView = getLayoutInflater().inflate(R.layout.add_assignments_dialog, null);
+		final View addView = getLayoutInflater().inflate(
+				R.layout.add_assignments_dialog, null);
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Add Assignment");
 		builder.setView(addView);
 		// Set up the buttons
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				//Get EditText
-				EditText edittext_course = (EditText)addView.findViewById(R.id.EditTextEnterCourse);
+				// Get EditText
+				EditText edittext_course = (EditText) addView
+						.findViewById(R.id.EditTextEnterCourse);
 				assignment_course = edittext_course.getText().toString();
 				// Get EditText
-				EditText edittext_assignment = (EditText)addView.findViewById(R.id.EditTextAddAssignment);
+				EditText edittext_assignment = (EditText) addView
+						.findViewById(R.id.EditTextAddAssignment);
 				assignment_name = edittext_assignment.getText().toString();
 				// Get DatePicker
-				DatePicker datepicker = (DatePicker)addView.findViewById(R.id.datePickerAddAssignment);
+				DatePicker datepicker = (DatePicker) addView
+						.findViewById(R.id.datePickerAddAssignment);
 				assignment_day = datepicker.getDayOfMonth();
 				assignment_month = datepicker.getMonth();
 				assignment_year = datepicker.getYear();
-				values = AddAssignments.addToCal(assignment_course, assignment_name, assignment_year, assignment_month, assignment_day);
-				Uri uri = getContentResolver().insert(CalendarProvider.CONTENT_URI, values);
-				//calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
-				AddAssignments.setNotification(HomeScreenActivity.this, assignment_course, assignment_name, assignment_year, assignment_month, assignment_day);
-				calendar.refreshCalendar();
+
+				// ArrayList<String> eventList =
+				// AddAssignments.readEvents(getApplicationContext());
+				boolean checkEvent = false;
+				ArrayList<Items> eventList = AddAssignments
+						.readEvents(getApplicationContext());
+
+				for (int i = 0; i < eventList.size(); i++) {
+					checkEvent = checkEvent
+							|| (Arrays.asList(eventList.get(i).getTitle())
+									.contains(assignment_course) & Arrays
+									.asList(eventList.get(i).getDescription())
+									.contains(assignment_name));
+				}
+
+				if (checkEvent == false) {
+					values = AddAssignments.addToCal(assignment_course,
+							assignment_name, assignment_year, assignment_month,
+							assignment_day);
+					Uri uri = getContentResolver().insert(
+							CalendarProvider.CONTENT_URI, values);
+					// calendar = (ExtendedCalendarView)
+					// findViewById(R.id.calendar);
+					AddAssignments.setNotification(HomeScreenActivity.this,
+							assignment_course, assignment_name,
+							assignment_year, assignment_month, assignment_day);
+					calendar.refreshCalendar();
+				}
 			}
 		});
 		builder.setNegativeButton("Cancel",
 				new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-			}
-		});
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+					}
+				});
 		builder.show();
 	}
 
-
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if ((keyCode == KeyEvent.KEYCODE_BACK)) { //Back key pressed
-			//Things to Do
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) { // Back key pressed
+			// Things to Do
 			logout();
 			return true;
 		}
@@ -425,31 +527,32 @@ public class HomeScreenActivity extends Activity {
 		// Set up the buttons
 		builder.setPositiveButton("Logout",
 				new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// WRITE BACKEND CODE!!!!
-				onBackPressed();
-			}
-		});
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// WRITE BACKEND CODE!!!!
+						onBackPressed();
+					}
+				});
 		builder.setNegativeButton("Cancel",
 				new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-			}
-		});
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+					}
+				});
 		return builder.show();
 	}
 
 	protected void getClasses() {
 		File file = new File(this.getFilesDir(), courseFileName);
 		boolean readResult = false;
-		if(file.exists()) {
+		if (file.exists()) {
 			readResult = readCoursesFromFile();
-		} 
-		if(readResult) {
+		}
+		if (readResult) {
 			this.courses = GlobalState.getClasses();
-			System.out.println("I'm in here now! " + courses.get(0).getClassName());
+			System.out.println("I'm in here now! "
+					+ courses.get(0).getClassName());
 			drawSidebar();
 		} else {
 			String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/siteJson";
@@ -457,15 +560,16 @@ public class HomeScreenActivity extends Activity {
 			new GetClassesTask().execute(get);
 		}
 	}
-	//	}
+
+	// }
 
 	protected void parseJson(JSONObject jObject) {
 		ArrayList<Course> classes = new ArrayList<Course>();
 		JSONArray array = null;
 		try {
-			//			System.out.println(jObject.length());
+			// System.out.println(jObject.length());
 			array = jObject.getJSONArray("site_collection");
-			for(int i = 0; i < array.length(); i++) {
+			for (int i = 0; i < array.length(); i++) {
 				JSONObject obj = array.getJSONObject(i);
 				String classTitle = obj.getString("title");
 				String classId = obj.getString("id");
@@ -478,25 +582,26 @@ public class HomeScreenActivity extends Activity {
 		GlobalState.setClasses(classes);
 		this.courses = classes;
 		File file = new File(this.getFilesDir(), courseFileName);
-		if(!file.exists()) writeCoursesToFile();
-		//		if(!prefs.contains("courseListJson")) {
-		//			SharedPreferences.Editor editor = prefs.edit();
-		//			editor.putString("courseListJson", jObject.toString());
-		//			editor.commit();
-		//		}
-		//		if(!prefs.contains("courseNames") && !prefs.contains("courseIds")) {
-		//			HashSet<String> courseNames = new HashSet<String>();
-		//			HashSet<String> courseIds = new HashSet<String>();
-		//			for(Course course : courses) {
-		//				courseNames.add(course.getClassName());
-		//				courseIds.add(course.getClassId());
-		//			}
-		//			SharedPreferences.Editor editor = prefs.edit();
-		//			editor.putStringSet("courseNames", courseNames);
-		//			editor.putStringSet("courseIds", courseIds);
-		//			editor.commit();
-		//			
-		//		}
+		if (!file.exists())
+			writeCoursesToFile();
+		// if(!prefs.contains("courseListJson")) {
+		// SharedPreferences.Editor editor = prefs.edit();
+		// editor.putString("courseListJson", jObject.toString());
+		// editor.commit();
+		// }
+		// if(!prefs.contains("courseNames") && !prefs.contains("courseIds")) {
+		// HashSet<String> courseNames = new HashSet<String>();
+		// HashSet<String> courseIds = new HashSet<String>();
+		// for(Course course : courses) {
+		// courseNames.add(course.getClassName());
+		// courseIds.add(course.getClassId());
+		// }
+		// SharedPreferences.Editor editor = prefs.edit();
+		// editor.putStringSet("courseNames", courseNames);
+		// editor.putStringSet("courseIds", courseIds);
+		// editor.commit();
+		//
+		// }
 		drawSidebar();
 	}
 
@@ -513,14 +618,14 @@ public class HomeScreenActivity extends Activity {
 
 			try {
 				stream = entity.getContent();
-				reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
+				reader = new BufferedReader(new InputStreamReader(stream,
+						"UTF-8"), 8);
 				StringBuilder sb = new StringBuilder();
-				while ((line = reader.readLine()) != null)
-				{
+				while ((line = reader.readLine()) != null) {
 					sb.append(line + "\n");
 				}
 				result = sb.toString();
-				//				System.out.println(result);
+				// System.out.println(result);
 				jObject = new JSONObject(result);
 				jObject = new JSONObject(jObject.getString("body"));
 			} catch (ClientProtocolException e) {
@@ -533,24 +638,28 @@ public class HomeScreenActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
-				try{if(stream != null)stream.close();}catch(Exception squish){}
+				try {
+					if (stream != null)
+						stream.close();
+				} catch (Exception squish) {
+				}
 			}
 			return jObject;
 		}
-
 
 		@Override
 		protected JSONObject doInBackground(HttpGet... params) {
 			DefaultHttpClient client = new DefaultHttpClient();
 			HttpGet get = params[0];
-			get.setHeader("Cookie", sessionName+"="+sessionId);
+			get.setHeader("Cookie", sessionName + "=" + sessionId);
 			HttpEntity entity = null;
 			HttpResponse response = null;
-			JSONObject jObject = null;	    	    
+			JSONObject jObject = null;
 			try {
 				Header[] headers = get.getAllHeaders();
-				for(Header header : headers) {
-					//					System.out.println(header.getName() + " " + header.getValue());
+				for (Header header : headers) {
+					// System.out.println(header.getName() + " " +
+					// header.getValue());
 				}
 				response = client.execute(get);
 				entity = response.getEntity();
@@ -570,7 +679,7 @@ public class HomeScreenActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(JSONObject jObject) {
-			//			System.out.println("I'm here!");
+			// System.out.println("I'm here!");
 			parseJson(jObject);
 		}
 	}
@@ -578,7 +687,8 @@ public class HomeScreenActivity extends Activity {
 	protected boolean writeCoursesToFile() {
 		boolean result = false;
 		try {
-			FileOutputStream fos = this.openFileOutput(courseFileName, Context.MODE_PRIVATE);
+			FileOutputStream fos = this.openFileOutput(courseFileName,
+					Context.MODE_PRIVATE);
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(GlobalState.getClasses());
 			result = true;
@@ -592,17 +702,18 @@ public class HomeScreenActivity extends Activity {
 	protected boolean readCoursesFromFile() {
 		boolean result = false;
 		File file = new File(this.getFilesDir(), courseFileName);
-		if(file.exists()) {
+		if (file.exists()) {
 			try {
 				FileInputStream fis = this.openFileInput(courseFileName);
 				ObjectInputStream ois = new ObjectInputStream(fis);
-				ArrayList<Course> courseList = (ArrayList<Course>) ois.readObject();
-				if(courseList != null) {
+				ArrayList<Course> courseList = (ArrayList<Course>) ois
+						.readObject();
+				if (courseList != null) {
 					GlobalState.setClasses(courseList);
 					result = true;
 					System.out.println("File loaded!");
 				}
-			} catch(Exception ex) {
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -610,58 +721,66 @@ public class HomeScreenActivity extends Activity {
 	}
 
 	// Add events to the calendar
-	/*private void add_to_Cal(String course, String assignment, int startYear, int startMonth, int startDay){
-		ContentValues values = new ContentValues();
-		values.put(CalendarProvider.COLOR, Event.COLOR_RED);
-		values.put(CalendarProvider.DESCRIPTION, course);
-		values.put(CalendarProvider.EVENT, assignment);
+	/*
+	 * private void add_to_Cal(String course, String assignment, int startYear,
+	 * int startMonth, int startDay){ ContentValues values = new
+	 * ContentValues(); values.put(CalendarProvider.COLOR, Event.COLOR_RED);
+	 * values.put(CalendarProvider.DESCRIPTION, course);
+	 * values.put(CalendarProvider.EVENT, assignment);
+	 * 
+	 * Calendar cal = Calendar.getInstance(); TimeZone tz =
+	 * TimeZone.getDefault();
+	 * 
+	 * cal.set(startYear, startMonth, startDay, 0, 0); int startDayJulian =
+	 * Time.getJulianDay(cal.getTimeInMillis(),
+	 * TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
+	 * values.put(CalendarProvider.START, cal.getTimeInMillis());
+	 * values.put(CalendarProvider.START_DAY, startDayJulian);
+	 * 
+	 * cal.set(startYear, startMonth, startDay, 0, 0); int endDayJulian =
+	 * Time.getJulianDay(cal.getTimeInMillis(),
+	 * TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
+	 * 
+	 * values.put(CalendarProvider.END, cal.getTimeInMillis());
+	 * values.put(CalendarProvider.END_DAY, endDayJulian);
+	 * 
+	 * Uri uri = getContentResolver().insert(CalendarProvider.CONTENT_URI,
+	 * values); }
+	 */
 
-		Calendar cal = Calendar.getInstance();
-		TimeZone tz = TimeZone.getDefault();
-
-		cal.set(startYear, startMonth, startDay, 0, 0);
-		int startDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
-		values.put(CalendarProvider.START, cal.getTimeInMillis());
-		values.put(CalendarProvider.START_DAY, startDayJulian);
-
-		cal.set(startYear, startMonth, startDay, 0, 0);
-		int endDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
-
-		values.put(CalendarProvider.END, cal.getTimeInMillis());
-		values.put(CalendarProvider.END_DAY, endDayJulian);
-
-		Uri uri = getContentResolver().insert(CalendarProvider.CONTENT_URI, values);
-	}*/
-	
-	//Alarm receiver
-	/*private void setNotification(String course, String assignment, int year, int month, int day){
-		
-		//if (Integer.parseInt(prefs.getString("updates_notifications", "null")) != 0){
-		//String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
-		//String date = months[month] + " " + day + ", " + year;
-		
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.MONTH, month);
-		calendar.set(Calendar.YEAR, year);
-		calendar.set(Calendar.DAY_OF_MONTH, day);
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		
-		long eventTime=calendar.getTimeInMillis();//Returns Time in milliseconds
-		
-		int noOfDays=1; //Integer.parseInt(prefs.getString("updates_notifications", "null"));
-		long reminderTime=eventTime-(noOfDays*86400000);//Time in milliseconds when the alarm will shoot up & you do not need to concider month/year with this approach as time is already in milliseconds.
-	
-		//Set alarm
-		Intent myIntent = new Intent(HomeScreenActivity.this, AlarmReceiver.class);
-		///myIntent.putExtra("course", course);
-		///myIntent.putExtra("assignment", assignment);
-		///myIntent.putExtra("date", date);
-		
-		pendingIntent = PendingIntent.getBroadcast(HomeScreenActivity.this, 0, myIntent,PendingIntent.FLAG_CANCEL_CURRENT);
-		AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
-		alarmManager.set(AlarmManager.RTC_WAKEUP, reminderTime, pendingIntent);
-		//}
-	}*/
+	// Alarm receiver
+	/*
+	 * private void setNotification(String course, String assignment, int year,
+	 * int month, int day){
+	 * 
+	 * //if (Integer.parseInt(prefs.getString("updates_notifications", "null"))
+	 * != 0){ //String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+	 * "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"}; //String date = months[month]
+	 * + " " + day + ", " + year;
+	 * 
+	 * Calendar calendar = Calendar.getInstance(); calendar.set(Calendar.MONTH,
+	 * month); calendar.set(Calendar.YEAR, year);
+	 * calendar.set(Calendar.DAY_OF_MONTH, day);
+	 * calendar.set(Calendar.HOUR_OF_DAY, 0); calendar.set(Calendar.MINUTE, 0);
+	 * calendar.set(Calendar.SECOND, 0);
+	 * 
+	 * long eventTime=calendar.getTimeInMillis();//Returns Time in milliseconds
+	 * 
+	 * int noOfDays=1;
+	 * //Integer.parseInt(prefs.getString("updates_notifications", "null"));
+	 * long reminderTime=eventTime-(noOfDays*86400000);//Time in milliseconds
+	 * when the alarm will shoot up & you do not need to concider month/year
+	 * with this approach as time is already in milliseconds.
+	 * 
+	 * //Set alarm Intent myIntent = new Intent(HomeScreenActivity.this,
+	 * AlarmReceiver.class); ///myIntent.putExtra("course", course);
+	 * ///myIntent.putExtra("assignment", assignment);
+	 * ///myIntent.putExtra("date", date);
+	 * 
+	 * pendingIntent = PendingIntent.getBroadcast(HomeScreenActivity.this, 0,
+	 * myIntent,PendingIntent.FLAG_CANCEL_CURRENT); AlarmManager alarmManager =
+	 * (AlarmManager)getSystemService(ALARM_SERVICE);
+	 * alarmManager.set(AlarmManager.RTC_WAKEUP, reminderTime, pendingIntent);
+	 * //} }
+	 */
 }

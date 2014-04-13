@@ -13,6 +13,12 @@ public class Items {
 	        this.date = "Due Date: " + months[month] + " " + day + ", " + year;
 	    }
 	    
+	    public Items(String title, String description) {
+	        super();
+	        this.title = title;
+	        this.description = description;
+	    }
+	    
 	    public String getTitle() {
 			return title;
 		}

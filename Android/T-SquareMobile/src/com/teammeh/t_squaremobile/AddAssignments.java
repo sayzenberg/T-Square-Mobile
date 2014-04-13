@@ -1,14 +1,19 @@
 package com.teammeh.t_squaremobile;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.text.format.Time;
 
 import com.tyczj.extendedcalendarview.CalendarProvider;
@@ -76,5 +81,42 @@ public class AddAssignments {
 		alarmManager.set(AlarmManager.RTC_WAKEUP, reminderTime, pendingIntent);
 		}
 		//}
+	}
+	
+	public static ArrayList<Items> readEvents(Context context){
+		ArrayList<Items> classAndEvent = new ArrayList<Items>();
+		Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());
+		Cursor cursor = context.getContentResolver().query(uri, 
+				new String[] {CalendarProvider.DESCRIPTION, CalendarProvider.EVENT}, null, null, null);//,  " event = ? ", null, null);
+		cursor.moveToFirst();
+		String CName[] = new String[cursor.getCount()];
+		for (int i = 0; i < CName.length; i++) {
+			classAndEvent.add(new Items(cursor.getString(0), cursor.getString(1)));
+            CName[i] = cursor.getString(0);
+			cursor.moveToNext();
+		}
+		return classAndEvent;
+	}
+	
+	public static void deleteEvent(Context context, String className, String assignmentName){
+		Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());
+		ContentResolver resolver = context.getContentResolver();
+		//Cursor cursor = resolver.query(uri, new String[] {CalendarProvider.DESCRIPTION, CalendarProvider.EVENT}, null, null, null);
+		//while(cursor.moveToNext()) {
+        //    long eventId = cursor.getLong(cursor.getColumnIndex(CalendarProvider.EVENT));
+        //    resolver.delete(ContentUris.withAppendedId(uri, eventId), null, null);
+        //}
+        //cursor.close();
+		//Cursor cursor = context.getContentResolver().query(uri, 
+		//		new String[] {CalendarProvider.DESCRIPTION, CalendarProvider.EVENT}, null, null, null);
+		context.getContentResolver().delete(uri, 
+				CalendarProvider.DESCRIPTION + "=" + className + " AND " +
+				CalendarProvider.EVENT + "=" + assignmentName, null);
+		//cursor.close();
+		
+		//Cursor cursor = context.getContentResolver().delete(uri, 
+		//		CalendarProvider.DESCRIPTION + "=" + className + " and "  + 
+		//CalendarProvider.EVENT + "=" + assignmentName, selectionArgs)
+		//return cursor2;
 	}
 }

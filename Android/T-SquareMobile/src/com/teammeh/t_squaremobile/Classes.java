@@ -28,13 +28,16 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,8 +51,10 @@ import android.widget.Toast;
 
 import com.teammeh.t_squaremobile.AnnouncementFragment.OnAnnouncementFragmentInteractionListener;
 import com.teammeh.t_squaremobile.AssignmentFragment.OnAssignmentFragmentInteractionListener;
+import com.tyczj.extendedcalendarview.ExtendedCalendarView;
 
 public class Classes extends FragmentActivity implements OnAssignmentFragmentInteractionListener, OnAnnouncementFragmentInteractionListener {
+	
 	ListView listview;
 	private String setClassname = "";
 	private String classId;
@@ -202,5 +207,21 @@ public class Classes extends FragmentActivity implements OnAssignmentFragmentInt
 		});
 		builder.create().show();
 
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) { // Back key pressed
+			// Things to Do
+			onBackPressed();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+	
+	@Override
+	public void onBackPressed(){
+		//calendar.refreshCalendar();
+		NavUtils.navigateUpFromSameTask(this);
 	}
 }

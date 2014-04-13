@@ -47,27 +47,28 @@ public class AssignmentFragment extends ListFragment {
 
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	
+
 	String sessionName;
 	String sessionId;
 	String classId;
-	
+
 	int month;
 	int day;
 	int year;
 	String myClassName;
 	String myClassId;
-	
-	//Context context;
+
+	// Context context;
 	private ContentValues values;
 	private ExtendedCalendarView calendar;
-	
+
 	private ArrayList<Assignment> assignments;
 
 	private OnAssignmentFragmentInteractionListener mListener;
 
 	// TODO: Rename and change types of parameters
-	public static AssignmentFragment newInstance(String sessionName, String sessionId, String classId) {
+	public static AssignmentFragment newInstance(String sessionName,
+			String sessionId, String classId) {
 		AssignmentFragment fragment = new AssignmentFragment();
 		Bundle args = new Bundle();
 		args.putString("sessionName", sessionName);
@@ -90,10 +91,10 @@ public class AssignmentFragment extends ListFragment {
 
 		sessionName = GlobalState.getSessionName();
 		sessionId = GlobalState.getSessionId();
-		
+
 		if (getArguments() != null) {
-//			this.sessionName = getArguments().getString("sessionName");
-//			this.sessionId = getArguments().getString("sessionId");
+			// this.sessionName = getArguments().getString("sessionName");
+			// this.sessionId = getArguments().getString("sessionId");
 			this.classId = getArguments().getString("classId");
 			getAssignments();
 		}
@@ -121,89 +122,110 @@ public class AssignmentFragment extends ListFragment {
 		super.onListItemClick(l, v, position, id);
 
 		Assignment assignment = this.assignments.get(position);
-		
+
 		if (null != mListener) {
 			// Notify the active callbacks interface (the activity, if the
 			// fragment is attached to one) that an item has been selected.
-			mListener
-					.onAssignmentFragmentInteraction(assignment);
+			mListener.onAssignmentFragmentInteraction(assignment);
 		}
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	public void parseJson(JSONArray items) {
-		String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
+		String months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+				"Aug", "Sept", "Oct", "Nov", "Dec" };
 		ArrayList<Assignment> list = new ArrayList<Assignment>();
-		
-		for(int i = 0; i < items.length(); i++) {
+
+		for (int i = 0; i < items.length(); i++) {
 			try {
 				JSONObject obj = items.getJSONObject(i);
 				Assignment assignment = new Assignment(obj);
 				list.add(assignment);
-				//To Put Assignments In the Calendar
+				// To Put Assignments In the Calendar
 				String date = assignment.getDueDate();
 				String delims = "[ ]";
 				String[] dateItems = date.split(delims);
 				month = Arrays.asList(months).indexOf(dateItems[0]);
-				day = Integer.parseInt(dateItems[1].replace(",",""));
+				day = Integer.parseInt(dateItems[1].replace(",", ""));
 				year = Integer.parseInt(dateItems[2]);
 				String assignName = assignment.getTitle();
 				ArrayList<Course> myClass = GlobalState.getClasses();
 				myClassId = classId;
-				for (int k = 0; k < myClass.size(); k++){
-					if (myClassId.equals(myClass.get(k).getClassId())){
+				for (int k = 0; k < myClass.size(); k++) {
+					if (myClassId.equals(myClass.get(k).getClassId())) {
 						myClassName = myClass.get(k).getClassName();
 					}
 				}
-				values = AddAssignments.addToCal(myClassName, assignName, year, month, day);
-				Uri uri = getActivity().getContentResolver().insert(CalendarProvider.CONTENT_URI, values);
-				AddAssignments.setNotification(getActivity(), myClassName, assignName, year, month, day);
+				boolean checkEvent = false;
+				ArrayList<Items> eventList = AddAssignments
+						.readEvents(getActivity());
+
+				for (int k = 0; k < eventList.size(); k++) {
+					checkEvent = checkEvent
+							|| (Arrays.asList(eventList.get(k).getTitle())
+									.contains(myClassName) & Arrays.asList(
+									eventList.get(k).getDescription())
+									.contains(assignName));
+				}
+
+				if (checkEvent == false) {
+						values = AddAssignments.addToCal(myClassName,
+								assignName, year, month, day);
+						Uri uri = getActivity().getContentResolver().insert(
+								CalendarProvider.CONTENT_URI, values);
+						AddAssignments.setNotification(getActivity(),
+								myClassName, assignName, year, month, day);
+				}
+
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
 		this.assignments = list;
-		if(assignments != null)	setListAdapter(new AssignmentListAdapter(getActivity(),
-				android.R.layout.simple_list_item_1, assignments));
+		if (assignments != null)
+			setListAdapter(new AssignmentListAdapter(getActivity(),
+					android.R.layout.simple_list_item_1, assignments));
 	}
-	
+
 	protected void getAssignments() {
 		String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getAssignmentsByClass";
 		HttpPost post = new HttpPost(url);
 		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-	    postParameters.add(new BasicNameValuePair("classId", classId));
-	    try {
+		postParameters.add(new BasicNameValuePair("classId", classId));
+		try {
 			post.setEntity(new UrlEncodedFormEntity(postParameters));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	    new GetAssignmentsTask().execute(post);
+		new GetAssignmentsTask().execute(post);
 	}
 
-	public class GetAssignmentsTask extends AsyncTask<HttpPost, String, JSONArray> {
+	public class GetAssignmentsTask extends
+			AsyncTask<HttpPost, String, JSONArray> {
 
 		String mText;
-		
+
 		protected JSONArray extractJson(HttpEntity entity) {
-		    InputStream stream = null;
-		    BufferedReader reader;
-		    String line = "";
-		    String result = "";
-		    JSONArray jArray = null;
-		   
+			InputStream stream = null;
+			BufferedReader reader;
+			String line = "";
+			String result = "";
+			JSONArray jArray = null;
+
 			try {
 				stream = entity.getContent();
-				reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
+				reader = new BufferedReader(new InputStreamReader(stream,
+						"UTF-8"), 8);
 				StringBuilder sb = new StringBuilder();
-				while ((line = reader.readLine()) != null)
-				{
-				    sb.append(line + "\n");
+				while ((line = reader.readLine()) != null) {
+					sb.append(line + "\n");
 				}
 				result = sb.toString();
 				jArray = new JSONArray(result);
-//				System.out.println("Length of JSON: " + jArray.length());
+				// System.out.println("Length of JSON: " + jArray.length());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -214,33 +236,38 @@ public class AssignmentFragment extends ListFragment {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
-				try{if(stream != null)stream.close();}catch(Exception squish){}
+				try {
+					if (stream != null)
+						stream.close();
+				} catch (Exception squish) {
+				}
 			}
 			return jArray;
 		}
-		
+
 		@Override
 		protected JSONArray doInBackground(HttpPost... params) {
 			DefaultHttpClient client = new DefaultHttpClient();
 			HttpPost post = params[0];
-			post.setHeader("Cookie", sessionName+"="+sessionId);
+			post.setHeader("Cookie", sessionName + "=" + sessionId);
 			HttpEntity entity = null;
-		    HttpResponse response = null;
-		    JSONArray jArray = null;	    	    
+			HttpResponse response = null;
+			JSONArray jArray = null;
 			try {
 				Header[] headers = post.getAllHeaders();
-				for(Header header : headers) {
-//					System.out.println(header.getName() + " " + header.getValue());
+				for (Header header : headers) {
+					// System.out.println(header.getName() + " " +
+					// header.getValue());
 				}
 				response = client.execute(post);
 				entity = response.getEntity();
-				if(response.getStatusLine().toString().contains("504")) {
+				if (response.getStatusLine().toString().contains("504")) {
 					jArray = null;
 				} else {
-//					System.out.println(response.getStatusLine());
+					// System.out.println(response.getStatusLine());
 					jArray = extractJson(entity);
 				}
-//				System.out.println(response.getStatusLine());
+				// System.out.println(response.getStatusLine());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -249,28 +276,26 @@ public class AssignmentFragment extends ListFragment {
 				e.printStackTrace();
 			}
 			client.getConnectionManager().shutdown();
-		    
+
 			return jArray;
-			
+
 		}
-		
+
 		@Override
 		protected void onPostExecute(JSONArray jArray) {
-			if(jArray != null) parseJson(jArray);
-//			if(jArray != null && jArray.length() > 0) {
-//				TextView t = (TextView)findViewById(R.id.textView1);
-//				try {
-//					t.setText(jArray.getString(0));
-//				} catch (JSONException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
+			if (jArray != null)
+				parseJson(jArray);
+			// if(jArray != null && jArray.length() > 0) {
+			// TextView t = (TextView)findViewById(R.id.textView1);
+			// try {
+			// t.setText(jArray.getString(0));
+			// } catch (JSONException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			// }
 		}
 	}
-
-
-
 
 	/**
 	 * This interface must be implemented by activities that contain this
@@ -285,6 +310,5 @@ public class AssignmentFragment extends ListFragment {
 		// TODO: Update argument type and name
 		public void onAssignmentFragmentInteraction(Assignment assignment);
 	}
-	
-	
+
 }
