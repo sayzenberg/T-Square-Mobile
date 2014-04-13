@@ -251,10 +251,9 @@ public class HomeScreenActivity extends Activity {
 					int position, long id, Day day) {
 
 				// boolean test = false;
-				// ArrayList<Items> eventList = AddAssignments
-				// .readEvents(getApplicationContext());
+				AddAssignments.setAllNotifications(getApplicationContext());
 
-				// for (int i = 0; i < eventList.size(); i++) {
+				//for (int i = 0; i < eventList.size(); i++) {
 				// test = test
 				// || (Arrays.asList(eventList.get(i).getTitle())
 				// .contains("piggy") & Arrays.asList(
@@ -267,7 +266,7 @@ public class HomeScreenActivity extends Activity {
 				// Toast.makeText(getApplicationContext(),
 				// String.valueOf(Arrays.asList(eventList.get(i)).contains("horse")),
 				// Toast.LENGTH_SHORT).show();
-				// }
+				//}
 				// Toast.makeText(getApplicationContext(), String.valueOf(test),
 				// Toast.LENGTH_SHORT).show();
 				// TODO Auto-generated method stub
@@ -479,7 +478,8 @@ public class HomeScreenActivity extends Activity {
 							CalendarProvider.CONTENT_URI, values);
 					// calendar = (ExtendedCalendarView)
 					// findViewById(R.id.calendar);
-					AddAssignments.setNotification(HomeScreenActivity.this,
+
+					AddAssignments.setSingleNotification(HomeScreenActivity.this,
 							assignment_course, assignment_name,
 							assignment_year, assignment_month, assignment_day);
 					calendar.refreshCalendar();

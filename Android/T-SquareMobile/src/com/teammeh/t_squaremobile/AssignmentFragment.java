@@ -27,6 +27,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
@@ -47,7 +48,7 @@ public class AssignmentFragment extends ListFragment {
 
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
+	PreferenceManager prefs;
 	String sessionName;
 	String sessionId;
 	String classId;
@@ -173,8 +174,9 @@ public class AssignmentFragment extends ListFragment {
 								assignName, year, month, day);
 						Uri uri = getActivity().getContentResolver().insert(
 								CalendarProvider.CONTENT_URI, values);
-						AddAssignments.setNotification(getActivity(),
+						AddAssignments.setSingleNotification(getActivity(),
 								myClassName, assignName, year, month, day);
+
 				}
 
 			} catch (JSONException e) {
