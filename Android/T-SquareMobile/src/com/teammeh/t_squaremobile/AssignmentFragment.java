@@ -56,8 +56,11 @@ public class AssignmentFragment extends ListFragment {
 	int month;
 	int day;
 	int year;
+	String assignDate;
 	String myClassName;
 	String myClassId;
+	
+	private String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
 
 	// Context context;
 	private ContentValues values;
@@ -149,6 +152,7 @@ public class AssignmentFragment extends ListFragment {
 				month = Arrays.asList(months).indexOf(dateItems[0]);
 				day = Integer.parseInt(dateItems[1].replace(",", ""));
 				year = Integer.parseInt(dateItems[2]);
+				
 				String assignName = assignment.getTitle();
 				ArrayList<Course> myClass = GlobalState.getClasses();
 				myClassId = classId;
@@ -157,6 +161,7 @@ public class AssignmentFragment extends ListFragment {
 						myClassName = myClass.get(k).getClassName();
 					}
 				}
+				assignDate = "Due Date: " + months[month] + " " + day + ", " + year;
 				boolean checkEvent = false;
 				ArrayList<Items> eventList = AddAssignments
 						.readEvents(getActivity());
@@ -166,7 +171,9 @@ public class AssignmentFragment extends ListFragment {
 							|| (Arrays.asList(eventList.get(k).getTitle())
 									.contains(myClassName) & Arrays.asList(
 									eventList.get(k).getDescription())
-									.contains(assignName));
+									.contains(assignName)
+									& Arrays.asList(eventList.get(k).getDate())
+									.contains(assignDate));
 				}
 
 				if (checkEvent == false) {

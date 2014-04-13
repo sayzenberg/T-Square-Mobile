@@ -80,14 +80,12 @@ public class HomeScreenActivity extends Activity {
 	private int assignment_day;
 	private int assignment_month;
 	private int assignment_year;
+	private String assignment_date;
+	private String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
 
 	// Variables for Settings, Notifications
 	private SharedPreferences prefs;
 	private boolean enable_notis;
-	private int reminder_notis;
-	private String ringtone_notis;
-	private boolean vibrate_notis;
-	private PendingIntent pendingIntent;
 
 	// Variables for calendar and listview
 	public ExtendedCalendarView calendar;
@@ -251,7 +249,7 @@ public class HomeScreenActivity extends Activity {
 					int position, long id, Day day) {
 
 				// boolean test = false;
-				AddAssignments.setAllNotifications(getApplicationContext());
+				//AddAssignments.setAllNotifications(getApplicationContext());
 
 				//for (int i = 0; i < eventList.size(); i++) {
 				// test = test
@@ -267,8 +265,8 @@ public class HomeScreenActivity extends Activity {
 				// String.valueOf(Arrays.asList(eventList.get(i)).contains("horse")),
 				// Toast.LENGTH_SHORT).show();
 				//}
-				// Toast.makeText(getApplicationContext(), String.valueOf(test),
-				// Toast.LENGTH_SHORT).show();
+				 //Toast.makeText(getApplicationContext(), String.valueOf(prefs.getBoolean("set_notifications", true)),
+				 //Toast.LENGTH_SHORT).show();
 				// TODO Auto-generated method stub
 				additems.clear();
 				if (day.getNumOfEvenets() != 0) {
@@ -455,7 +453,8 @@ public class HomeScreenActivity extends Activity {
 				assignment_day = datepicker.getDayOfMonth();
 				assignment_month = datepicker.getMonth();
 				assignment_year = datepicker.getYear();
-
+				assignment_date = "Due Date: " + months[assignment_month] +
+						" " + assignment_day + ", " + assignment_year;
 				// ArrayList<String> eventList =
 				// AddAssignments.readEvents(getApplicationContext());
 				boolean checkEvent = false;
@@ -467,7 +466,9 @@ public class HomeScreenActivity extends Activity {
 							|| (Arrays.asList(eventList.get(i).getTitle())
 									.contains(assignment_course) & Arrays
 									.asList(eventList.get(i).getDescription())
-									.contains(assignment_name));
+									.contains(assignment_name) 
+									& Arrays.asList(eventList.get(i).getDate())
+									.contains(assignment_date));
 				}
 
 				if (checkEvent == false) {

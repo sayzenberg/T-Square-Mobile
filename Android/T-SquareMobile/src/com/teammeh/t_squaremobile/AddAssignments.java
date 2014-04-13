@@ -108,51 +108,42 @@ public class AddAssignments {
 		// }
 	}
 
-	public static void cancelAllNotifications() {
-		notifications.cancelAll();
+	public static void cancelAllNotifications(Context context) {
+		NotificationManager nMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		nMgr.cancelAll();
 	}
 
 	public static void setAllNotifications(Context context) {
 		// ArrayList<Items> classAndEvent = new ArrayList<Items>();
 		Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());
 		Cursor cursor = context.getContentResolver().query(uri,
-				new String[] { CalendarProvider.END }, null, null, null);// ,
-																			// " event = ? ",
-																			// null,
-																			// null);
+				new String[] { CalendarProvider.END }, null, null, null);
+		
 		cursor.moveToFirst();
 		String CName[] = new String[cursor.getCount()];
 		for (int i = 0; i < CName.length; i++) {
-			long currentTime = System.currentTimeMillis();
 
 			long eventTime = Long.parseLong(cursor.getString(0));// Returns
-																	// Event
-																	// Time in
-																	// milliseconds
+			Date date = new Date(eventTime);	
+			Toast.makeText(context, date.toString(), Toast.LENGTH_SHORT).show();
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(Calendar.MONTH, date.getMonth());
+			calendar.set(Calendar.YEAR, date.getYear());
+			calendar.set(Calendar.DAY_OF_MONTH, date.getDay());
+			calendar.set(Calendar.HOUR_OF_DAY, 0);
+			calendar.set(Calendar.MINUTE, 0);
+			calendar.set(Calendar.SECOND, 0);
+			
+			long eventTime2 = calendar.getTimeInMillis();// Returns Event Time in
+			// milliseconds
+			
+			long currentTime = System.currentTimeMillis();
+			
 			int noOfDays = 1; // Integer.parseInt(prefs.getString("updates_notifications",
 								// "null"));
-			long reminderTime = eventTime - (noOfDays * 86400000);// Time in
-																	// milliseconds
-																	// when the
-																	// alarm
-																	// will
-																	// shoot up
-																	// & you do
-																	// not need
-																	// to
-																	// concider
-																	// month/year
-																	// with this
-																	// approach
-																	// as time
-																	// is
-																	// already
-																	// in
-																	// milliseconds.
-
-			// If the current time is after the event date, do not add
+			long reminderTime = eventTime2 - (noOfDays * 86400000);
 			// notifications
-			if (currentTime < eventTime) {
+			if (currentTime < eventTime2) {
 
 				// Set alarm
 				Intent myIntent = new Intent(context, AlarmReceiver.class);
@@ -167,28 +158,28 @@ public class AddAssignments {
 				alarmManager.set(AlarmManager.RTC_WAKEUP, reminderTime,
 						pendingIntent);
 			}
-
 			cursor.moveToNext();
-			// Toast.makeText(context, CName[i], Toast.LENGTH_SHORT).show();
-
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public static ArrayList<Items> readEvents(Context context) {
 		ArrayList<Items> classAndEvent = new ArrayList<Items>();
 		Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());
 		Cursor cursor = context.getContentResolver().query(
 				uri,
 				new String[] { CalendarProvider.DESCRIPTION,
-						CalendarProvider.EVENT }, null, null, null);// ,
+						CalendarProvider.EVENT, CalendarProvider.END }, null, null, null);// ,
 																	// " event = ? ",
 																	// null,
 																	// null);
 		cursor.moveToFirst();
 		String CName[] = new String[cursor.getCount()];
 		for (int i = 0; i < CName.length; i++) {
+			Date date = new Date(Long.parseLong(cursor.getString(2)));
+			//Toast.makeText(context, date.toString() + "   asdfasf    " + String.valueOf(date.getYear()+1900), Toast.LENGTH_SHORT).show();
 			classAndEvent.add(new Items(cursor.getString(0), cursor
-					.getString(1)));
+					.getString(1), date.getDate(), date.getMonth(), date.getYear()+1900));
 			CName[i] = cursor.getString(0);
 			cursor.moveToNext();
 		}
