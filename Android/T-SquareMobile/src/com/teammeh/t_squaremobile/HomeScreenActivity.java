@@ -30,6 +30,7 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -216,13 +217,26 @@ public class HomeScreenActivity extends Activity {
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int id) {
-										// if this button is clicked, close
-										// current activity
+										// if this button is clicked, delete event
+										Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());
+										String selection=""+CalendarProvider.EVENT+"=?";
+							            //String[] args = new String[] {"Event name"};
+										//String selection=""+CalendarProvider.EVENT+"="+getAssign;//+" AND "+
+										//CalendarProvider.DESCRIPTION+"="+getClass;
+										getContentResolver().delete(uri, selection , null);
+										//Cursor cursor = getContentResolver().query(uri, new String[] {CalendarProvider.DESCRIPTION},
+										//		null, null, null);
+										//cursor.moveToFirst();
+										///for (int i = 0; i < cursor.getCount(); i++){
+										//	Toast.makeText(getApplicationContext(), cursor.getString(0), Toast.LENGTH_SHORT).show();
+										//	cursor.moveToNext();
+										//}
+							            //calendar.refreshCalendar();
 										// AddAssignments.deleteEvent(getBaseContext(),
 										// getClass, getAssign);
 										// Toast.makeText(getBaseContext(),
 										// test, Toast.LENGTH_SHORT).show();
-										calendar.refreshCalendar();
+										//calendar.refreshCalendar();
 									}
 								})
 						.setNegativeButton("Cancel",

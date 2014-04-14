@@ -146,6 +146,7 @@ public class AssignmentFragment extends ListFragment {
 				Assignment assignment = new Assignment(obj);
 				list.add(assignment);
 				// To Put Assignments In the Calendar
+				if(assignment.getDueDate() != null){
 				String date = assignment.getDueDate();
 				String delims = "[ ]";
 				String[] dateItems = date.split(delims);
@@ -185,7 +186,7 @@ public class AssignmentFragment extends ListFragment {
 								myClassName, assignName, year, month, day);
 
 				}
-
+				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
