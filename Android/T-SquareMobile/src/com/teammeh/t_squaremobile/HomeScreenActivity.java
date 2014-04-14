@@ -180,9 +180,9 @@ public class HomeScreenActivity extends Activity {
 		// myClasses[i] = courses.get(i).getClassName();
 		// }
 
-		if (savedInstanceState == null) {
-			selectItem(0);
-		}
+//		if (savedInstanceState == null) {
+//			selectItem(0);
+//		}
 
 		additems = new ArrayList<Items>();
 
@@ -439,16 +439,13 @@ public class HomeScreenActivity extends Activity {
 	private void selectItem(int position) {
 		// Update the content
 		Intent intent;
-		if (position == 0) {
-		} else {
-			intent = new Intent(HomeScreenActivity.this, Classes.class);
-			intent.putExtra("className", courses.get(position).getClassName());
-			intent.putExtra("sessionName", sessionName);
-			intent.putExtra("sessionId", sessionId);
-			intent.putExtra("classId", courses.get(position).getClassId());
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			this.startActivity(intent);
-		}
+		intent = new Intent(HomeScreenActivity.this, Classes.class);
+		intent.putExtra("className", courses.get(position).getClassName());
+		intent.putExtra("sessionName", sessionName);
+		intent.putExtra("sessionId", sessionId);
+		intent.putExtra("classId", courses.get(position).getClassId());
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		this.startActivity(intent);
 		// update selected item and title, then close the drawer
 		myDrawerList.setItemChecked(position, true);
 		myDrawerLayout.closeDrawer(myDrawerList);
