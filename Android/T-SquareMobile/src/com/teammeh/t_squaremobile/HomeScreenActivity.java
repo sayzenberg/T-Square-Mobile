@@ -215,6 +215,7 @@ public class HomeScreenActivity extends Activity {
 						.setCancelable(false)
 						.setPositiveButton("Delete",
 								new DialogInterface.OnClickListener() {
+									@SuppressWarnings("unchecked")
 									public void onClick(DialogInterface dialog,
 											int id) {
 										// if this button is clicked, delete event
