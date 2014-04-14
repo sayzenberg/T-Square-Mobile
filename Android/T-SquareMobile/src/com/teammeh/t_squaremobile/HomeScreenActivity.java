@@ -218,9 +218,10 @@ public class HomeScreenActivity extends Activity {
 											int id) {
 										// if this button is clicked, delete event
 										Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());
-										String selection=""+CalendarProvider.EVENT+"=?";
+//										String selection=""+CalendarProvider.EVENT+"=?";
 							            //String[] args = new String[] {"Event name"};
-										//String selection=""+CalendarProvider.EVENT+"="+getAssign;//+" AND "+
+										String selection="("+CalendarProvider.EVENT+"="+"\""+getAssign + "\" AND " + CalendarProvider.DESCRIPTION
+												+ "=\"" + getClass + "\")";
 										//CalendarProvider.DESCRIPTION+"="+getClass;
 										getContentResolver().delete(uri, selection , null);
 										//Cursor cursor = getContentResolver().query(uri, new String[] {CalendarProvider.DESCRIPTION},
