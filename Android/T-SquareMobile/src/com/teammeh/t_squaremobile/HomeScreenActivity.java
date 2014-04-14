@@ -86,8 +86,7 @@ public class HomeScreenActivity extends Activity {
 
 	// Variables for Settings, Notifications
 	private SharedPreferences prefs;
-	private boolean enable_notis;
-
+	
 	// Variables for calendar and listview
 	public ExtendedCalendarView calendar;
 	private ArrayAdapter adapter1;
@@ -236,7 +235,8 @@ public class HomeScreenActivity extends Activity {
 										// getClass, getAssign);
 										// Toast.makeText(getBaseContext(),
 										// test, Toast.LENGTH_SHORT).show();
-										//calendar.refreshCalendar();
+										adapter1.notifyDataSetChanged();
+										calendar.refreshCalendar();
 									}
 								})
 						.setNegativeButton("Cancel",
