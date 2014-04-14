@@ -194,7 +194,7 @@ public class HomeScreenActivity extends Activity {
 		listview.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
-					int position, long id) {
+					final int position, long id) {
 				// TODO Auto-generated method stub
 				Items selectAssignment = (Items) adapter1.getItem(position);
 				final String getClass = selectAssignment.getTitle();
@@ -236,8 +236,9 @@ public class HomeScreenActivity extends Activity {
 										// getClass, getAssign);
 										// Toast.makeText(getBaseContext(),
 										// test, Toast.LENGTH_SHORT).show();
-										adapter1.notifyDataSetChanged();
+										adapter1.remove(adapter1.getItem(position));
 										calendar.refreshCalendar();
+										adapter1.notifyDataSetChanged();
 									}
 								})
 						.setNegativeButton("Cancel",
