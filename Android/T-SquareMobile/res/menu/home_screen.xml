@@ -18,5 +18,6 @@
         android:title="@string/action_add_assignment"
         android:showAsAction="ifRoom"/>
     <item android:id="@+id/action_refreshlist" android:title="@string/course_refresh" android:orderInCategory="100" android:showAsAction="never"></item>
+    <item android:id="@+id/action_edit_courses" android:title="@string/edit_courses"></item>
 
 </menu>

@@ -30,6 +30,7 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.app.AlertDialog.Builder;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -194,7 +195,7 @@ public class HomeScreenActivity extends Activity {
 		listview.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
-					int position, long id) {
+					final int position, long id) {
 				// TODO Auto-generated method stub
 				Items selectAssignment = (Items) adapter1.getItem(position);
 				final String getClass = selectAssignment.getTitle();
@@ -236,8 +237,9 @@ public class HomeScreenActivity extends Activity {
 										// getClass, getAssign);
 										// Toast.makeText(getBaseContext(),
 										// test, Toast.LENGTH_SHORT).show();
-										adapter1.notifyDataSetChanged();
+										adapter1.remove(adapter1.getItem(position));
 										calendar.refreshCalendar();
+										adapter1.notifyDataSetChanged();
 									}
 								})
 						.setNegativeButton("Cancel",
@@ -389,6 +391,35 @@ public class HomeScreenActivity extends Activity {
 		case R.id.action_logout:
 			// Logout of tsquare
 			logout();
+			return true;
+		case R.id.action_edit_courses:
+			final ArrayList<Integer> selected = new ArrayList<Integer>();
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.edit_courses)
+			.setMultiChoiceItems(myClasses, null, new DialogInterface.OnMultiChoiceClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+					if(isChecked) {
+						selected.add(which);
+					} else if(selected.contains(which)) {
+						selected.remove(Integer.valueOf(which));
+					}
+				}
+			})
+			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int id) {
+					// do stuff here
+				}
+			})
+			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			});
+			builder.create();
+			builder.show();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

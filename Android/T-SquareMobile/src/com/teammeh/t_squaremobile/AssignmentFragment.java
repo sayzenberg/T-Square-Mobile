@@ -197,6 +197,7 @@ public class AssignmentFragment extends ListFragment {
 		if (assignments != null)
 			setListAdapter(new AssignmentListAdapter(getActivity(),
 					android.R.layout.simple_list_item_1, assignments));
+			//TODO: FIX THIS! NullPointerException
 	}
 
 	protected void getAssignments() {

@@ -27,6 +27,7 @@ int drawable red 0x7f020012
 int id EditTextAddAssignment 0x7f09000a
 int id EditTextEnterCourse 0x7f090009
 int id action_add_assignment 0x7f09001d
+int id action_edit_courses 0x7f09001f
 int id action_logout 0x7f09001c
 int id action_refreshlist 0x7f09001e
 int id action_settings 0x7f09001b
@@ -88,6 +89,7 @@ int string assignment_due_date 0x7f050014
 int string course_refresh 0x7f050024
 int string drawer_close 0x7f050010
 int string drawer_open 0x7f05000f
+int string edit_courses 0x7f050025
 int string friday 0x7f050005
 int string gradebook_button_text 0x7f050023
 int string hello_world 0x7f05000d

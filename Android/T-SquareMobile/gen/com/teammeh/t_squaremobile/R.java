@@ -54,6 +54,7 @@ public final class R {
         public static final int EditTextAddAssignment=0x7f09000a;
         public static final int EditTextEnterCourse=0x7f090009;
         public static final int action_add_assignment=0x7f09001d;
+        public static final int action_edit_courses=0x7f09001f;
         public static final int action_logout=0x7f09001c;
         public static final int action_refreshlist=0x7f09001e;
         public static final int action_settings=0x7f09001b;
@@ -125,6 +126,7 @@ public final class R {
         /**  Navigation Drawer 
          */
         public static final int drawer_open=0x7f05000f;
+        public static final int edit_courses=0x7f050025;
         public static final int friday=0x7f050005;
         public static final int gradebook_button_text=0x7f050023;
         public static final int hello_world=0x7f05000d;
