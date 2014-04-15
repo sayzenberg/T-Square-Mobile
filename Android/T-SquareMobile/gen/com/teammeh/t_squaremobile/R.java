@@ -89,17 +89,18 @@ public final class R {
         public static final int activity_broadcast_receiver=0x7f030001;
         public static final int activity_classes=0x7f030002;
         public static final int activity_home_screen=0x7f030003;
-        public static final int activity_login=0x7f030004;
-        public static final int activity_notification=0x7f030005;
-        public static final int add_assignments_dialog=0x7f030006;
-        public static final int day_of_week=0x7f030007;
-        public static final int day_view=0x7f030008;
-        public static final int drawer_list_item=0x7f030009;
-        public static final int fragment_classes_dummy=0x7f03000a;
-        public static final int fragment_gradebook=0x7f03000b;
-        public static final int list_item=0x7f03000c;
-        public static final int listview_assignments=0x7f03000d;
-        public static final int preferences=0x7f03000e;
+        public static final int activity_home_screen_tablet=0x7f030004;
+        public static final int activity_login=0x7f030005;
+        public static final int activity_notification=0x7f030006;
+        public static final int add_assignments_dialog=0x7f030007;
+        public static final int day_of_week=0x7f030008;
+        public static final int day_view=0x7f030009;
+        public static final int drawer_list_item=0x7f03000a;
+        public static final int fragment_classes_dummy=0x7f03000b;
+        public static final int fragment_gradebook=0x7f03000c;
+        public static final int list_item=0x7f03000d;
+        public static final int listview_assignments=0x7f03000e;
+        public static final int preferences=0x7f03000f;
     }
     public static final class menu {
         public static final int add_assignments=0x7f080000;

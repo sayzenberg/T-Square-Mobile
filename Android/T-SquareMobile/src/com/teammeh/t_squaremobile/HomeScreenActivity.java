@@ -102,8 +102,12 @@ public class HomeScreenActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_home_screen);
-
+		Configuration config = getResources().getConfiguration();
+        if (config.smallestScreenWidthDp >= 600) {
+        	setContentView(R.layout.activity_home_screen_tablet);
+        } else {
+        	setContentView(R.layout.activity_home_screen);
+        }
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 		calendar = (ExtendedCalendarView) findViewById(R.id.calendar);

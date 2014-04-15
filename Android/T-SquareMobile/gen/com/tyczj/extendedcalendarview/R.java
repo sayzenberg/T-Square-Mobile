@@ -34,8 +34,8 @@ public final class R {
 		public static final int textView1 = 0x7f09000d;
 	}
 	public static final class layout {
-		public static final int day_of_week = 0x7f030007;
-		public static final int day_view = 0x7f030008;
+		public static final int day_of_week = 0x7f030008;
+		public static final int day_view = 0x7f030009;
 	}
 	public static final class string {
 		public static final int app_name = 0x7f050000;
