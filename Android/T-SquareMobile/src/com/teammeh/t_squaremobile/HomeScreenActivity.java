@@ -310,7 +310,7 @@ public class HomeScreenActivity extends Activity {
 		for (int i = 0; i < courses.size(); i++) {
 			myClasses[i] = courses.get(i).getClassName();
 		}
-		System.out.println(myClasses[0]);
+//		System.out.println(myClasses[0]);
 		myDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		myDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -410,7 +410,15 @@ public class HomeScreenActivity extends Activity {
 			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int id) {
-					// do stuff here
+					ArrayList<Course> temp = new ArrayList<Course>();
+					
+					for(Integer i : selected) {
+						temp.add(courses.get(i));
+					}
+					courses = temp;
+					GlobalState.setClasses(courses);
+					writeCoursesToFile();
+					drawSidebar();
 				}
 			})
 			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -421,6 +429,7 @@ public class HomeScreenActivity extends Activity {
 			});
 			builder.create();
 			builder.show();
+
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
