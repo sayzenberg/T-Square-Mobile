@@ -5,8 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -20,10 +24,15 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import com.tyczj.extendedcalendarview.CalendarProvider;
+import com.tyczj.extendedcalendarview.ExtendedCalendarView;
 
 import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,11 +40,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
-
-import com.tyczj.extendedcalendarview.CalendarProvider;
-import com.tyczj.extendedcalendarview.Day;
-import com.tyczj.extendedcalendarview.Event;
-import com.tyczj.extendedcalendarview.ExtendedCalendarView;
 
 /**
  * A fragment representing a list of Items.
@@ -143,7 +147,36 @@ public class AssignmentFragment extends ListFragment {
 		for (int i = 0; i < items.length(); i++) {
 			try {
 				JSONObject obj = items.getJSONObject(i);
-				Assignment assignment = new Assignment(obj);
+				Assignment assignment;
+				if(obj.optString("class_id").equals("")) {
+					assignment = new Assignment(obj);
+				} else {
+					String assignmentId = obj.optString("assignment_id");
+					String title = obj.optString("title");
+					String openDate = obj.optString("open_date");
+					if(!openDate.equals("")) {
+						Date date = new Date(Long.parseLong(openDate));
+						DateFormat format = new SimpleDateFormat("MMM dd, yyyy hh:mm aaa");
+						format.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+						openDate = format.format(date);
+					}
+					String dueDate = obj.optString("due_date");
+					if(!dueDate.equals("")) {
+						Date date = new Date(Long.parseLong(dueDate));
+						DateFormat format = new SimpleDateFormat("MMM dd, yyyy hh:mm aaa");
+						format.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+						dueDate = format.format(date);
+
+					}
+					String instructions = obj.optString("instructions");
+					if(instructions != "") {
+						Document doc = Jsoup.parseBodyFragment(instructions);
+						Element bodyElement = doc.body();
+						instructions = bodyElement.text();
+					}
+					assignment = new Assignment(assignmentId, title, openDate, dueDate, instructions);
+
+				}
 				list.add(assignment);
 				// To Put Assignments In the Calendar
 				if(assignment.getDueDate() != null){
@@ -199,9 +232,14 @@ public class AssignmentFragment extends ListFragment {
 					android.R.layout.simple_list_item_1, assignments));
 			//TODO: FIX THIS! NullPointerException
 	}
+	
+	
 
 	protected void getAssignments() {
-		String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getAssignmentsByClass";
+		String url;
+		if(classId.equals("gtc-9371-3996-558c-9d8c-41046acd8ba4")) {
+			url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getDatabaseAssignmentsByClass";
+		} else url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getAssignmentsByClass";
 		HttpPost post = new HttpPost(url);
 		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 		postParameters.add(new BasicNameValuePair("classId", classId));
