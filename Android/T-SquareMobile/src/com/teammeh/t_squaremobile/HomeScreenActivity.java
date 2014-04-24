@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +44,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.CalendarContract.Events;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -94,6 +96,7 @@ public class HomeScreenActivity extends Activity {
 	private ArrayList<Items> additems;
 	private ListView listview;
 	private ContentValues values;
+	private ContentValues values2;
 
 	// CAS Call
 	String sessionName;
@@ -230,6 +233,12 @@ public class HomeScreenActivity extends Activity {
 												+ "=\"" + getClass + "\")";
 										//CalendarProvider.DESCRIPTION+"="+getClass;
 										getContentResolver().delete(uri, selection , null);
+										
+										String eventUri = "content://com.android.calendar/events";
+										Uri uriAndroidCal = Uri.parse((eventUri).toString());
+										String selectionAndroidCal="("+Events.TITLE+"="+"\""+getAssign + "\" AND " + CalendarProvider.DESCRIPTION
+												+ "=\"" + getClass + "\")";
+										getContentResolver().delete(uriAndroidCal, selectionAndroidCal, null);
 										//Cursor cursor = getContentResolver().query(uri, new String[] {CalendarProvider.DESCRIPTION},
 										//		null, null, null);
 										//cursor.moveToFirst();
@@ -532,6 +541,15 @@ public class HomeScreenActivity extends Activity {
 					values = AddAssignments.addToCal(assignment_course,
 							assignment_name, assignment_year, assignment_month,
 							assignment_day);
+					//Date date = new Date(assignment_year-1900, assignment_month, assignment_day);
+					//Toast.makeText(getApplicationContext(), date.toString(), Toast.LENGTH_LONG).show();
+					//Add event to google calendar
+					AddAssignments.addToGoogleCalendar(HomeScreenActivity.this,
+							assignment_course, assignment_name, assignment_year, 
+							assignment_month, assignment_day);
+					//Uri uri2 = getContentResolver().insert(
+					//		Uri.parse("content://com.android.calendar/events"), values2);
+					
 					Uri uri = getContentResolver().insert(
 							CalendarProvider.CONTENT_URI, values);
 					// calendar = (ExtendedCalendarView)

@@ -3,9 +3,11 @@ package com.teammeh.t_squaremobile;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -17,7 +19,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.provider.CalendarContract.Events;
+import android.provider.CalendarContract.Reminders;
 import android.text.format.Time;
 import android.widget.Toast;
 
@@ -214,4 +219,33 @@ public class AddAssignments {
 		// CalendarProvider.EVENT + "=" + assignmentName, selectionArgs)
 		// return cursor2;
 	}
+	
+	public static void addToGoogleCalendar(Activity activity, String course, String description, 
+			int year, int month, int day){
+		Calendar cal = new GregorianCalendar(year, month, day);
+		
+		String eventUriString = "content://com.android.calendar/events";
+		ContentValues values = new ContentValues();
+		TimeZone tz = TimeZone.getDefault();
+		values.put(Events.CALENDAR_ID, 1);
+		values.put(Events.DTSTART, cal.getTimeInMillis());
+		values.put(Events.DTEND, cal.getTimeInMillis());
+		values.put(Events.TITLE, description);
+		values.put(Events.DESCRIPTION, course);
+		values.put(Events.EVENT_LOCATION, "");
+		values.put(Events.EVENT_TIMEZONE, tz.getID());
+		values.put(Events.HAS_ALARM, 1);
+		values.put(Events.ALL_DAY, 1);
+		
+		Uri eventUri = activity.getApplicationContext().getContentResolver().insert(Uri.parse(eventUriString), values);
+		long eventID = Long.parseLong(eventUri.getLastPathSegment());
+		String reminderUriString = "content://com.android.calendar/reminders";
+		
+		ContentValues reminderValues = new ContentValues();
+		reminderValues.put(Reminders.EVENT_ID, eventID);
+		reminderValues.put(Reminders.MINUTES, 1440);
+		reminderValues.put(Reminders.METHOD, 2);
+		
+		Uri reminderUri = activity.getApplicationContext().getContentResolver().insert(Uri.parse(reminderUriString), reminderValues);
+	};
 }
