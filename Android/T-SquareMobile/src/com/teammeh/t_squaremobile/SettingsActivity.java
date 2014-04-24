@@ -25,7 +25,6 @@ public class SettingsActivity extends PreferenceActivity {
 
 	                if (key.equals("set_notifications")) {
 	                	if (prefs.getBoolean("set_notifications", true) == true) {
-	                		//Toast.makeText(getApplicationContext(), String.valueOf(prefs.getBoolean("set_notifications", true)), Toast.LENGTH_SHORT).show();
 	                		AddAssignments.setAllNotifications(getApplicationContext());
 	                		return true; // we handled the click
 	                	}

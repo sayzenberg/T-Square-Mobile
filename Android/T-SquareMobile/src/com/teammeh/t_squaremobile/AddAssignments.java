@@ -3,9 +3,11 @@ package com.teammeh.t_squaremobile;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -17,7 +19,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.provider.CalendarContract.Events;
+import android.provider.CalendarContract.Reminders;
 import android.text.format.Time;
 import android.widget.Toast;
 
@@ -30,16 +35,30 @@ public class AddAssignments {
 	private static NotificationManager notifications;
 	private static SharedPreferences prefs;
 
+	// Adds events to application calendar
+	/**
+	 * 
+	 * @param course 
+	 * @param assignment
+	 * @param startYear
+	 * @param startMonth
+	 * @param startDay
+	 * @return
+	 */
 	public static ContentValues addToCal(String course, String assignment,
 			int startYear, int startMonth, int startDay) {
+		// create object that can store values that ContentResolver can process
 		ContentValues values = new ContentValues();
-		values.put(CalendarProvider.COLOR, Event.COLOR_RED);
-		values.put(CalendarProvider.DESCRIPTION, course);
-		values.put(CalendarProvider.EVENT, assignment);
-
+		values.put(CalendarProvider.COLOR, Event.COLOR_RED); // Event color
+		values.put(CalendarProvider.DESCRIPTION, course); // Course name
+		values.put(CalendarProvider.EVENT, assignment); // Assignment Name
+		
+		// Initialize calendar and time zone
+		/* thhththththt	 */
 		Calendar cal = Calendar.getInstance();
 		TimeZone tz = TimeZone.getDefault();
-
+		
+		// set the start date and the end date of the event
 		cal.set(startYear, startMonth, startDay, 0, 0);
 		int startDayJulian = Time.getJulianDay(cal.getTimeInMillis(),
 				TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal
@@ -55,20 +74,17 @@ public class AddAssignments {
 		values.put(CalendarProvider.END, cal.getTimeInMillis());
 		values.put(CalendarProvider.END_DAY, endDayJulian);
 
-		// Uri uri = getContentResolver().insert(CalendarProvider.CONTENT_URI,
-		// values);
 		return values;
 	}
 
+	// Sets a notification for each event
 	public static void setSingleNotification(Context context, String course,
 			String assignment, int year, int month, int day) {
-
+		
+		// access the shared settings of the application
 		prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		// if (Integer.parseInt(prefs.getString("updates_notifications",
-		// "null")) != 0){
-		// String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
-		// "Aug", "Sept", "Oct", "Nov", "Dec"};
-		// String date = months[month] + " " + day + ", " + year;
+		
+		// If the variable "set_notifications" is true, then set the event
 		if (prefs.getBoolean("set_notifications", true) == true) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.set(Calendar.MONTH, month);
@@ -77,15 +93,17 @@ public class AddAssignments {
 			calendar.set(Calendar.HOUR_OF_DAY, 0);
 			calendar.set(Calendar.MINUTE, 0);
 			calendar.set(Calendar.SECOND, 0);
-
+			
+			// Returns current time in milliseconds
 			long currentTime = System.currentTimeMillis();
-
-			long eventTime = calendar.getTimeInMillis();// Returns Event Time in
-														// milliseconds
-			int noOfDays = 1; // Integer.parseInt(prefs.getString("updates_notifications",
-								// "null"));
-			long reminderTime = eventTime - (noOfDays * 86400000);// Time in
-			//milliseconds
+			
+			// Returns Event Time in milliseconds
+			long eventTime = calendar.getTimeInMillis();
+			
+			int noOfDays = 1; 
+			
+			// Gives the reminder time a day before due date
+			long reminderTime = eventTime - (noOfDays * 86400000);
 
 			// If the current time is after the event date, do not add
 			// notifications
@@ -93,9 +111,6 @@ public class AddAssignments {
 
 				// Set alarm
 				Intent myIntent = new Intent(context, AlarmReceiver.class);
-				// /myIntent.putExtra("course", course);
-				// /myIntent.putExtra("assignment", assignment);
-				// /myIntent.putExtra("date", date);
 
 				pendingIntent = PendingIntent.getBroadcast(context, 0,
 						myIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -107,14 +122,16 @@ public class AddAssignments {
 		}
 		// }
 	}
-
+	
+	// Cancels all notifications set by the application
 	public static void cancelAllNotifications(Context context) {
 		NotificationManager nMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		nMgr.cancelAll();
 	}
 
+	// Recreates all notifications if all notifications were canceled before
 	public static void setAllNotifications(Context context) {
-		// ArrayList<Items> classAndEvent = new ArrayList<Items>();
+		
 		Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());
 		Cursor cursor = context.getContentResolver().query(uri,
 				new String[] { CalendarProvider.END }, null, null, null);
@@ -147,9 +164,6 @@ public class AddAssignments {
 
 				// Set alarm
 				Intent myIntent = new Intent(context, AlarmReceiver.class);
-				// /myIntent.putExtra("course", course);
-				// /myIntent.putExtra("assignment", assignment);
-				// /myIntent.putExtra("date", date);
 
 				pendingIntent = PendingIntent.getBroadcast(context, 0,
 						myIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -177,7 +191,6 @@ public class AddAssignments {
 		String CName[] = new String[cursor.getCount()];
 		for (int i = 0; i < CName.length; i++) {
 			Date date = new Date(Long.parseLong(cursor.getString(2)));
-			//Toast.makeText(context, date.toString() + "   asdfasf    " + String.valueOf(date.getYear()+1900), Toast.LENGTH_SHORT).show();
 			classAndEvent.add(new Items(cursor.getString(0), cursor
 					.getString(1), date.getDate(), date.getMonth(), date.getYear()+1900));
 			CName[i] = cursor.getString(0);
@@ -185,33 +198,51 @@ public class AddAssignments {
 		}
 		return classAndEvent;
 	}
-
+	
+	//I didn't use this
 	public static void deleteEvent(Context context, String className,
 			String assignmentName) {
 		Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());
 		ContentResolver resolver = context.getContentResolver();
-		// Cursor cursor = resolver.query(uri, new String[]
-		// {CalendarProvider.DESCRIPTION, CalendarProvider.EVENT}, null, null,
-		// null);
-		// while(cursor.moveToNext()) {
-		// long eventId =
-		// cursor.getLong(cursor.getColumnIndex(CalendarProvider.EVENT));
-		// resolver.delete(ContentUris.withAppendedId(uri, eventId), null,
-		// null);
-		// }
-		// cursor.close();
-		// Cursor cursor = context.getContentResolver().query(uri,
-		// new String[] {CalendarProvider.DESCRIPTION, CalendarProvider.EVENT},
-		// null, null, null);
+		
 		context.getContentResolver().delete(
 				uri,
 				CalendarProvider.DESCRIPTION + "=" + className + " AND "
 						+ CalendarProvider.EVENT + "=" + assignmentName, null);
-		// cursor.close();
-
-		// Cursor cursor = context.getContentResolver().delete(uri,
-		// CalendarProvider.DESCRIPTION + "=" + className + " and " +
-		// CalendarProvider.EVENT + "=" + assignmentName, selectionArgs)
-		// return cursor2;
 	}
+	
+	
+	// Add events to google calendar
+	public static void addToGoogleCalendar(Activity activity, String course, String description, 
+			int year, int month, int day){
+		
+		//Create a calendar event to get the specific day in milliseconds
+		Calendar cal = new GregorianCalendar(year, month, day);
+		
+		String eventUriString = "content://com.android.calendar/events";
+		ContentValues values = new ContentValues();
+		TimeZone tz = TimeZone.getDefault();
+		values.put(Events.CALENDAR_ID, 1);
+		values.put(Events.DTSTART, cal.getTimeInMillis());
+		values.put(Events.DTEND, cal.getTimeInMillis());
+		values.put(Events.TITLE, course + " - " + description);
+		//values.put(Events.DESCRIPTION, course);
+		values.put(Events.EVENT_LOCATION, "");
+		values.put(Events.EVENT_TIMEZONE, tz.getID());
+		values.put(Events.HAS_ALARM, 1);
+		values.put(Events.ALL_DAY, 1);
+		
+		Uri eventUri = activity.getApplicationContext().getContentResolver().insert(Uri.parse(eventUriString), values);
+		
+		// Create a reminder for the calendar event
+		long eventID = Long.parseLong(eventUri.getLastPathSegment());
+		String reminderUriString = "content://com.android.calendar/reminders";
+		
+		ContentValues reminderValues = new ContentValues();
+		reminderValues.put(Reminders.EVENT_ID, eventID);
+		reminderValues.put(Reminders.MINUTES, 1440);
+		reminderValues.put(Reminders.METHOD, 2);
+		
+		Uri reminderUri = activity.getApplicationContext().getContentResolver().insert(Uri.parse(reminderUriString), reminderValues);
+	};
 }
