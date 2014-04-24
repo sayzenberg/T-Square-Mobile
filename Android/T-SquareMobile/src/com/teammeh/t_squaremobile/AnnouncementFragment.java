@@ -115,28 +115,29 @@ public class AnnouncementFragment extends ListFragment {
 	public void parseJson(JSONObject items) {
 		ArrayList<Announcement> list = new ArrayList<Announcement>();
 		JSONArray array;
-		try {
-			array = items.getJSONArray("announcement_collection");
-//			System.out.println(array.length());
-			int i = 0;
-			JSONObject obj = array.optJSONObject(i);
-			while(obj != null) {
-				list.add(new Announcement(obj));
-				i++;
-				obj = array.optJSONObject(i);
+		if(items != null) {
+			try {
+				array = items.getJSONArray("announcement_collection");
+				//			System.out.println(array.length());
+				int i = 0;
+				JSONObject obj = array.optJSONObject(i);
+				while(obj != null) {
+					list.add(new Announcement(obj));
+					i++;
+					obj = array.optJSONObject(i);
 
+				}
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			if(list.size() == 0) {
+				list.add(new Announcement("0", "", "No announcements at this time", "", ""));
+			}
+			this.announcements = list;
+			setListAdapter(new AnnouncementListAdapter(getActivity(),
+					android.R.layout.simple_list_item_1, announcements));
 		}
-		if(list.size() == 0) {
-			list.add(new Announcement("0", "", "No announcements at this time", "", ""));
-		}
-		this.announcements = list;
-		setListAdapter(new AnnouncementListAdapter(getActivity(),
-				android.R.layout.simple_list_item_1, announcements));
-
 	}
 
 	protected void getAnnouncements() {
@@ -173,9 +174,9 @@ public class AnnouncementFragment extends ListFragment {
 					sb.append(line + "\n");
 				}
 				result = sb.toString();
-//				System.out.println(result);
+				//				System.out.println(result);
 				jObject = new JSONObject(result);
-//				System.out.println("Length of JSON: " + jObject.length());
+				//				System.out.println("Length of JSON: " + jObject.length());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -202,12 +203,12 @@ public class AnnouncementFragment extends ListFragment {
 			try {
 				Header[] headers = post.getAllHeaders();
 				for(Header header : headers) {
-//					System.out.println(header.getName() + " " + header.getValue());
+					//					System.out.println(header.getName() + " " + header.getValue());
 				}
 				response = client.execute(post);
 				entity = response.getEntity();
 				jObject = extractJson(entity);
-//				System.out.println(response.getStatusLine());
+				//				System.out.println(response.getStatusLine());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

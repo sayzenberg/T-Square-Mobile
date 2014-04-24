@@ -19,6 +19,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -27,9 +28,6 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
-import com.tyczj.extendedcalendarview.CalendarProvider;
-import com.tyczj.extendedcalendarview.ExtendedCalendarView;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -40,6 +38,9 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
+
+import com.tyczj.extendedcalendarview.CalendarProvider;
+import com.tyczj.extendedcalendarview.ExtendedCalendarView;
 
 /**
  * A fragment representing a list of Items.
@@ -64,6 +65,8 @@ public class AssignmentFragment extends ListFragment {
 	String myClassName;
 	String myClassId;
 	
+	Object lock = new Object();
+
 	private String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
 
 	// Context context;
@@ -143,26 +146,30 @@ public class AssignmentFragment extends ListFragment {
 		String months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
 				"Aug", "Sept", "Oct", "Nov", "Dec" };
 		ArrayList<Assignment> list = new ArrayList<Assignment>();
+		boolean fromDb = false;
 
 		for (int i = 0; i < items.length(); i++) {
 			try {
 				JSONObject obj = items.getJSONObject(i);
 				Assignment assignment;
 				if(obj.optString("class_id").equals("")) {
+					fromDb = true;
 					assignment = new Assignment(obj);
 				} else {
 					String assignmentId = obj.optString("assignment_id");
 					String title = obj.optString("title");
-					String openDate = obj.optString("open_date");
-					if(!openDate.equals("")) {
-						Date date = new Date(Long.parseLong(openDate));
+					String openDateEpoch = obj.optString("open_date");
+					String openDate = "";
+					if(!openDateEpoch.equals("")) {
+						Date date = new Date(Long.parseLong(openDateEpoch));
 						DateFormat format = new SimpleDateFormat("MMM dd, yyyy hh:mm aaa");
 						format.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 						openDate = format.format(date);
 					}
-					String dueDate = obj.optString("due_date");
-					if(!dueDate.equals("")) {
-						Date date = new Date(Long.parseLong(dueDate));
+					String dueDateEpoch = obj.optString("due_date");
+					String dueDate = "";
+					if(!dueDateEpoch.equals("")) {
+						Date date = new Date(Long.parseLong(dueDateEpoch));
 						DateFormat format = new SimpleDateFormat("MMM dd, yyyy hh:mm aaa");
 						format.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 						dueDate = format.format(date);
@@ -174,43 +181,43 @@ public class AssignmentFragment extends ListFragment {
 						Element bodyElement = doc.body();
 						instructions = bodyElement.text();
 					}
-					assignment = new Assignment(assignmentId, title, openDate, dueDate, instructions);
+					assignment = new Assignment(assignmentId, title, openDate, openDateEpoch, dueDate, dueDateEpoch, instructions);
 
 				}
 				list.add(assignment);
 				// To Put Assignments In the Calendar
 				if(assignment.getDueDate() != null){
-				String date = assignment.getDueDate();
-				String delims = "[ ]";
-				String[] dateItems = date.split(delims);
-				month = Arrays.asList(months).indexOf(dateItems[0]);
-				day = Integer.parseInt(dateItems[1].replace(",", ""));
-				year = Integer.parseInt(dateItems[2]);
-				
-				String assignName = assignment.getTitle();
-				ArrayList<Course> myClass = GlobalState.getClasses();
-				myClassId = classId;
-				for (int k = 0; k < myClass.size(); k++) {
-					if (myClassId.equals(myClass.get(k).getClassId())) {
-						myClassName = myClass.get(k).getClassName();
+					String date = assignment.getDueDate();
+					String delims = "[ ]";
+					String[] dateItems = date.split(delims);
+					month = Arrays.asList(months).indexOf(dateItems[0]);
+					day = Integer.parseInt(dateItems[1].replace(",", ""));
+					year = Integer.parseInt(dateItems[2]);
+
+					String assignName = assignment.getTitle();
+					ArrayList<Course> myClass = GlobalState.getClasses();
+					myClassId = classId;
+					for (int k = 0; k < myClass.size(); k++) {
+						if (myClassId.equals(myClass.get(k).getClassId())) {
+							myClassName = myClass.get(k).getClassName();
+						}
 					}
-				}
-				assignDate = "Due Date: " + months[month] + " " + day + ", " + year;
-				boolean checkEvent = false;
-				ArrayList<Items> eventList = AddAssignments
-						.readEvents(getActivity());
+					assignDate = "Due Date: " + months[month] + " " + day + ", " + year;
+					boolean checkEvent = false;
+					ArrayList<Items> eventList = AddAssignments
+							.readEvents(getActivity());
 
-				for (int k = 0; k < eventList.size(); k++) {
-					checkEvent = checkEvent
-							|| (Arrays.asList(eventList.get(k).getTitle())
-									.contains(myClassName) & Arrays.asList(
-									eventList.get(k).getDescription())
-									.contains(assignName)
-									& Arrays.asList(eventList.get(k).getDate())
-									.contains(assignDate));
-				}
+					for (int k = 0; k < eventList.size(); k++) {
+						checkEvent = checkEvent
+								|| (Arrays.asList(eventList.get(k).getTitle())
+										.contains(myClassName) & Arrays.asList(
+												eventList.get(k).getDescription())
+												.contains(assignName)
+												& Arrays.asList(eventList.get(k).getDate())
+												.contains(assignDate));
+					}
 
-				if (checkEvent == false) {
+					if (checkEvent == false) {
 						values = AddAssignments.addToCal(myClassName,
 								assignName, year, month, day);
 						Uri uri = getActivity().getContentResolver().insert(
@@ -218,7 +225,7 @@ public class AssignmentFragment extends ListFragment {
 						AddAssignments.setSingleNotification(getActivity(),
 								myClassName, assignName, year, month, day);
 
-				}
+					}
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -230,16 +237,21 @@ public class AssignmentFragment extends ListFragment {
 		if (assignments != null)
 			setListAdapter(new AssignmentListAdapter(getActivity(),
 					android.R.layout.simple_list_item_1, assignments));
-			//TODO: FIX THIS! NullPointerException
+		System.out.println("Printed, about to release");
+//		if(fromDb) {
+//			synchronized (lock) { lock.notify(); }
+//		} else 
+		updateDatabaseAssignments();
+		//TODO: FIX THIS! NullPointerException
 	}
-	
-	
+
+
 
 	protected void getAssignments() {
-		String url;
-		if(classId.equals("gtc-9371-3996-558c-9d8c-41046acd8ba4")) {
-			url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getDatabaseAssignmentsByClass";
-		} else url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getAssignmentsByClass";
+		String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getDatabaseAssignmentsByClass";
+//		if(classId.equals("gtc-9371-3996-558c-9d8c-41046acd8ba4")) {
+//			url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getDatabaseAssignmentsByClass";
+//		} else url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getAssignmentsByClass";
 		HttpPost post = new HttpPost(url);
 		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 		postParameters.add(new BasicNameValuePair("classId", classId));
@@ -250,10 +262,69 @@ public class AssignmentFragment extends ListFragment {
 			e.printStackTrace();
 		}
 		new GetAssignmentsTask().execute(post);
+		System.out.println("About to get db");
+//		try {
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		synchronized (lock) {
+//		    try {
+//				lock.wait();
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		} 
+
+		url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getAssignmentsByClass";
+//		if(classId.equals("gtc-9371-3996-558c-9d8c-41046acd8ba4")) {
+//			url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getDatabaseAssignmentsByClass";
+//		} else url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getAssignmentsByClass";
+		post = new HttpPost(url);
+		try {
+			post.setEntity(new UrlEncodedFormEntity(postParameters));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		new GetAssignmentsTask().execute(post);
+
+	}
+
+	protected void updateDatabaseAssignments() {
+		JSONArray array = new JSONArray();
+		try {
+			for(Assignment assignment : this.assignments) {
+				JSONObject obj = new JSONObject();
+				obj.put("classId", this.classId);
+				obj.put("assignmentId", assignment.getAssignmentId());
+				obj.put("title", assignment.getTitle());
+				obj.put("openDate", assignment.getOpenDateEpoch());
+				obj.put("dueDate", assignment.getDueDateEpoch());
+				obj.put("instructions", assignment.getInstructions());
+				array.put(obj);
+			}
+
+			String jsonString = array.toString();
+			System.out.println(jsonString);
+//			StringEntity jsonEntity = null;
+//			jsonEntity = new StringEntity(jsonString);
+			String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/updateDatabaseAssignmentsByClass";
+			HttpPost post = new HttpPost(url);
+			ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+			postParameters.add(new BasicNameValuePair("postData", jsonString));
+			post.setEntity(new UrlEncodedFormEntity(postParameters));
+//			post.setHeader("Content-type", "application/json");
+			new UpdateAssignmentsTask().execute(post);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public class GetAssignmentsTask extends
-			AsyncTask<HttpPost, String, JSONArray> {
+	AsyncTask<HttpPost, String, JSONArray> {
 
 		String mText;
 
@@ -303,11 +374,6 @@ public class AssignmentFragment extends ListFragment {
 			HttpResponse response = null;
 			JSONArray jArray = null;
 			try {
-				Header[] headers = post.getAllHeaders();
-				for (Header header : headers) {
-					// System.out.println(header.getName() + " " +
-					// header.getValue());
-				}
 				response = client.execute(post);
 				entity = response.getEntity();
 				if (response.getStatusLine().toString().contains("504")) {
@@ -344,6 +410,38 @@ public class AssignmentFragment extends ListFragment {
 			// }
 			// }
 		}
+	}
+	
+	public class UpdateAssignmentsTask extends AsyncTask<HttpPost, Integer, Integer> {
+
+		@Override
+		protected Integer doInBackground(HttpPost... params) {
+			DefaultHttpClient client = new DefaultHttpClient();
+			HttpPost post = params[0];
+			post.setHeader("Cookie", sessionName + "=" + sessionId);
+			HttpResponse response = null;
+			int statusCode = 0;
+			try {
+				response = client.execute(post);
+				statusCode = response.getStatusLine().getStatusCode();
+				System.out.println("The response line is: " + response.getStatusLine().toString());
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			client.getConnectionManager().shutdown();
+
+			return statusCode;
+		}
+		
+		@Override
+		protected void onPostExecute(Integer statusCode) {
+			System.out.println("The status is: " + statusCode);
+		}
+		
 	}
 
 	/**
