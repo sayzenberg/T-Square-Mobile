@@ -213,11 +213,11 @@ public class AssignmentFragment extends ListFragment {
 				if (checkEvent == false) {
 						values = AddAssignments.addToCal(myClassName,
 								assignName, year, month, day);
-						AddAssignments.addToGoogleCalendar(getActivity(), 
-								myClassName, assignName, year, month, day);
 						Uri uri = getActivity().getContentResolver().insert(
 								CalendarProvider.CONTENT_URI, values);
 						AddAssignments.setSingleNotification(getActivity(),
+								myClassName, assignName, year, month, day);
+						AddAssignments.addToGoogleCalendar(getActivity(), 
 								myClassName, assignName, year, month, day);
 				}
 				}

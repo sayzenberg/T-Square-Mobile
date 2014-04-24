@@ -36,6 +36,15 @@ public class AddAssignments {
 	private static SharedPreferences prefs;
 
 	// Adds events to application calendar
+	/**
+	 * 
+	 * @param course 
+	 * @param assignment
+	 * @param startYear
+	 * @param startMonth
+	 * @param startDay
+	 * @return
+	 */
 	public static ContentValues addToCal(String course, String assignment,
 			int startYear, int startMonth, int startDay) {
 		// create object that can store values that ContentResolver can process
@@ -45,6 +54,7 @@ public class AddAssignments {
 		values.put(CalendarProvider.EVENT, assignment); // Assignment Name
 		
 		// Initialize calendar and time zone
+		/* thhththththt	 */
 		Calendar cal = Calendar.getInstance();
 		TimeZone tz = TimeZone.getDefault();
 		
@@ -223,6 +233,8 @@ public class AddAssignments {
 		values.put(Events.ALL_DAY, 1);
 		
 		Uri eventUri = activity.getApplicationContext().getContentResolver().insert(Uri.parse(eventUriString), values);
+		
+		// Create a reminder for the calendar event
 		long eventID = Long.parseLong(eventUri.getLastPathSegment());
 		String reminderUriString = "content://com.android.calendar/reminders";
 		
