@@ -215,8 +215,8 @@ public class AddAssignments {
 		values.put(Events.CALENDAR_ID, 1);
 		values.put(Events.DTSTART, cal.getTimeInMillis());
 		values.put(Events.DTEND, cal.getTimeInMillis());
-		values.put(Events.TITLE, description);
-		values.put(Events.DESCRIPTION, course);
+		values.put(Events.TITLE, course + " - " + description);
+		//values.put(Events.DESCRIPTION, course);
 		values.put(Events.EVENT_LOCATION, "");
 		values.put(Events.EVENT_TIMEZONE, tz.getID());
 		values.put(Events.HAS_ALARM, 1);

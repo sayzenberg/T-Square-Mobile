@@ -235,8 +235,9 @@ public class HomeScreenActivity extends Activity {
 										
 										String eventUri = "content://com.android.calendar/events";
 										Uri uriAndroidCal = Uri.parse((eventUri).toString());
-										String selectionAndroidCal="("+Events.TITLE+"="+"\""+getAssign + "\" AND " + CalendarProvider.DESCRIPTION
-												+ "=\"" + getClass + "\")";
+										//String selectionAndroidCal="("+Events.TITLE+"="+"\""+getAssign + "\" AND " + CalendarProvider.DESCRIPTION
+										//		+ "=\"" + getClass + "\")";
+										String selectionAndroidCal="("+Events.TITLE+"="+"\""+getClass + " - " + getAssign + "\")";
 										getContentResolver().delete(uriAndroidCal, selectionAndroidCal, null);
 										
 										adapter1.remove(adapter1.getItem(position));
