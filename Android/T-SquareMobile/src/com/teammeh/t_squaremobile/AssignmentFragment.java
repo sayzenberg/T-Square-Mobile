@@ -182,52 +182,52 @@ public class AssignmentFragment extends ListFragment {
 						instructions = bodyElement.text();
 					}
 					assignment = new Assignment(assignmentId, title, openDate, openDateEpoch, dueDate, dueDateEpoch, instructions);
-					list.add(assignment);
-					// To Put Assignments In the Calendar
-					if(assignment.getDueDate() != null){
-						String date = assignment.getDueDate();
-						String delims = "[ ]";
-						String[] dateItems = date.split(delims);
-						month = Arrays.asList(months).indexOf(dateItems[0]);
-						day = Integer.parseInt(dateItems[1].replace(",", ""));
-						year = Integer.parseInt(dateItems[2]);
+				}
+				list.add(assignment);
+				// To Put Assignments In the Calendar
+				if(assignment.getDueDate() != null){
+					String date = assignment.getDueDate();
+					String delims = "[ ]";
+					String[] dateItems = date.split(delims);
+					month = Arrays.asList(months).indexOf(dateItems[0]);
+					day = Integer.parseInt(dateItems[1].replace(",", ""));
+					year = Integer.parseInt(dateItems[2]);
 
-						String assignName = assignment.getTitle();
-						ArrayList<Course> myClass = GlobalState.getClasses();
-						myClassId = classId;
-						for (int k = 0; k < myClass.size(); k++) {
-							if (myClassId.equals(myClass.get(k).getClassId())) {
-								myClassName = myClass.get(k).getClassName();
-							}
-						}
-						assignDate = "Due Date: " + months[month] + " " + day + ", " + year;
-						boolean checkEvent = false;
-						ArrayList<Items> eventList = AddAssignments
-								.readEvents(getActivity());
-
-						for (int k = 0; k < eventList.size(); k++) {
-							checkEvent = checkEvent
-									|| (Arrays.asList(eventList.get(k).getTitle())
-											.contains(myClassName) & Arrays.asList(
-													eventList.get(k).getDescription())
-													.contains(assignName)
-													& Arrays.asList(eventList.get(k).getDate())
-													.contains(assignDate));
-						}
-
-						if (checkEvent == false) {
-							values = AddAssignments.addToCal(myClassName,
-									assignName, year, month, day);
-							Uri uri = getActivity().getContentResolver().insert(
-									CalendarProvider.CONTENT_URI, values);
-							AddAssignments.setSingleNotification(getActivity(),
-									myClassName, assignName, year, month, day);
-							AddAssignments.addToGoogleCalendar(getActivity(), 
-									myClassName, assignName, year, month, day);
+					String assignName = assignment.getTitle();
+					ArrayList<Course> myClass = GlobalState.getClasses();
+					myClassId = classId;
+					for (int k = 0; k < myClass.size(); k++) {
+						if (myClassId.equals(myClass.get(k).getClassId())) {
+							myClassName = myClass.get(k).getClassName();
 						}
 					}
+					assignDate = "Due Date: " + months[month] + " " + day + ", " + year;
+					boolean checkEvent = false;
+					ArrayList<Items> eventList = AddAssignments
+							.readEvents(getActivity());
+
+					for (int k = 0; k < eventList.size(); k++) {
+						checkEvent = checkEvent
+								|| (Arrays.asList(eventList.get(k).getTitle())
+										.contains(myClassName) & Arrays.asList(
+												eventList.get(k).getDescription())
+												.contains(assignName)
+												& Arrays.asList(eventList.get(k).getDate())
+												.contains(assignDate));
+					}
+
+					if (checkEvent == false) {
+						values = AddAssignments.addToCal(myClassName,
+								assignName, year, month, day);
+						Uri uri = getActivity().getContentResolver().insert(
+								CalendarProvider.CONTENT_URI, values);
+						AddAssignments.setSingleNotification(getActivity(),
+								myClassName, assignName, year, month, day);
+						AddAssignments.addToGoogleCalendar(getActivity(), 
+								myClassName, assignName, year, month, day);
+					}
 				}
-			} catch (JSONException e) {
+			}catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -244,6 +244,7 @@ public class AssignmentFragment extends ListFragment {
 
 		//TODO: FIX THIS! NullPointerException
 	}
+
 
 
 
