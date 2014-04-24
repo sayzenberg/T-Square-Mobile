@@ -226,9 +226,8 @@ public class HomeScreenActivity extends Activity {
 									public void onClick(DialogInterface dialog,
 											int id) {
 										// if this button is clicked, delete event
-										Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());
-//										String selection=""+CalendarProvider.EVENT+"=?";
-							            //String[] args = new String[] {"Event name"};
+										Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());									
+
 										String selection="("+CalendarProvider.EVENT+"="+"\""+getAssign + "\" AND " + CalendarProvider.DESCRIPTION
 												+ "=\"" + getClass + "\")";
 										//CalendarProvider.DESCRIPTION+"="+getClass;
@@ -239,18 +238,7 @@ public class HomeScreenActivity extends Activity {
 										String selectionAndroidCal="("+Events.TITLE+"="+"\""+getAssign + "\" AND " + CalendarProvider.DESCRIPTION
 												+ "=\"" + getClass + "\")";
 										getContentResolver().delete(uriAndroidCal, selectionAndroidCal, null);
-										//Cursor cursor = getContentResolver().query(uri, new String[] {CalendarProvider.DESCRIPTION},
-										//		null, null, null);
-										//cursor.moveToFirst();
-										///for (int i = 0; i < cursor.getCount(); i++){
-										//	Toast.makeText(getApplicationContext(), cursor.getString(0), Toast.LENGTH_SHORT).show();
-										//	cursor.moveToNext();
-										//}
-							            //calendar.refreshCalendar();
-										// AddAssignments.deleteEvent(getBaseContext(),
-										// getClass, getAssign);
-										// Toast.makeText(getBaseContext(),
-										// test, Toast.LENGTH_SHORT).show();
+										
 										adapter1.remove(adapter1.getItem(position));
 										calendar.refreshCalendar();
 										adapter1.notifyDataSetChanged();
