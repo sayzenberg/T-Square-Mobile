@@ -8,7 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
- 
+
+// Class that creates custom adapter for listviews
 public class MyAdapter extends ArrayAdapter<Items> {
  
         private final Context context;

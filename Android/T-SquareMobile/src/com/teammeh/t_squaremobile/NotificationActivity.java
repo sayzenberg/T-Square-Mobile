@@ -37,19 +37,18 @@ public class NotificationActivity extends Service {
        mManager = (NotificationManager) this.getApplicationContext().getSystemService(this.getApplicationContext().NOTIFICATION_SERVICE);
        Intent intent1 = new Intent(this.getApplicationContext(), LoginActivity.class);
      
-       ///String courseName = intent1.getStringExtra("course");
-       ///String assignmentName = intent1.getStringExtra("assignment");
-       ///String dateName = intent1.getStringExtra("date");
-       ///String description = assignmentName + " for " + courseName + " is due on " + dateName;
-       
-       Notification notification = new Notification(R.drawable.ic_launcher, "Assignment notice from BeeSquared", System.currentTimeMillis());
+       //Sets the view of the notification in status bar
+       Notification notification = new Notification(R.drawable.ic_launcher, "Assignment notice from T-Square Mobile", System.currentTimeMillis());
+       // If the activity is already open, notification will not initialize new activity
        intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP| Intent.FLAG_ACTIVITY_CLEAR_TOP);
  
        PendingIntent pendingNotificationIntent = PendingIntent.getActivity( this.getApplicationContext(),0, intent1,PendingIntent.FLAG_UPDATE_CURRENT);
+       // Lets notification be canceled
        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-       notification.setLatestEventInfo(this.getApplicationContext(), "BeeSquared", "You have an assignment due tomorrow!", pendingNotificationIntent);
+       // Displays the content of the notification
+       notification.setLatestEventInfo(this.getApplicationContext(), "T-Square Mobile", "You have an assignment due tomorrow!", pendingNotificationIntent);
  
-       //Check if this works
+       //posts notification in status bar
        mManager.notify((int)(Math.random()*1000), notification);
     }
  
