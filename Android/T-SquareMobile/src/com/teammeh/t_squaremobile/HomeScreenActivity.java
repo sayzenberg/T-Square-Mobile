@@ -2,44 +2,34 @@ package com.teammeh.t_squaremobile;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.PendingIntent;
-import android.app.AlertDialog.Builder;
-import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -48,23 +38,19 @@ import android.provider.CalendarContract.Events;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.text.format.Time;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.tyczj.extendedcalendarview.CalendarProvider;
 import com.tyczj.extendedcalendarview.Day;
-import com.tyczj.extendedcalendarview.Event;
 import com.tyczj.extendedcalendarview.ExtendedCalendarView;
 import com.tyczj.extendedcalendarview.ExtendedCalendarView.OnDayClickListener;
 
@@ -75,8 +61,8 @@ public class HomeScreenActivity extends Activity {
 	private ListView myDrawerList;
 	private ActionBarDrawerToggle myDrawerToggle;
 	private String[] myClasses;
-	private String className = "";
 	private ArrayList<Course> courses;
+	private ArrayList<Course> activeCourses;
 
 	// Variables to add assignments
 	private String assignment_course;
@@ -89,7 +75,7 @@ public class HomeScreenActivity extends Activity {
 
 	// Variables for Settings, Notifications
 	private SharedPreferences prefs;
-	
+
 	// Variables for calendar and listview
 	public ExtendedCalendarView calendar;
 	private ArrayAdapter adapter1;
@@ -101,16 +87,18 @@ public class HomeScreenActivity extends Activity {
 	// CAS Call
 	String sessionName;
 	String sessionId;
+	GetDatabaseClassesTask dbClassesTask;
+	UpdateDatabaseClassesTask updateDbClassesTask;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Configuration config = getResources().getConfiguration();
-        if (config.smallestScreenWidthDp >= 600) {
-        	setContentView(R.layout.activity_home_screen_tablet);
-        } else {
-        	setContentView(R.layout.activity_home_screen);
-        }
+		if (config.smallestScreenWidthDp >= 600) {
+			setContentView(R.layout.activity_home_screen_tablet);
+		} else {
+			setContentView(R.layout.activity_home_screen);
+		}
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 		calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
@@ -144,7 +132,7 @@ public class HomeScreenActivity extends Activity {
 					R.layout.drawer_list_item, myClasses));
 			// myDrawerList.setOnItemClickListener(new
 			// DrawerItemClickListener());
-			getClasses(); // load preliminary screen before getting classes
+			getDatabaseClasses(); // load preliminary screen before getting classes
 			// Enable IC_launcher icon to set action to toggle the navigation
 			// drawer
 			getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -153,11 +141,11 @@ public class HomeScreenActivity extends Activity {
 			// ActionBarDrawerToggle ties together the the proper interactions
 			// between the sliding drawer and the action bar app icon
 			myDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
-			myDrawerLayout, /* DrawerLayout object */
-			R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
-			R.string.drawer_open, /* "open drawer" description for accessibility */
-			R.string.drawer_close /* "close drawer" description for accessibility */
-			) {
+					myDrawerLayout, /* DrawerLayout object */
+					R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
+					R.string.drawer_open, /* "open drawer" description for accessibility */
+					R.string.drawer_close /* "close drawer" description for accessibility */
+					) {
 				public void onDrawerClosed(View view) {
 					invalidateOptionsMenu(); // creates call to
 					// onPrepareOptionsMenu()
@@ -171,9 +159,12 @@ public class HomeScreenActivity extends Activity {
 
 			// Listens to whenever the drawer is toggled
 			myDrawerLayout.setDrawerListener(myDrawerToggle);
+			if(GlobalState.getUserId() != null) System.out.println(GlobalState.getUserId());
+			getClasses();
 
 		} else {
 			courses = GlobalState.getClasses();
+			activeCourses = GlobalState.getActiveClasses();
 			drawSidebar();
 		}
 		// while(GlobalState.getClasses() == null) {
@@ -187,9 +178,9 @@ public class HomeScreenActivity extends Activity {
 		// myClasses[i] = courses.get(i).getClassName();
 		// }
 
-//		if (savedInstanceState == null) {
-//			selectItem(0);
-//		}
+		//		if (savedInstanceState == null) {
+		//			selectItem(0);
+		//		}
 
 		additems = new ArrayList<Items>();
 
@@ -218,42 +209,42 @@ public class HomeScreenActivity extends Activity {
 
 				// set dialog message
 				alertDialogBuilder
-						.setMessage("Do you want to delete this event?")
-						.setCancelable(false)
-						.setPositiveButton("Delete",
-								new DialogInterface.OnClickListener() {
-									@SuppressWarnings("unchecked")
-									public void onClick(DialogInterface dialog,
-											int id) {
-										// if this button is clicked, delete event
-										Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());									
+				.setMessage("Do you want to delete this event?")
+				.setCancelable(false)
+				.setPositiveButton("Delete",
+						new DialogInterface.OnClickListener() {
+					@SuppressWarnings("unchecked")
+					public void onClick(DialogInterface dialog,
+							int id) {
+						// if this button is clicked, delete event
+						Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());									
 
-										String selection="("+CalendarProvider.EVENT+"="+"\""+getAssign + "\" AND " + CalendarProvider.DESCRIPTION
-												+ "=\"" + getClass + "\")";
-										//CalendarProvider.DESCRIPTION+"="+getClass;
-										getContentResolver().delete(uri, selection , null);
-										
-										String eventUri = "content://com.android.calendar/events";
-										Uri uriAndroidCal = Uri.parse((eventUri).toString());
-										//String selectionAndroidCal="("+Events.TITLE+"="+"\""+getAssign + "\" AND " + CalendarProvider.DESCRIPTION
-										//		+ "=\"" + getClass + "\")";
-										String selectionAndroidCal="("+Events.TITLE+"="+"\""+getClass + " - " + getAssign + "\")";
-										getContentResolver().delete(uriAndroidCal, selectionAndroidCal, null);
-										
-										adapter1.remove(adapter1.getItem(position));
-										calendar.refreshCalendar();
-										adapter1.notifyDataSetChanged();
-									}
-								})
-						.setNegativeButton("Cancel",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										// if this button is clicked, just close
-										// the dialog box and do nothing
-										dialog.cancel();
-									}
-								});
+						String selection="("+CalendarProvider.EVENT+"="+"\""+getAssign + "\" AND " + CalendarProvider.DESCRIPTION
+								+ "=\"" + getClass + "\")";
+						//CalendarProvider.DESCRIPTION+"="+getClass;
+						getContentResolver().delete(uri, selection , null);
+
+						String eventUri = "content://com.android.calendar/events";
+						Uri uriAndroidCal = Uri.parse((eventUri).toString());
+						//String selectionAndroidCal="("+Events.TITLE+"="+"\""+getAssign + "\" AND " + CalendarProvider.DESCRIPTION
+						//		+ "=\"" + getClass + "\")";
+						String selectionAndroidCal="("+Events.TITLE+"="+"\""+getClass + " - " + getAssign + "\")";
+						getContentResolver().delete(uriAndroidCal, selectionAndroidCal, null);
+
+						adapter1.remove(adapter1.getItem(position));
+						calendar.refreshCalendar();
+						adapter1.notifyDataSetChanged();
+					}
+				})
+				.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,
+							int id) {
+						// if this button is clicked, just close
+						// the dialog box and do nothing
+						dialog.cancel();
+					}
+				});
 				// create alert dialog
 				AlertDialog alertDialog = alertDialogBuilder.create();
 				// show it
@@ -285,8 +276,8 @@ public class HomeScreenActivity extends Activity {
 				// String.valueOf(Arrays.asList(eventList.get(i)).contains("horse")),
 				// Toast.LENGTH_SHORT).show();
 				//}
-				 //Toast.makeText(getApplicationContext(), String.valueOf(prefs.getBoolean("set_notifications", true)),
-				 //Toast.LENGTH_SHORT).show();
+				//Toast.makeText(getApplicationContext(), String.valueOf(prefs.getBoolean("set_notifications", true)),
+				//Toast.LENGTH_SHORT).show();
 				// TODO Auto-generated method stub
 				additems.clear();
 				if (day.getNumOfEvenets() != 0) {
@@ -308,11 +299,15 @@ public class HomeScreenActivity extends Activity {
 	}
 
 	protected void drawSidebar() {
-		myClasses = new String[courses.size()];
-		for (int i = 0; i < courses.size(); i++) {
-			myClasses[i] = courses.get(i).getClassName();
+		activeCourses = GlobalState.getActiveClasses();
+		myClasses = new String[activeCourses.size()];
+		for (int i = 0; i < activeCourses.size(); i++) {
+			myClasses[i] = activeCourses.get(i).getClassName();
 		}
-//		System.out.println(myClasses[0]);
+		if(courses.size() == 0) {
+			myClasses = new String[1];
+			myClasses[0] = "Classes loading, please wait";
+		}
 		myDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		myDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -333,11 +328,11 @@ public class HomeScreenActivity extends Activity {
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the sliding drawer and the action bar app icon
 		myDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
-		myDrawerLayout, /* DrawerLayout object */
-		R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
-		R.string.drawer_open, /* "open drawer" description for accessibility */
-		R.string.drawer_close /* "close drawer" description for accessibility */
-		) {
+				myDrawerLayout, /* DrawerLayout object */
+				R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
+				R.string.drawer_open, /* "open drawer" description for accessibility */
+				R.string.drawer_close /* "close drawer" description for accessibility */
+				) {
 			public void onDrawerClosed(View view) {
 				invalidateOptionsMenu(); // creates call to
 				// onPrepareOptionsMenu()
@@ -381,9 +376,10 @@ public class HomeScreenActivity extends Activity {
 			return true;
 		case R.id.action_refreshlist:
 			// Force refresh of course list
-			File file = new File(this.getFilesDir(), courseFileName);
-			if (file.exists())
-				file.delete();
+//			File file = new File(this.getFilesDir(), courseFileName);
+//			if (file.exists())
+//				file.delete();
+			
 			getClasses();
 			return true;
 		case R.id.action_settings:
@@ -398,8 +394,12 @@ public class HomeScreenActivity extends Activity {
 		case R.id.action_edit_courses:
 			final ArrayList<Integer> selected = new ArrayList<Integer>();
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			String[] allClasses = new String[courses.size()];
+			for(int i = 0; i < allClasses.length; i++) {
+				allClasses[i] = courses.get(i).getClassName();
+			}
 			builder.setTitle(R.string.edit_courses)
-			.setMultiChoiceItems(myClasses, null, new DialogInterface.OnMultiChoiceClickListener() {
+			.setMultiChoiceItems(allClasses, null, new DialogInterface.OnMultiChoiceClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 					if(isChecked) {
@@ -412,15 +412,19 @@ public class HomeScreenActivity extends Activity {
 			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int id) {
-					ArrayList<Course> temp = new ArrayList<Course>();
-					
-					for(Integer i : selected) {
-						temp.add(courses.get(i));
+					for(Integer i = 0; i < courses.size(); i++) {
+						if(selected.contains(i)) {
+							courses.get(i).setActive(true);
+						} else courses.get(i).setActive(false);
 					}
-					courses = temp;
+//					for(Integer i : selected) {
+//						temp.add(courses.get(i));
+//					}
+//					courses = temp;
 					GlobalState.setClasses(courses);
-					writeCoursesToFile();
+//					writeCoursesToFile();
 					drawSidebar();
+					updateDatabaseClasses(courses, true);
 				}
 			})
 			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -439,7 +443,7 @@ public class HomeScreenActivity extends Activity {
 
 	/* The click listener for ListView in the navigation drawer */
 	private class DrawerItemClickListener implements
-			ListView.OnItemClickListener {
+	ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
@@ -451,10 +455,10 @@ public class HomeScreenActivity extends Activity {
 		// Update the content
 		Intent intent;
 		intent = new Intent(HomeScreenActivity.this, Classes.class);
-		intent.putExtra("className", courses.get(position).getClassName());
+		intent.putExtra("className", activeCourses.get(position).getClassName());
 		intent.putExtra("sessionName", sessionName);
 		intent.putExtra("sessionId", sessionId);
-		intent.putExtra("classId", courses.get(position).getClassId());
+		intent.putExtra("classId", activeCourses.get(position).getClassId());
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		this.startActivity(intent);
 		// update selected item and title, then close the drawer
@@ -538,7 +542,7 @@ public class HomeScreenActivity extends Activity {
 							assignment_month, assignment_day);
 					//Uri uri2 = getContentResolver().insert(
 					//		Uri.parse("content://com.android.calendar/events"), values2);
-					
+
 					Uri uri = getContentResolver().insert(
 							CalendarProvider.CONTENT_URI, values);
 					// calendar = (ExtendedCalendarView)
@@ -553,11 +557,11 @@ public class HomeScreenActivity extends Activity {
 		});
 		builder.setNegativeButton("Cancel",
 				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+			}
+		});
 		builder.show();
 	}
 
@@ -592,38 +596,66 @@ public class HomeScreenActivity extends Activity {
 		// Set up the buttons
 		builder.setPositiveButton("Logout",
 				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// WRITE BACKEND CODE!!!!
-						onBackPressed();
-					}
-				});
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// WRITE BACKEND CODE!!!!
+				onBackPressed();
+			}
+		});
 		builder.setNegativeButton("Cancel",
 				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+			}
+		});
 		return builder.show();
 	}
 
+	protected void getUserId() {
+		String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getUserInfo";
+		HttpGet get = new HttpGet(url);
+		new GetUserIdTask().execute(get);
+	}
+
 	protected void getClasses() {
-		File file = new File(this.getFilesDir(), courseFileName);
-		boolean readResult = false;
-		if (file.exists()) {
-			readResult = readCoursesFromFile();
-		}
-		if (readResult) {
-			this.courses = GlobalState.getClasses();
-			System.out.println("I'm in here now! "
-					+ courses.get(0).getClassName());
-			drawSidebar();
-		} else {
+//		File file = new File(this.getFilesDir(), courseFileName);
+//		boolean readResult = false;
+//		if (file.exists()) {
+//			readResult = readCoursesFromFile();
+//		}
+//		if (readResult) {
+//			this.courses = GlobalState.getClasses();
+//			System.out.println("I'm in here now! "
+//					+ courses.get(0).getClassName());
+//			drawSidebar();
+//		} else {
 			String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/siteJson";
 			HttpGet get = new HttpGet(url);
 			new GetClassesTask().execute(get);
+//		}
+	}
+
+	protected void getDatabaseClasses() {
+		String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getDatabaseSites";
+		HttpPost post = new HttpPost(url);
+		ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+		if(GlobalState.getUserId() == null) {
+			getUserId();
 		}
+		while(GlobalState.getUserId() == null);
+		System.out.println("User id loaded and querying db");
+		postParameters.add(new BasicNameValuePair("userId", GlobalState.getUserId()));
+		try {
+			post.setEntity(new UrlEncodedFormEntity(postParameters));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		dbClassesTask = new GetDatabaseClassesTask();
+		dbClassesTask.execute(post);
+
+
 	}
 
 	// }
@@ -632,43 +664,90 @@ public class HomeScreenActivity extends Activity {
 		ArrayList<Course> classes = new ArrayList<Course>();
 		JSONArray array = null;
 		try {
-			// System.out.println(jObject.length());
 			array = jObject.getJSONArray("site_collection");
 			for (int i = 0; i < array.length(); i++) {
 				JSONObject obj = array.getJSONObject(i);
 				String classTitle = obj.getString("title");
 				String classId = obj.getString("id");
-				classes.add(new Course(classTitle, classId));
+				classes.add(new Course(classTitle, classId, true));
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		if(GlobalState.getClasses() != null) {
+			if(GlobalState.getClasses().size() == 0) {
+				GlobalState.setClasses(classes);
+				this.courses = classes;
+				this.activeCourses = GlobalState.getActiveClasses();
+//				File file = new File(this.getFilesDir(), courseFileName);
+//				if (!file.exists())
+//					writeCoursesToFile();
+				drawSidebar();
+			}
+		}
+		updateDatabaseClasses(classes, false);
+		
+	}
+	
+	protected void updateDatabaseClasses(ArrayList<Course> classes, boolean updateExisting) {
+		JSONArray array = new JSONArray();
+		try {
+			for(Course course : classes) {
+				JSONObject obj = new JSONObject();
+				obj.put("site_id", course.getClassId());
+				obj.put("user_id", GlobalState.getUserId());
+				obj.put("site_title", course.getClassName());
+				String active = "0";
+				if(course.isActive()) active = "1";
+				obj.put("active", active);
+				array.put(obj);
+			}
+
+			String jsonString = array.toString();
+			//			StringEntity jsonEntity = null;
+			//			jsonEntity = new StringEntity(jsonString);
+			String url = "";
+			if(updateExisting) {
+				url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/updateSitesOnDatabase";
+			} else url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/insertSites";
+			HttpPost post = new HttpPost(url);
+			ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+			postParameters.add(new BasicNameValuePair("siteData", jsonString));
+			post.setEntity(new UrlEncodedFormEntity(postParameters));
+			//			post.setHeader("Content-type", "application/json");
+			updateDbClassesTask = new UpdateDatabaseClassesTask();
+			updateDbClassesTask.execute(post);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void parseDatabaseClassesJSON(JSONArray jArray) {
+		ArrayList<Course> classes = new ArrayList<Course>();
+		for(int i = 0; i < jArray.length(); i++) {
+			try {
+				JSONObject obj = jArray.getJSONObject(i);
+				Course course = new Course(obj.optString("site_title"),
+						obj.optString("site_id"), obj.optString("active").equals("1"));
+				classes.add(course);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 		GlobalState.setClasses(classes);
 		this.courses = classes;
-		File file = new File(this.getFilesDir(), courseFileName);
-		if (!file.exists())
-			writeCoursesToFile();
-		// if(!prefs.contains("courseListJson")) {
-		// SharedPreferences.Editor editor = prefs.edit();
-		// editor.putString("courseListJson", jObject.toString());
-		// editor.commit();
-		// }
-		// if(!prefs.contains("courseNames") && !prefs.contains("courseIds")) {
-		// HashSet<String> courseNames = new HashSet<String>();
-		// HashSet<String> courseIds = new HashSet<String>();
-		// for(Course course : courses) {
-		// courseNames.add(course.getClassName());
-		// courseIds.add(course.getClassId());
-		// }
-		// SharedPreferences.Editor editor = prefs.edit();
-		// editor.putStringSet("courseNames", courseNames);
-		// editor.putStringSet("courseIds", courseIds);
-		// editor.commit();
-		//
-		// }
+		this.activeCourses = GlobalState.getActiveClasses();
 		drawSidebar();
+		
 	}
+
+	protected void parseUserJson(JSONObject jObject) {
+		GlobalState.setUserId(jObject.optString("id"));
+	}
+
 
 	public class GetClassesTask extends AsyncTask<HttpGet, String, JSONObject> {
 
@@ -690,7 +769,6 @@ public class HomeScreenActivity extends Activity {
 					sb.append(line + "\n");
 				}
 				result = sb.toString();
-				// System.out.println(result);
 				jObject = new JSONObject(result);
 				jObject = new JSONObject(jObject.getString("body"));
 			} catch (ClientProtocolException e) {
@@ -721,11 +799,6 @@ public class HomeScreenActivity extends Activity {
 			HttpResponse response = null;
 			JSONObject jObject = null;
 			try {
-				Header[] headers = get.getAllHeaders();
-				for (Header header : headers) {
-					// System.out.println(header.getName() + " " +
-					// header.getValue());
-				}
 				response = client.execute(get);
 				entity = response.getEntity();
 				jObject = extractJson(entity);
@@ -744,46 +817,239 @@ public class HomeScreenActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(JSONObject jObject) {
-			// System.out.println("I'm here!");
 			parseJson(jObject);
 		}
 	}
 
-	protected boolean writeCoursesToFile() {
-		boolean result = false;
-		try {
-			FileOutputStream fos = this.openFileOutput(courseFileName,
-					Context.MODE_PRIVATE);
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(GlobalState.getClasses());
-			result = true;
-			System.out.println("File written!");
-		} catch (Exception ex) {
-			ex.printStackTrace();
+	public class GetDatabaseClassesTask extends
+	AsyncTask<HttpPost, String, JSONArray> {
+
+		String mText;
+
+		protected JSONArray extractJson(HttpEntity entity) {
+			InputStream stream = null;
+			BufferedReader reader;
+			String line = "";
+			String result = "";
+			JSONArray jArray = null;
+
+			try {
+				stream = entity.getContent();
+				reader = new BufferedReader(new InputStreamReader(stream,
+						"UTF-8"), 8);
+				StringBuilder sb = new StringBuilder();
+				while ((line = reader.readLine()) != null) {
+					sb.append(line + "\n");
+				}
+				result = sb.toString();
+				if(result.equals("")) {
+					jArray = new JSONArray();
+				} else jArray = new JSONArray(result);
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				try {
+					if (stream != null)
+						stream.close();
+				} catch (Exception squish) {
+				}
+			}
+			return jArray;
 		}
-		return result;
+
+		@Override
+		protected JSONArray doInBackground(HttpPost... params) {
+			DefaultHttpClient client = new DefaultHttpClient();
+			HttpPost post = params[0];
+			post.setHeader("Cookie", sessionName + "=" + sessionId);
+			HttpEntity entity = null;
+			HttpResponse response = null;
+			JSONArray jArray = null;
+			try {
+				response = client.execute(post);
+				entity = response.getEntity();
+				if (response.getStatusLine().toString().contains("504")) {
+					jArray = null;
+				} else {
+					jArray = extractJson(entity);
+				}
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			client.getConnectionManager().shutdown();
+
+			return jArray;
+
+		}
+
+		@Override
+		protected void onPostExecute(JSONArray jArray) {
+			if (jArray != null)
+				parseDatabaseClassesJSON(jArray);
+			// if(jArray != null && jArray.length() > 0) {
+			// TextView t = (TextView)findViewById(R.id.textView1);
+			// try {
+			// t.setText(jArray.getString(0));
+			// } catch (JSONException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			// }
+		}
 	}
 
-	protected boolean readCoursesFromFile() {
-		boolean result = false;
-		File file = new File(this.getFilesDir(), courseFileName);
-		if (file.exists()) {
+	public class GetUserIdTask extends AsyncTask<HttpGet, String, JSONObject> {
+
+		String mText;
+
+		protected JSONObject extractJson(HttpEntity entity) {
+			InputStream stream = null;
+			BufferedReader reader;
+			String line = "";
+			String result = "";
+			JSONObject jObject = null;
+
 			try {
-				FileInputStream fis = this.openFileInput(courseFileName);
-				ObjectInputStream ois = new ObjectInputStream(fis);
-				ArrayList<Course> courseList = (ArrayList<Course>) ois
-						.readObject();
-				if (courseList != null) {
-					GlobalState.setClasses(courseList);
-					result = true;
-					System.out.println("File loaded!");
+				stream = entity.getContent();
+				reader = new BufferedReader(new InputStreamReader(stream,
+						"UTF-8"), 8);
+				StringBuilder sb = new StringBuilder();
+				while ((line = reader.readLine()) != null) {
+					sb.append(line + "\n");
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
+				result = sb.toString();
+				jObject = new JSONObject(result);
+				jObject = new JSONObject(jObject.getString("body"));
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				try {
+					if (stream != null)
+						stream.close();
+				} catch (Exception squish) {
+				}
 			}
+			return jObject;
 		}
-		return result;
+
+		@Override
+		protected JSONObject doInBackground(HttpGet... params) {
+			DefaultHttpClient client = new DefaultHttpClient();
+			HttpGet get = params[0];
+			get.setHeader("Cookie", sessionName + "=" + sessionId);
+			HttpEntity entity = null;
+			HttpResponse response = null;
+			JSONObject jObject = null;
+			try {
+				response = client.execute(get);
+				entity = response.getEntity();
+				jObject = extractJson(entity);
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			client.getConnectionManager().shutdown();
+			parseUserJson(jObject);
+			return jObject;
+
+		}
+
+		@Override
+		protected void onPostExecute(JSONObject jObject) {
+//			super.onPostExecute(jObject);
+//			parseUserJson(jObject);
+		}
 	}
+
+	public class UpdateDatabaseClassesTask extends AsyncTask<HttpPost, Integer, Integer> {
+
+		@Override
+		protected Integer doInBackground(HttpPost... params) {
+			DefaultHttpClient client = new DefaultHttpClient();
+			HttpPost post = params[0];
+			post.setHeader("Cookie", sessionName + "=" + sessionId);
+			HttpResponse response = null;
+			int statusCode = 0;
+			try {
+				response = client.execute(post);
+				statusCode = response.getStatusLine().getStatusCode();
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			client.getConnectionManager().shutdown();
+
+			return statusCode;
+		}
+
+		@Override
+		protected void onPostExecute(Integer statusCode) {
+//			System.out.println("The status is: " + statusCode);
+		}
+
+	}
+
+
+//	protected boolean writeCoursesToFile() {
+//		boolean result = false;
+//		try {
+//			FileOutputStream fos = this.openFileOutput(courseFileName,
+//					Context.MODE_PRIVATE);
+//			ObjectOutputStream oos = new ObjectOutputStream(fos);
+//			oos.writeObject(GlobalState.getClasses());
+//			result = true;
+//			System.out.println("File written!");
+//		} catch (Exception ex) {
+//			ex.printStackTrace();
+//		}
+//		return result;
+//	}
+
+//	protected boolean readCoursesFromFile() {
+//		boolean result = false;
+//		File file = new File(this.getFilesDir(), courseFileName);
+//		if (file.exists()) {
+//			try {
+//				FileInputStream fis = this.openFileInput(courseFileName);
+//				ObjectInputStream ois = new ObjectInputStream(fis);
+//				ArrayList<Course> courseList = (ArrayList<Course>) ois
+//						.readObject();
+//				if (courseList != null) {
+//					GlobalState.setClasses(courseList);
+//					this.activeCourses = GlobalState.getActiveClasses();
+//					result = true;
+//					System.out.println("File loaded!");
+//				}
+//			} catch (Exception ex) {
+//				ex.printStackTrace();
+//			}
+//		}
+//		return result;
+//	}
 
 	// Add events to the calendar
 	/*

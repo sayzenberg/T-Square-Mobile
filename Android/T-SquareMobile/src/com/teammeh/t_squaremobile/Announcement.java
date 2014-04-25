@@ -40,9 +40,7 @@ public class Announcement {
 		SimpleDateFormat formatter = new SimpleDateFormat("LLLL dd, yyyy h:mm a");
 		formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 		String epoch = obj.optString("createdOn");
-//		System.out.println(epoch);
 		if(epoch != "") {
-//			System.out.println(epoch == null);
 			Long epochNum = Long.parseLong(epoch);
 			Date epochDate = new Date(epochNum);
 			this.date = formatter.format(epochDate);

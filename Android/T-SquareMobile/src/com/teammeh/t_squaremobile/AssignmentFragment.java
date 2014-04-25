@@ -65,7 +65,8 @@ public class AssignmentFragment extends ListFragment {
 	String myClassName;
 	String myClassId;
 
-	Object lock = new Object();
+	GetAssignmentsTask assignmentsTask;
+	UpdateAssignmentsTask dbAssignmentsTask;
 
 	private String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
 
@@ -139,6 +140,13 @@ public class AssignmentFragment extends ListFragment {
 			// fragment is attached to one) that an item has been selected.
 			mListener.onAssignmentFragmentInteraction(assignment);
 		}
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		if(assignmentsTask != null) assignmentsTask.cancel(true);
+		if(dbAssignmentsTask != null) dbAssignmentsTask.cancel(true);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -236,7 +244,6 @@ public class AssignmentFragment extends ListFragment {
 		if (assignments != null)
 			setListAdapter(new AssignmentListAdapter(getActivity(),
 					android.R.layout.simple_list_item_1, assignments));
-		System.out.println("Printed, about to release");
 		//		if(fromDb) {
 		//			synchronized (lock) { lock.notify(); }
 		//		} else 
@@ -263,21 +270,7 @@ public class AssignmentFragment extends ListFragment {
 			e.printStackTrace();
 		}
 		new GetAssignmentsTask().execute(post);
-		System.out.println("About to get db");
-		//		try {
-		//			Thread.sleep(5000);
-		//		} catch (InterruptedException e1) {
-		//			// TODO Auto-generated catch block
-		//			e1.printStackTrace();
-		//		}
-		//		synchronized (lock) {
-		//		    try {
-		//				lock.wait();
-		//			} catch (InterruptedException e) {
-		//				// TODO Auto-generated catch block
-		//				e.printStackTrace();
-		//			}
-		//		} 
+
 
 		url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/getAssignmentsByClass";
 		//		if(classId.equals("gtc-9371-3996-558c-9d8c-41046acd8ba4")) {
@@ -290,7 +283,8 @@ public class AssignmentFragment extends ListFragment {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		new GetAssignmentsTask().execute(post);
+		assignmentsTask = new GetAssignmentsTask();
+		assignmentsTask.execute(post);
 
 	}
 
@@ -309,7 +303,6 @@ public class AssignmentFragment extends ListFragment {
 			}
 
 			String jsonString = array.toString();
-			System.out.println(jsonString);
 			//			StringEntity jsonEntity = null;
 			//			jsonEntity = new StringEntity(jsonString);
 			String url = "http://dev.m.gatech.edu/d/tkerr3/w/t2/content/api/updateDatabaseAssignmentsByClass";
@@ -318,7 +311,8 @@ public class AssignmentFragment extends ListFragment {
 			postParameters.add(new BasicNameValuePair("postData", jsonString));
 			post.setEntity(new UrlEncodedFormEntity(postParameters));
 			//			post.setHeader("Content-type", "application/json");
-			new UpdateAssignmentsTask().execute(post);
+			dbAssignmentsTask = new UpdateAssignmentsTask();
+			dbAssignmentsTask.execute(post);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -346,7 +340,6 @@ public class AssignmentFragment extends ListFragment {
 				}
 				result = sb.toString();
 				jArray = new JSONArray(result);
-				// System.out.println("Length of JSON: " + jArray.length());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -380,10 +373,8 @@ public class AssignmentFragment extends ListFragment {
 				if (response.getStatusLine().toString().contains("504")) {
 					jArray = null;
 				} else {
-					// System.out.println(response.getStatusLine());
 					jArray = extractJson(entity);
 				}
-				// System.out.println(response.getStatusLine());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -425,7 +416,6 @@ public class AssignmentFragment extends ListFragment {
 			try {
 				response = client.execute(post);
 				statusCode = response.getStatusLine().getStatusCode();
-				System.out.println("The response line is: " + response.getStatusLine().toString());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -440,7 +430,7 @@ public class AssignmentFragment extends ListFragment {
 
 		@Override
 		protected void onPostExecute(Integer statusCode) {
-			System.out.println("The status is: " + statusCode);
+//			System.out.println("The status is: " + statusCode);
 		}
 
 	}

@@ -47,7 +47,6 @@ public class AssignmentListAdapter extends ArrayAdapter {
 		//       }
 
 		holder.titleText.setText(assignment.getTitle());
-//		System.out.println(holder.titleText.getText());
 		return viewToUse;
 	}
 

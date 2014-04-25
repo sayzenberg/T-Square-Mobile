@@ -43,6 +43,8 @@ public class AnnouncementFragment extends ListFragment {
 	String sessionName;
 	String sessionId;
 	String classId;
+	
+	GetAnnouncementsTask task;
 
 	private ArrayList<Announcement> announcements;
 
@@ -97,6 +99,12 @@ public class AnnouncementFragment extends ListFragment {
 		super.onDetach();
 		mListener = null;
 	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		if(task != null) task.cancel(true);
+	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
@@ -118,7 +126,6 @@ public class AnnouncementFragment extends ListFragment {
 		if(items != null) {
 			try {
 				array = items.getJSONArray("announcement_collection");
-				//			System.out.println(array.length());
 				int i = 0;
 				JSONObject obj = array.optJSONObject(i);
 				while(obj != null) {
@@ -151,7 +158,8 @@ public class AnnouncementFragment extends ListFragment {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		new GetAnnouncementsTask().execute(post);
+		task = new GetAnnouncementsTask();
+		task.execute(post);
 	}
 
 	public class GetAnnouncementsTask extends AsyncTask<HttpPost, String, JSONObject> {
@@ -174,9 +182,7 @@ public class AnnouncementFragment extends ListFragment {
 					sb.append(line + "\n");
 				}
 				result = sb.toString();
-				//				System.out.println(result);
 				jObject = new JSONObject(result);
-				//				System.out.println("Length of JSON: " + jObject.length());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -201,14 +207,9 @@ public class AnnouncementFragment extends ListFragment {
 			HttpResponse response = null;
 			JSONObject jObject = null;	    	    
 			try {
-				Header[] headers = post.getAllHeaders();
-				for(Header header : headers) {
-					//					System.out.println(header.getName() + " " + header.getValue());
-				}
 				response = client.execute(post);
 				entity = response.getEntity();
 				jObject = extractJson(entity);
-				//				System.out.println(response.getStatusLine());
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
