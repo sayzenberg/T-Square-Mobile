@@ -29,6 +29,8 @@ import android.widget.Toast;
 import com.tyczj.extendedcalendarview.CalendarProvider;
 import com.tyczj.extendedcalendarview.Event;
 
+/*This class contains all the functions that add assignments to calendars
+ * or set notifications for assignments*/
 public class AddAssignments {
 
 	private static PendingIntent pendingIntent;
@@ -58,7 +60,7 @@ public class AddAssignments {
 		Calendar cal = Calendar.getInstance();
 		TimeZone tz = TimeZone.getDefault();
 		
-		/* set the start date and the end date of the event
+		/* set the start date and the end date of the event.
 		 * JulianDay is used for when multiple events used on 
 		 * same day	 */
 		cal.set(startYear, startMonth, startDay, 0, 0);
@@ -113,7 +115,7 @@ public class AddAssignments {
 			// notifications
 			if (currentTime < eventTime) {
 
-				// Set alarm
+				// Set alarm by broadcasting an alarm
 				Intent myIntent = new Intent(context, AlarmReceiver.class);
 
 				pendingIntent = PendingIntent.getBroadcast(context, 0,
@@ -124,7 +126,6 @@ public class AddAssignments {
 						pendingIntent);
 			}
 		}
-		// }
 	}
 	
 	// Cancels all notifications set by the application
@@ -147,7 +148,7 @@ public class AddAssignments {
 
 			long eventTime = Long.parseLong(cursor.getString(0));// Returns
 			Date date = new Date(eventTime);	
-			Toast.makeText(context, date.toString(), Toast.LENGTH_SHORT).show();
+			//Toast.makeText(context, date.toString(), Toast.LENGTH_SHORT).show();
 			Calendar calendar = Calendar.getInstance();
 			calendar.set(Calendar.MONTH, date.getMonth());
 			calendar.set(Calendar.YEAR, date.getYear());
@@ -226,6 +227,7 @@ public class AddAssignments {
 		//Create a calendar event to get the specific day in milliseconds
 		Calendar cal = new GregorianCalendar(year, month, day);
 		
+		// stores variables for the events tables and saves them in "values" object
 		ContentValues values = new ContentValues();
 		TimeZone tz = TimeZone.getDefault();
 		values.put(Events.CALENDAR_ID, 1);

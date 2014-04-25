@@ -4,7 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-// AlarmReceiver is a BroadcastReceiver is receiving an Intent broadcast and will start the notification activity
+/* AlarmReceiver is a BroadcastReceiver is receiving an Intent broadcast 
+* and will start the notification activity */
 public class AlarmReceiver extends BroadcastReceiver {
     
   @Override

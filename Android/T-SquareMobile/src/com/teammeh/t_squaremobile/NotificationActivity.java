@@ -43,7 +43,7 @@ public class NotificationActivity extends Service {
        intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP| Intent.FLAG_ACTIVITY_CLEAR_TOP);
  
        PendingIntent pendingNotificationIntent = PendingIntent.getActivity( this.getApplicationContext(),0, intent1,PendingIntent.FLAG_UPDATE_CURRENT);
-       // Lets notification be canceled
+       // Lets notification be removed when clicked
        notification.flags |= Notification.FLAG_AUTO_CANCEL;
        // Displays the content of the notification
        notification.setLatestEventInfo(this.getApplicationContext(), "T-Square Mobile", "You have an assignment due tomorrow!", pendingNotificationIntent);

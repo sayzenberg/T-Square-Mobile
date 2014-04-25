@@ -3,8 +3,6 @@ package com.teammeh.t_squaremobile;
 /**
  * This class allows user to get and set the course name, assignment, and due date
  * for the ListView on the HomeScreen
- * @author kevin_000
- *
  */
 public class Items {
 	 private String title;
