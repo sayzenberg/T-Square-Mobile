@@ -193,6 +193,9 @@ public class AssignmentFragment extends ListFragment {
 				}
 				list.add(assignment);
 				// To Put Assignments In the Calendar
+				
+				/* If there are assignments, place them in the calendar, google calendar, and create
+				 * notifications*/
 				if(assignment.getDueDate() != null){
 					String date = assignment.getDueDate();
 					String delims = "[ ]";
@@ -213,7 +216,8 @@ public class AssignmentFragment extends ListFragment {
 					boolean checkEvent = false;
 					ArrayList<Items> eventList = AddAssignments
 							.readEvents(getActivity());
-
+					
+					// Checks to make sure duplicate items are not placed in the calendars
 					for (int k = 0; k < eventList.size(); k++) {
 						checkEvent = checkEvent
 								|| (Arrays.asList(eventList.get(k).getTitle())
@@ -223,7 +227,7 @@ public class AssignmentFragment extends ListFragment {
 												& Arrays.asList(eventList.get(k).getDate())
 												.contains(assignDate));
 					}
-
+					// If there are no duplicate items, add assignemnts to calendars and notifications
 					if (checkEvent == false) {
 						values = AddAssignments.addToCal(myClassName,
 								assignName, year, month, day);

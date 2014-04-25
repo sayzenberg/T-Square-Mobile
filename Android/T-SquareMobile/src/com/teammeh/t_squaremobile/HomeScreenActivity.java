@@ -93,14 +93,18 @@ public class HomeScreenActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// Configuration to see resolution for tablets
 		Configuration config = getResources().getConfiguration();
-		if (config.smallestScreenWidthDp >= 600) {
-			setContentView(R.layout.activity_home_screen_tablet);
-		} else {
-			setContentView(R.layout.activity_home_screen);
-		}
+        if (config.smallestScreenWidthDp >= 600) {
+        	setContentView(R.layout.activity_home_screen_tablet);
+        } else {
+        	setContentView(R.layout.activity_home_screen);
+        }
+        // Pull shared preferences from my settings
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
+		
+		// gets the custom calendar view from XML and refreshes calendar for updates
 		calendar = (ExtendedCalendarView) findViewById(R.id.calendar);
 		calendar.refreshCalendar();
 
@@ -182,14 +186,14 @@ public class HomeScreenActivity extends Activity {
 		//			selectItem(0);
 		//		}
 
+		// Initializes Item array list for the listview and sets the XML listview
 		additems = new ArrayList<Items>();
-
 		listview = (ListView) findViewById(R.id.listView1);
-
-		adapter1 = new MyAdapter(this, additems);// generateData());
-
+		// Creates a custom adapter for the assignments
+		adapter1 = new MyAdapter(this, additems);
+		//sets the adapter in the listview
 		listview.setAdapter(adapter1);
-
+		
 		listview.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
@@ -199,87 +203,69 @@ public class HomeScreenActivity extends Activity {
 				final String getClass = selectAssignment.getTitle();
 				final String getAssign = selectAssignment.getDescription();
 
-				// Toast.makeText(HomeScreenActivity.this, getClass + " " +
-				// getAssign, Toast.LENGTH_SHORT).show();
+				// Create an alert dialog for deleting events
 				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 						HomeScreenActivity.this);
 
-				// set title
 				alertDialogBuilder.setTitle("Delete Event");
-
-				// set dialog message
 				alertDialogBuilder
-				.setMessage("Do you want to delete this event?")
-				.setCancelable(false)
-				.setPositiveButton("Delete",
-						new DialogInterface.OnClickListener() {
-					@SuppressWarnings("unchecked")
-					public void onClick(DialogInterface dialog,
-							int id) {
-						// if this button is clicked, delete event
-						Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());									
+						.setMessage("Do you want to delete this event?")
+						.setCancelable(false)
+						.setPositiveButton("Delete",
+								new DialogInterface.OnClickListener() {
+									@SuppressWarnings("unchecked")
+									public void onClick(DialogInterface dialog,
+											int id) {
+										// if this button is clicked, delete event
+										// Access the sqlite database and delete events based on class and description
+										Uri uri = Uri.parse((CalendarProvider.CONTENT_URI).toString());									
 
-						String selection="("+CalendarProvider.EVENT+"="+"\""+getAssign + "\" AND " + CalendarProvider.DESCRIPTION
-								+ "=\"" + getClass + "\")";
-						//CalendarProvider.DESCRIPTION+"="+getClass;
-						getContentResolver().delete(uri, selection , null);
-
-						String eventUri = "content://com.android.calendar/events";
-						Uri uriAndroidCal = Uri.parse((eventUri).toString());
-						//String selectionAndroidCal="("+Events.TITLE+"="+"\""+getAssign + "\" AND " + CalendarProvider.DESCRIPTION
-						//		+ "=\"" + getClass + "\")";
-						String selectionAndroidCal="("+Events.TITLE+"="+"\""+getClass + " - " + getAssign + "\")";
-						getContentResolver().delete(uriAndroidCal, selectionAndroidCal, null);
-
-						adapter1.remove(adapter1.getItem(position));
-						calendar.refreshCalendar();
-						adapter1.notifyDataSetChanged();
-					}
-				})
-				.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,
-							int id) {
-						// if this button is clicked, just close
-						// the dialog box and do nothing
-						dialog.cancel();
-					}
-				});
+										String selection="("+CalendarProvider.EVENT+"="+"\""+getAssign + "\" AND " + CalendarProvider.DESCRIPTION
+												+ "=\"" + getClass + "\")";
+										
+										getContentResolver().delete(uri, selection , null);
+										
+										// Delete the event on the google calendar from its sql database
+										String eventUri = Events.CONTENT_URI.toString();
+										Uri uriAndroidCal = Uri.parse((eventUri).toString());
+										String selectionAndroidCal="("+Events.TITLE+"="+"\""+getClass + " - " + getAssign + "\")";
+										getContentResolver().delete(uriAndroidCal, selectionAndroidCal, null);
+										
+										/*Remove the event from the adapter, update the adapter,
+										 *  and refresh the calendar to view events*/
+										adapter1.remove(adapter1.getItem(position));
+										calendar.refreshCalendar();
+										adapter1.notifyDataSetChanged();
+									}
+								})
+								
+						.setNegativeButton("Cancel",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										// if this button is clicked, just close
+										// the dialog box and do nothing
+										dialog.cancel();
+									}
+								});
 				// create alert dialog
 				AlertDialog alertDialog = alertDialogBuilder.create();
-				// show it
 				alertDialog.show();
 				return true;
 			}
 		});
-
+		
+		// listens to when the day on the calendar is clicked
 		calendar.setOnDayClickListener(new OnDayClickListener() {
 
 			@Override
 			public void onDayClicked(AdapterView<?> adapter, View view,
 					int position, long id, Day day) {
 
-				// boolean test = false;
-				//AddAssignments.setAllNotifications(getApplicationContext());
-
-				//for (int i = 0; i < eventList.size(); i++) {
-				// test = test
-				// || (Arrays.asList(eventList.get(i).getTitle())
-				// .contains("piggy") & Arrays.asList(
-				// eventList.get(i).getDescription())
-				// .contains("horse"));
-				// Toast.makeText(getApplicationContext(),
-				// eventList.get(i).getTitle() + " " +
-				// eventList.get(i).getDescription(),
-				// Toast.LENGTH_SHORT).show();
-				// Toast.makeText(getApplicationContext(),
-				// String.valueOf(Arrays.asList(eventList.get(i)).contains("horse")),
-				// Toast.LENGTH_SHORT).show();
-				//}
-				//Toast.makeText(getApplicationContext(), String.valueOf(prefs.getBoolean("set_notifications", true)),
-				//Toast.LENGTH_SHORT).show();
 				// TODO Auto-generated method stub
 				additems.clear();
+				/*Gets the number of events on the specific day and 
+				 * places them on the listview via custom adapter*/
 				if (day.getNumOfEvenets() != 0) {
 					for (int i = 0; i < day.getNumOfEvenets(); i++) {
 						additems.add(new Items(day.getEvents().get(i)
@@ -287,6 +273,7 @@ public class HomeScreenActivity extends Activity {
 								.getTitle(), day.getDay(), day.getMonth(), day
 								.getYear()));
 					}
+					// refreshes the calendar
 					adapter1.notifyDataSetChanged();
 				} else {
 					additems.clear();
@@ -371,8 +358,8 @@ public class HomeScreenActivity extends Activity {
 		}
 		switch (item.getItemId()) {
 		case R.id.action_add_assignment:
-			// Add assignments
-			add_assignments();
+			// Add a custom assignment
+			addAssignments();
 			return true;
 		case R.id.action_refreshlist:
 			// Force refresh of course list
@@ -486,7 +473,7 @@ public class HomeScreenActivity extends Activity {
 	}
 
 	// Create Dialog Box to enter Assignment and Due Date
-	public void add_assignments() {
+	public void addAssignments() {
 
 		final View addView = getLayoutInflater().inflate(
 				R.layout.add_assignments_dialog, null);
@@ -514,12 +501,12 @@ public class HomeScreenActivity extends Activity {
 				assignment_year = datepicker.getYear();
 				assignment_date = "Due Date: " + months[assignment_month] +
 						" " + assignment_day + ", " + assignment_year;
-				// ArrayList<String> eventList =
-				// AddAssignments.readEvents(getApplicationContext());
+
 				boolean checkEvent = false;
 				ArrayList<Items> eventList = AddAssignments
 						.readEvents(getApplicationContext());
-
+				
+				//Checks if the assignment has already been written
 				for (int i = 0; i < eventList.size(); i++) {
 					checkEvent = checkEvent
 							|| (Arrays.asList(eventList.get(i).getTitle())
@@ -529,25 +516,23 @@ public class HomeScreenActivity extends Activity {
 									& Arrays.asList(eventList.get(i).getDate())
 									.contains(assignment_date));
 				}
-
+				
+				// If the assignment has not been made already
 				if (checkEvent == false) {
+					
+					// Add events to custom calendar
 					values = AddAssignments.addToCal(assignment_course,
 							assignment_name, assignment_year, assignment_month,
 							assignment_day);
-					//Date date = new Date(assignment_year-1900, assignment_month, assignment_day);
-					//Toast.makeText(getApplicationContext(), date.toString(), Toast.LENGTH_LONG).show();
+					
+					Uri uri = getContentResolver().insert(
+							CalendarProvider.CONTENT_URI, values);
+					
 					//Add event to google calendar
 					AddAssignments.addToGoogleCalendar(HomeScreenActivity.this,
 							assignment_course, assignment_name, assignment_year, 
 							assignment_month, assignment_day);
-					//Uri uri2 = getContentResolver().insert(
-					//		Uri.parse("content://com.android.calendar/events"), values2);
-
-					Uri uri = getContentResolver().insert(
-							CalendarProvider.CONTENT_URI, values);
-					// calendar = (ExtendedCalendarView)
-					// findViewById(R.id.calendar);
-
+					// Set an application notification for the event
 					AddAssignments.setSingleNotification(HomeScreenActivity.this,
 							assignment_course, assignment_name,
 							assignment_year, assignment_month, assignment_day);
@@ -568,7 +553,7 @@ public class HomeScreenActivity extends Activity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)) { // Back key pressed
-			// Things to Do
+			// logout of the application
 			logout();
 			return true;
 		}
@@ -596,12 +581,11 @@ public class HomeScreenActivity extends Activity {
 		// Set up the buttons
 		builder.setPositiveButton("Logout",
 				new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// WRITE BACKEND CODE!!!!
-				onBackPressed();
-			}
-		});
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						onBackPressed();
+					}
+				});
 		builder.setNegativeButton("Cancel",
 				new DialogInterface.OnClickListener() {
 			@Override
