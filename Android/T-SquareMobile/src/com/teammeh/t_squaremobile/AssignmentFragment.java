@@ -251,7 +251,7 @@ public class AssignmentFragment extends ListFragment {
 		//		if(fromDb) {
 		//			synchronized (lock) { lock.notify(); }
 		//		} else 
-		updateDatabaseAssignments();
+		if(!fromDb) updateDatabaseAssignments();
 
 		//TODO: FIX THIS! NullPointerException
 	}
